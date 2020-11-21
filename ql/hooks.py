@@ -92,6 +92,11 @@ website_context = {
 # 		"on_trash": "method"
 #	}
 # }
+doc_events = {
+	"Sales Invoice": {
+		"validate": "ql.ql.sales.update_discount"
+	},
+}
 
 # Scheduled Tasks
 # ---------------
@@ -132,4 +137,10 @@ website_context = {
 # override_doctype_dashboards = {
 # 	"Task": "ql.task.get_dashboard_data"
 # }
+
+default_mail_footer = """
+    <div>
+        Sent via <a href="http://qs.quantum-laboratories.com//" target="_blank">Quantum Laboratories</a>
+    </div>
+"""
 
