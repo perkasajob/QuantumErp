@@ -28,10 +28,10 @@ app_logo_url = '/assets/ql/images/logo.png'
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
-# doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
+doctype_tree_js = {"Warehouse" : "public/js/warehouse.js"}
+doctype_list_js = {"Purchase Order" : "public/js/purchase_order.js", "Purchase Receipt" : "public/js/purchase_receipt_list.js"} #, {"Purchase Receipt" : "public/js/purchase_receipt_list.js"}
 # Home Pages
 # ----------
 
@@ -97,6 +97,7 @@ doc_events = {
 		"validate": "ql.ql.sales.update_discount"
 	},
 }
+
 
 # Scheduled Tasks
 # ---------------

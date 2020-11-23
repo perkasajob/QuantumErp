@@ -1,3 +1,4 @@
+
 frappe.ui.form.on('Purchase Receipt', {
 	refresh(frm) {
 		set_POQty_btn(frm)
@@ -37,7 +38,7 @@ async function check_POqty(frm, validation){
 			    	var str = ""
 			    	var fail = false
 			    	r.message.forEach(e => {
-			    	    
+
 			    	    if(frm.doc.__islocal){
 			    	        var pri_qty = lqty[e[0].purchase_order_item] + e[0].pri_qty
 			    	    } else{
@@ -50,10 +51,10 @@ async function check_POqty(frm, validation){
     					    fail = true
     					} else {
     					    str += '<td>'
-    					}    
+    					}
     					str += percentage +'</td></tr>'
     				});
-    				
+
 					str = '<table class="table" id="prqty"><thead><tr><th>PO Idx</th><th>Item Name</th><th>PO qty</th><th>PR qty</th><th>%</th></tr></thead><tbody>'+str+'</tbody></table>'
 					if(validation){
 					    if(fail){
