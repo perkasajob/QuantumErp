@@ -27,11 +27,12 @@ app_logo_url = '/assets/ql/images/logo.png'
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Purchase Receipt" : "public/js/purchase_receipt.js", "Quality Inspection" : "public/js/quality_inspection.js","Material Request" : "public/js/material_request.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
+# doctype_js = {"Kanban Board" : "public/js/kanban_board.js"}
 doctype_tree_js = {"Warehouse" : "public/js/warehouse.js"}
-doctype_list_js = {"Purchase Order" : "public/js/purchase_order.js", "Purchase Receipt" : "public/js/purchase_receipt_list.js"} #, {"Purchase Receipt" : "public/js/purchase_receipt_list.js"}
+doctype_list_js = {"Material Request" : "public/js/material_request_list.js","Purchase Order" : "public/js/purchase_order.js", "Purchase Receipt" : "public/js/purchase_receipt_list.js", "Project" : "public/js/kanban_list.js"}
 # Home Pages
 # ----------
 
@@ -95,6 +96,12 @@ website_context = {
 doc_events = {
 	"Sales Invoice": {
 		"validate": "ql.ql.sales.update_discount"
+	},
+	"Material Request": {
+		"validate": "ql.ql.buying.update_completed_with_draft_qty"
+	},
+	"Purchase Receipt": {
+		"validate": "ql.ql.stock.purchase_receipt_validate"
 	},
 }
 

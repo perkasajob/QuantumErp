@@ -4,16 +4,24 @@ from frappe import _
 def get_data():
 	return [
 			{
-			"label": _("QL Reports"),
-			"items": [
-				{
-					"type": "report",
-					"is_query_report": True,
-					"name": "Stock Ledger QL",
-					"doctype": "Stock Ledger Entry",
-					"onboard": 1,
-					"dependencies": ["Item"],
-				}
-			]
-		}
+				"label": _("QL Reports"),
+				"items": [
+					{
+						"type": "report",
+						"is_query_report": True,
+						"name": "Stock Ledger QL",
+						"doctype": "Stock Ledger Entry",
+						"onboard": 1,
+						"dependencies": ["Item"],
+					},
+					{
+						"type": "report",
+						"is_query_report": True,
+						"name": "Procurement Tracker QL",
+						"doctype": "Purchase Order",
+						"onboard": 1,
+						"dependencies": ["Item","Material Request"],
+					}
+				]
+			}
 		]
