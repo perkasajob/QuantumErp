@@ -10,17 +10,22 @@ frappe.ui.form.on('Material Request', {
 		}
 	},
 	onload(frm){
+		if(!frm.doc.requestee){
+			frm.set_value("requestee", frappe.user.full_name())
+			console.log("SCRIPT IS RUNNING")
+		}
+
 	    if(frm.doc.department)
 	        return
-	    var dept_list = []
+		var dept_list = []
         frappe.db.get_single_value('QL Settings', 'dept_abbr')
     	.then(value => {
     		dept_list = value.split(",");
-    		var dept = dept_list.find((e)=>{return frappe.user.has_role(e)})
+			var dept = dept_list.find((e)=>{return frappe.user.has_role(e)})
     		if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Purchase Manager"))
-    	        frm.set_df_property("department", "read_only", dept ? 1 : 0);
+				frm.set_df_property("department", "read_only", dept ? 1 : 0);
 			frm.set_value("department", dept)
-			frm.set_value("requestee", frappe.user.full_name())
+			// frm.set_value("requestee", frappe.user.full_name())
 		});
 	}
 })

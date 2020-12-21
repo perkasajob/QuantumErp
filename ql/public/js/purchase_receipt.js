@@ -169,7 +169,6 @@ function create_batch(o, inspection_nr){
 
 function genNum(number, length)
 {
-    // var number = Math.floor(Math.random() * 10000)
     var str = '' + number%Math.pow(10,length);
     while (str.length < length) {
         str = '0' + str;
