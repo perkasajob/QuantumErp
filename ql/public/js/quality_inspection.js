@@ -1,5 +1,9 @@
-console.log("Quality Inspection Script is active")
 frappe.ui.form.on('Quality Inspection', {
+	onload(frm) {
+		frm.get_field("readings").grid.cannot_add_rows = true;
+		if(!frm.doc.quality_inspection_template)
+			frm.set_value("quality_inspection_template",frm.doc.item_code)
+	},
     validate(frm) {
         set_month_code(cur_frm)
     },
@@ -76,12 +80,11 @@ function test_criteria(frm){
 }
 
 function set_sample_size(frm){
-	console.log("set sample size "+ frm.doc.sample_type)
 	if(frm.doc.sample_type == 'N'){
 		if(frm.doc.received_qty > 4)
 			frm.set_value('sample_size', Math.round(Math.sqrt(frm.doc.received_qty)+1))
 		else
-			frm.set_value('sample_size', n)
+			frm.set_value('sample_size', frm.doc.received_qty)
 	}else if(frm.doc.sample_type == 'P'){
 		frm.set_value('sample_size', Math.ceil(0.4*Math.sqrt(frm.doc.received_qty)))
 	}else if(frm.doc.sample_type == 'R'){

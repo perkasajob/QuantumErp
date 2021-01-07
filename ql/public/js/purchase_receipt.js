@@ -1,6 +1,9 @@
 frappe.ui.form.on('Purchase Receipt', {
 	refresh(frm) {
 		set_POQty_btn(frm)
+		if(frappe.user.has_role('WH') ||frappe.user.has_role('QC')){
+			set_auto_batch_insp_btn(frm)
+		}
 	},
 	validate(frm) {
 	    frm.doc.items.forEach((o,i)=>{if(!o.purchase_order_item)frm.doc.items.splice(i)}) // remove items without PO reference
@@ -21,7 +24,11 @@ function set_POQty_btn(frm){
 	});
 }
 
-
+function set_auto_batch_insp_btn(frm){
+    frm.add_custom_button(__('Auto'), function(){
+        create_batch_inspection(frm)
+	});
+}
 
 async function check_POqty(frm, validation){
     var lqty = {}
@@ -103,6 +110,7 @@ function create_batch_inspection(frm){
 	                    month_code:a[(new Date()).getMonth()]
 	                }).then(doc => {
 						o.batch_no = doc.name
+						cur_frm.refresh_field("items")
 						frappe.msgprint(`Batch ${doc.name} is Created`)
 						debugger
 	                    create_inspection(cur_frm, o)
@@ -115,7 +123,6 @@ function create_batch_inspection(frm){
 	    	create_inspection(cur_frm, o)
 	    }
     })
-    cur_frm.refresh_field("items")
 }
 
 
@@ -139,6 +146,7 @@ function create_inspection(frm, o){
                     month_code:a[(new Date()).getMonth()]
                 }).then(doc => {
 					o.quality_inspection = doc.name
+					cur_frm.refresh_field("items")
 					frappe.msgprint(`Quality Inspection ${doc.name} is Created`)
                 })
             }
@@ -160,7 +168,8 @@ function create_batch(o, inspection_nr){
                     inspection: inspection_nr,
                     month_code:a[(new Date()).getMonth()]
                 }).then(doc => {
-                    o.batch_no = doc.name
+					o.batch_no = doc.name
+    				cur_frm.refresh_field("items")
                 })
             }
         })();

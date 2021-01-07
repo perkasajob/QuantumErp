@@ -12,7 +12,6 @@ frappe.ui.form.on('Material Request', {
 	onload(frm){
 		if(!frm.doc.requestee){
 			frm.set_value("requestee", frappe.user.full_name())
-			console.log("SCRIPT IS RUNNING")
 		}
 
 	    if(frm.doc.department)
@@ -25,7 +24,6 @@ frappe.ui.form.on('Material Request', {
     		if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Purchase Manager"))
 				frm.set_df_property("department", "read_only", dept ? 1 : 0);
 			frm.set_value("department", dept)
-			// frm.set_value("requestee", frappe.user.full_name())
 		});
 	}
 })
