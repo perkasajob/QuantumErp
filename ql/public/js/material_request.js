@@ -1,6 +1,8 @@
 frappe.ui.form.on('Material Request', {
 	refresh(frm) {
-		// your code here
+		if(!frm.doc.requestee){
+			frm.set_value("requestee", frappe.user.full_name())
+		}
 	},
 	validate(frm){
 	    if(!frm.doc.department){
