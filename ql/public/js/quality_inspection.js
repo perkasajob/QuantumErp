@@ -5,7 +5,8 @@ frappe.ui.form.on('Quality Inspection', {
 			frm.set_value("quality_inspection_template",frm.doc.item_code)
 	},
     validate(frm) {
-        set_month_code(cur_frm)
+		set_month_code(cur_frm)
+		check_expiry_date(cur_frm)
     },
 	sample_type(frm) {
 		set_sample_size(cur_frm)
@@ -14,6 +15,16 @@ frappe.ui.form.on('Quality Inspection', {
 		set_sample_size(cur_frm)
 	},
 })
+
+function check_expiry_date(frm){
+	if(!frm.doc.expired_date){
+		frappe.confirm('No Expiry Date, proceed ?',
+			() => {},
+			() => {
+				frappe.validated = false;
+		})
+	}
+}
 
 function set_month_code(frm){
     var a = ['A','B','C','D','E','F','G','H','J','K','L','N']

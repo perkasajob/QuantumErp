@@ -108,24 +108,11 @@ doc_events = {
 
 # Scheduled Tasks
 # ---------------
-
-# scheduler_events = {
-# 	"all": [
-# 		"ql.tasks.all"
-# 	],
-# 	"daily": [
-# 		"ql.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"ql.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"ql.tasks.weekly"
-# 	]
-# 	"monthly": [
-# 		"ql.tasks.monthly"
-# 	]
-# }
+scheduler_events = {
+	"daily": [
+		"bo.bo.tasks.daily"
+	]
+}
 
 # Testing
 # -------
