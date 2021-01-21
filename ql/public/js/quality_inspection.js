@@ -14,6 +14,12 @@ frappe.ui.form.on('Quality Inspection', {
 	received_qty(frm) {
 		set_sample_size(cur_frm)
 	},
+	vat(frm) {
+		set_sample_size(cur_frm)
+	},
+	before_submit(frm){
+		frm.set_value('completion_status', 'Completed')
+	}
 })
 
 function check_expiry_date(frm){
@@ -65,10 +71,11 @@ frappe.ui.form.on('Quality Inspection Reading', {
 })
 
 function test_criteria(frm){
+	frm.selected_doc.status = "Accepted"
     for(let i=0;i<10;i++){
         let reading = frm.selected_doc['reading_'+ cstr(i+1)]
         if(frm.selected_doc.status == "Accepted" && reading != undefined){
-            let criteria = frm.selected_doc.value.replaceAll(' ','')
+            let criteria = frm.selected_doc.value.replaceAll(' ','').replaceAll('%','')
             if(criteria.match(/\<=x|\<x/)){
                 criteria = criteria.replace('<x<','<'+cstr(reading)+"&&"+cstr(reading)+'<').replace('<=x<','<='+cstr(reading)+"&&"+cstr(reading)+'<')
             } else if(criteria.match(/^\<|^\>/)){
@@ -83,23 +90,30 @@ function test_criteria(frm){
                 if(!result)
                     debugger
                 let status = result?"Accepted":"Rejected"
-                frm.selected_doc.status  = status
+                frm.selected_doc.status = status
             }
         }
     }
+
+	frm.doc.status = "Accepted"
+	frm.doc.readings.forEach(o => {
+		if(o.status == "Rejected")
+			frm.doc.status = "Rejected"
+	});
     frm.refresh()
+
 }
 
 function set_sample_size(frm){
 	if(frm.doc.sample_type == 'N'){
 		if(frm.doc.received_qty > 4)
-			frm.set_value('sample_size', Math.round(Math.sqrt(frm.doc.received_qty)+1))
+			frm.set_value('sample_size', Math.round(Math.sqrt(frm.doc.received_qty)+1)*frm.doc.vat)
 		else
 			frm.set_value('sample_size', frm.doc.received_qty)
 	}else if(frm.doc.sample_type == 'P'){
-		frm.set_value('sample_size', Math.ceil(0.4*Math.sqrt(frm.doc.received_qty)))
+		frm.set_value('sample_size', Math.ceil(0.4*Math.sqrt(frm.doc.received_qty)*frm.doc.vat))
 	}else if(frm.doc.sample_type == 'R'){
-		frm.set_value('sample_size', Math.ceil(1.5*Math.sqrt(frm.doc.received_qty)))
+		frm.set_value('sample_size', Math.ceil(1.5*Math.sqrt(frm.doc.received_qty)*frm.doc.vat))
 	}else if(frm.doc.sample_type == 'Military General'){
 		ISO2859milGeneral(frm)
 	}else if(frm.doc.sample_type == 'Military Special'){
@@ -141,7 +155,7 @@ function ISO2859milGeneral(frm){
 	} else {
 		size = 1250
 	}
-	frm.set_value('sample_size', size)
+	frm.set_value('sample_size', size*frm.doc.vat)
 }
 
 function ISO2859milSpecial(frm){
@@ -178,5 +192,5 @@ function ISO2859milSpecial(frm){
 	} else {
 		size = 13
 	}
-	frm.set_value('sample_size', size)
+	frm.set_value('sample_size', size*frm.doc.vat)
 }

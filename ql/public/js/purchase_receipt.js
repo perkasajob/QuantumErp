@@ -24,7 +24,8 @@ function set_POQty_btn(frm){
 
 function set_auto_batch_insp_btn(frm){
     frm.add_custom_button(__('Auto'), function(){
-        create_batch_inspection(frm)
+		create_batch_inspection(frm)
+		cur_frm.save();
 	});
 }
 
@@ -35,7 +36,7 @@ function check_expiry_date(frm){
 			frappe.db.get_value('Batch', item.batch_no, ['name', 'expiry_date'])
 			.then(doc => {
 				console.log(doc)
-				frappe.msgprint(doc.message.name + ' : '+ doc.message.expiry_date)
+				// frappe.msgprint(doc.message.name + ' : '+ doc.message.expiry_date)
 				batchesNoED.push(doc.message.name)
 			})
 	}
@@ -48,6 +49,8 @@ function check_expiry_date(frm){
 		})
 	}
 }
+
+
 
 async function check_POqty(frm, validation){
     var lqty = {}
@@ -127,9 +130,10 @@ async function create_batch_inspection(frm){
 					month_code:a[(new Date()).getMonth()]
 				}))
 				o.batch_no = doc.name
+				// frappe.model.set_value(v.doctype,
+				frappe.model.set_value(o.doctype, o.name, 'batch_no', doc.name)
 				cur_frm.refresh_field("items")
-				frappe.msgprint(`Batch ${doc.name} is Created`)
-				debugger
+				// frappe.msgprint(`Batch ${doc.name} is Created`)
 				create_inspection(cur_frm, o)
 
 			} else {

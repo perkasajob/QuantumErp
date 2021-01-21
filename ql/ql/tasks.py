@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from frappe import _
 import frappe
 from frappe.utils.background_jobs import enqueue
-from frappe.utils import nowdate
+from frappe.utils import nowdate, date_diff, add_months, today, getdate, add_days, flt, get_last_day
 from frappe.desk.doctype.notification_log.notification_log import enqueue_create_notification,\
 	get_title, get_title_html
 from datetime import datetime
@@ -11,12 +11,36 @@ def daily():
 	quality_inspection_scheduler()
 
 def quality_inspection_scheduler(today=nowdate()):
-	return
-	from frappe.desk.doctype.event.event import get_events
-	qis = frappe.get_list('Adv Item', filters=[['parentfield','=','adv'+ adv_idx], ['date','<=',today]], fields=['*'])
-	qi = frappe.get_doc(adv.parenttype, adv.parent)
-	# frappe.db.sql("""update `tabDPPU` set workflow_state = 'Overdue Refund', amount_refund = number where DATEDIFF(NOW(),date)>{} and (workflow_state = 'Refund' or workflow_state = 'DM Received')""".format(period))
-	# frappe.db.commit()
+	month_map = {'Monthly': 30, 'Quarterly': 3*30, 'Half-yearly': 6*30, 'Yearly': 12*30}
+	days_offset = 20 #days
+
+	qis = frappe.db.sql("""select `tabQuality Inspection`.name as qi, `tabQuality Inspection`.retest_period as retest_period, `tabQuality Inspection`.modified as date, \
+		batch_id, sum(`tabStock Ledger Entry`.actual_qty) as qty \
+		from `tabBatch` \
+			join `tabStock Ledger Entry` ignore index (item_code, warehouse) \
+				on (`tabBatch`.batch_id = `tabStock Ledger Entry`.batch_no ) \
+			join `tabQuality Inspection` ignore index (item_code) \
+				on (`tabBatch`.batch_id = `tabQuality Inspection`.batch_no ) \
+		where (`tabBatch`.expiry_date >= CURDATE()) and `tabStock Ledger Entry`.actual_qty > 0 \
+		group by batch_id \
+		order by `tabBatch`.expiry_date ASC, `tabBatch`.creation ASC;""", as_dict=True)
+
+	for qi in qis:
+		datediff = datetime.today() - qi.date
+		if (datediff.days + days_offset) % month_map[qi.retest_period] == 0 :
+			qi_doc = frappe.get_doc('Quality Inspection', qi.qi)
+			cnt = frappe.db.count('Quality Inspection', filters={'name': ('like', qi_doc.name + '%')})
+			new_qi_doc = frappe.copy_doc(qi_doc)
+			new_qi_doc.update({"name": qi_doc.name + '_T'+ str(cnt), "completion_status": "Not Started", "status": "Rejected", "report_date":add_days(datetime.now(), days_offset).date() })
+
+			try:
+				new_qi_doc.insert()
+				new_qi_doc.add_comment('Comment', text=qi_doc.name + ' scheduled retest ' + str(cnt))
+				frappe.db.commit()
+			except frappe.DuplicateEntryError:
+				pass
+			except Exception:
+				frappe.db.rollback()
 
 
 @frappe.whitelist()

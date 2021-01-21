@@ -12,10 +12,38 @@ from frappe.utils import formatdate, get_number_format_info
 from six import iteritems
 
 
+@frappe.whitelist()
+def purchase_receipt_on_submit(doc, method): #pr, doc, method
+	# if(not pr):
+	# 	return {'status': 'pr cannot be empty'}
+	# doc = frappe.get_doc('Purchase Receipt', pr)
+	stock_entry = frappe.new_doc("Stock Entry")
+	stock_entry.purpose = "Material Transfer"
+	stock_entry.stock_entry_type = "Material Transfer"
+	stock_entry.to_warehouse = "QC Pandaan - QL"
+
+	for d in doc.get('items'):
+		if (d.quality_inspection):
+			quality_inspection = frappe.get_doc('Quality Inspection', d.quality_inspection)
+			if (quality_inspection.sample_size > 0):
+				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 't_warehouse': 'QC Pandaan - QL', 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection' }) #
+
+	try:
+		stock_entry.insert(ignore_permissions=True)
+		stock_entry.add_comment('Comment', text=doc.name)
+		stock_entry.submit()
+		frappe.db.commit()
+	except Exception:
+		frappe.db.rollback()
+	return stock_entry.as_dict()
+
+
+
 def purchase_receipt_validate(doc, method):
 	'''Checks if quality inspection is set for Items that require inspection.
 		On submit, throw an exception'''
 	inspection_required_fieldname = None
+
 	# if self.doctype in ["Purchase Receipt", "Purchase Invoice"]:
 	# 	inspection_required_fieldname = "inspection_required_before_purchase"
 	# elif self.doctype in ["Delivery Note", "Sales Invoice"]:

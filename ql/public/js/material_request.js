@@ -6,8 +6,8 @@ frappe.ui.form.on('Material Request', {
 	},
 	validate(frm){
 	    if(!frm.doc.department){
-	        var msg = "Department must be filled"
-	        frappe.msgprint(msg);
+	        var msg = "Department must be fislled"
+			frappe.msgprint(msg);
             throw msg;
 		}
 	},
@@ -29,7 +29,6 @@ frappe.ui.form.on('Material Request', {
 		});
 	}
 })
-
 
 frappe.ui.form.on('Purchase Invoice', {
 	refresh(frm) {
@@ -56,6 +55,7 @@ frappe.ui.form.on('Purchase Invoice', {
         });
 	}
 })
+
 
 function dept_list_func(frm){
     var dept_list = []
