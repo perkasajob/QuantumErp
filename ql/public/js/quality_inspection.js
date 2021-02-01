@@ -3,10 +3,15 @@ frappe.ui.form.on('Quality Inspection', {
 		frm.get_field("readings").grid.cannot_add_rows = true;
 		if(!frm.doc.quality_inspection_template)
 			frm.set_value("quality_inspection_template",frm.doc.item_code)
+		if(frm.doc.batch_no && !frm.doc.expired_date){
+			let ed = frm.doc.frappe.get_doc('Batch',frm.doc.batch_no)
+			frm.set_value('expired_date', ed.expiry_date)
+		}
 	},
     validate(frm) {
 		set_month_code(cur_frm)
 		check_expiry_date(cur_frm)
+		set_sample_size(cur_frm)
     },
 	sample_type(frm) {
 		set_sample_size(cur_frm)
@@ -109,11 +114,11 @@ function set_sample_size(frm){
 		if(frm.doc.received_qty > 4)
 			frm.set_value('sample_size', Math.round(Math.sqrt(frm.doc.received_qty)+1)*frm.doc.vat)
 		else
-			frm.set_value('sample_size', frm.doc.received_qty)
+			frm.set_value('sample_size', frm.doc.received_qty*frm.doc.vat)
 	}else if(frm.doc.sample_type == 'P'){
-		frm.set_value('sample_size', Math.ceil(0.4*Math.sqrt(frm.doc.received_qty)*frm.doc.vat))
+		frm.set_value('sample_size', Math.ceil(0.4*Math.sqrt(frm.doc.received_qty))*frm.doc.vat)
 	}else if(frm.doc.sample_type == 'R'){
-		frm.set_value('sample_size', Math.ceil(1.5*Math.sqrt(frm.doc.received_qty)*frm.doc.vat))
+		frm.set_value('sample_size', Math.ceil(1.5*Math.sqrt(frm.doc.received_qty))*frm.doc.vat)
 	}else if(frm.doc.sample_type == 'Military General'){
 		ISO2859milGeneral(frm)
 	}else if(frm.doc.sample_type == 'Military Special'){

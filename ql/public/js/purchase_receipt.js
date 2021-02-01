@@ -1,4 +1,7 @@
 frappe.ui.form.on('Purchase Receipt', {
+	onload_post_render(frm){
+		set_query_inspection(frm)
+	},
 	refresh(frm) {
 		set_POQty_btn(frm)
 		if(frappe.user.has_role('WH') ||frappe.user.has_role('QC')){
@@ -15,6 +18,19 @@ frappe.ui.form.on('Purchase Receipt', {
 	}
 })
 
+function set_query_inspection(frm){
+	frm.set_query("quality_inspection",'items', function(doc, cdt, cdn){
+		var d =locals[cdt][cdn]
+		return {
+			"filters": {
+				"inspection_type": "Incoming",
+				"reference_name": frm.doc.name,
+				"item_code": d.item_code
+			}
+		};
+	})
+}
+
 
 function set_POQty_btn(frm){
     frm.add_custom_button(__('PO Qty'), function(){
@@ -24,8 +40,11 @@ function set_POQty_btn(frm){
 
 function set_auto_batch_insp_btn(frm){
     frm.add_custom_button(__('Auto'), function(){
-		create_batch_inspection(frm)
-		cur_frm.save();
+		(async () => {
+			await create_batch_inspection(frm)
+			cur_frm.save();
+			console.log('Finished created Batch & QI !!!! ')
+		})();
 	});
 }
 
@@ -35,8 +54,6 @@ function check_expiry_date(frm){
 		if(item.batch_no)
 			frappe.db.get_value('Batch', item.batch_no, ['name', 'expiry_date'])
 			.then(doc => {
-				console.log(doc)
-				// frappe.msgprint(doc.message.name + ' : '+ doc.message.expiry_date)
 				batchesNoED.push(doc.message.name)
 			})
 	}
@@ -57,7 +74,7 @@ async function check_POqty(frm, validation){
     frm.doc.items.forEach((o,i)=>{if(!o.purchase_order_item)frm.doc.items.splice(i)}) // remove items without PO reference
 	frm.refresh_field("items")
     // frm.doc.items.forEach(o=>lqty[o.item_name]= o.item_name in lqty?lqty[o.item_name]+o.qty:o.qty)
-    frm.doc.items.forEach(o=>lqty[o.purchase_order_item]= o.qty)
+	frm.doc.items.forEach(o=>lqty[o.purchase_order_item]= o.qty)
 
     frappe.call({
 		method: "ql.ql.purchase.check_PO_qty",
@@ -71,8 +88,6 @@ async function check_POqty(frm, validation){
 		    	var str = ""
 		    	var fail = false
 		    	r.message.forEach(e => {
-
-
 		    	    if(frm.doc.__islocal){
 		    	        var pri_qty = lqty[e[0].purchase_order_item] + e[0].pri_qty
 		    	    } else{
@@ -115,8 +130,8 @@ async function check_POqty(frm, validation){
 async function create_batch_inspection(frm){
     if(frm.doc.__islocal)
 		return
-
 	for (let o of  cur_frm.doc.items){
+		console.log('Item: ' + o.item_name)
 		if(!Object.keys(o).includes("batch_no") || !o.batch_no){
 			let has_batch_no = (await frappe.db.get_value('Item',o.item_code,'has_batch_no')).message.has_batch_no
 			let batch_count = (await frappe.db.count('Batch'))
@@ -134,13 +149,13 @@ async function create_batch_inspection(frm){
 				frappe.model.set_value(o.doctype, o.name, 'batch_no', doc.name)
 				cur_frm.refresh_field("items")
 				// frappe.msgprint(`Batch ${doc.name} is Created`)
-				create_inspection(cur_frm, o)
+				await create_inspection(cur_frm, o)
 
 			} else {
-				create_inspection(cur_frm, o)
+				await create_inspection(cur_frm, o)
 			}
 		} else { // create inspection only
-			create_inspection(cur_frm, o)
+			await create_inspection(cur_frm, o)
 		}
 	}
 }
@@ -164,6 +179,7 @@ async function create_inspection(frm, o){
 				month_code:a[(new Date()).getMonth()]
 			}))
 			o.quality_inspection = doc.name
+			frappe.model.set_value(o.doctype, o.name, 'quality_inspection', doc.name)
 			cur_frm.refresh_field("items")
 			frappe.msgprint(`Quality Inspection ${doc.name} is Created`)
 		}
@@ -179,3 +195,8 @@ function genNum(number, length)
     }
     return str;
 }
+
+
+async function stall(stallTime = 3000) {
+	await new Promise(resolve => setTimeout(resolve, stallTime));
+  }

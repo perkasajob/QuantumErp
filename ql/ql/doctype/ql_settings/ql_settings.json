@@ -4,17 +4,24 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "dept_abbr"
+  "dept_abbr",
+  "qi_warehouse"
  ],
  "fields": [
   {
    "fieldname": "dept_abbr",
    "fieldtype": "Small Text",
    "label": "Department Abbr."
+  },
+  {
+   "fieldname": "qi_warehouse",
+   "fieldtype": "Link",
+   "label": "QI Warehouse",
+   "options": "Warehouse"
   }
  ],
  "issingle": 1,
- "modified": "2020-09-08 15:50:37.927629",
+ "modified": "2021-01-23 11:28:44.810846",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "QL Settings",

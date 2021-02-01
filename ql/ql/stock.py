@@ -10,6 +10,7 @@ from frappe.utils import nowdate, cstr, flt, cint, now, getdate
 from frappe import throw, _
 from frappe.utils import formatdate, get_number_format_info
 from six import iteritems
+from datetime import datetime
 
 
 @frappe.whitelist()
@@ -17,16 +18,22 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 	# if(not pr):
 	# 	return {'status': 'pr cannot be empty'}
 	# doc = frappe.get_doc('Purchase Receipt', pr)
+	ql_settings = frappe.get_doc('QL Settings')
 	stock_entry = frappe.new_doc("Stock Entry")
 	stock_entry.purpose = "Material Transfer"
 	stock_entry.stock_entry_type = "Material Transfer"
-	stock_entry.to_warehouse = "QC Pandaan - QL"
+	stock_entry.to_warehouse = ql_settings.qi_warehouse
+	need_inspection = False
 
 	for d in doc.get('items'):
 		if (d.quality_inspection):
 			quality_inspection = frappe.get_doc('Quality Inspection', d.quality_inspection)
 			if (quality_inspection.sample_size > 0):
-				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 't_warehouse': 'QC Pandaan - QL', 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection' }) #
+				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 't_warehouse': ql_settings.qi_warehouse, 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no }) #, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection'
+				need_inspection = True
+
+	if not need_inspection:
+		return stock_entry
 
 	try:
 		stock_entry.insert(ignore_permissions=True)
@@ -38,6 +45,78 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 	return stock_entry.as_dict()
 
 
+@frappe.whitelist()
+def create_inspection(batch_no, item_code, warehouse, qty, new_batch_id=None): #pr, doc, method
+	# batch = frappe.get_doc(dict(doctype='Batch', item=item_code, batch_id=new_batch_id)).insert()
+	ql_settings = frappe.get_doc('QL Settings')
+
+	company = frappe.db.get_value('Stock Ledger Entry', dict(
+			item_code=item_code,
+			batch_no=batch_no,
+			warehouse=warehouse
+		), ['company'])
+
+	stock_entry_out = frappe.get_doc(dict(
+		doctype='Stock Entry',
+		purpose='Material Transfer',
+		stock_entry_type = "Material Transfer",
+		company=company,
+		to_warehouse=ql_settings.qi_warehouse,
+		items=[
+			dict(
+				item_code=item_code,
+				qty=float(qty or 0),
+				s_warehouse=warehouse,
+				t_warehouse=ql_settings.qi_warehouse,
+				batch_no=batch_no
+			)
+		]
+	))
+
+	qi_doc = frappe.get_all('Quality Inspection', filters={'batch_no':batch_no}, fields='*', order_by='modified')
+	cnt = len(qi_doc)
+	if cnt > 0:
+		new_qi_doc = frappe.copy_doc(frappe.get_doc('Quality Inspection', qi_doc[0].name))
+		new_qi_doc.update({"name": batch_no + '_D'+ str(cnt), "completion_status": "Not Started", "status": "Rejected", "report_date": datetime.now().date() })
+	else:
+		new_qi_doc = frappe.get_doc(dict(
+			doctype='Quality Inspection',
+			name= batch_no + '_D'+ str(cnt),
+			completion_status= "Not Started",
+			status= "Rejected",
+			report_date= datetime.now().date()
+		))
+
+	new_qi_doc.insert()
+
+	stock_entry_in = frappe.get_doc(dict(
+		doctype='Stock Entry',
+		purpose='Material Transfer',
+		stock_entry_type = "Material Transfer",
+		inspection_required= 1,
+		company=company,
+		to_warehouse=warehouse,
+		items=[
+			dict(
+				item_code=item_code,
+				qty=float(qty or 0),
+				s_warehouse=ql_settings.qi_warehouse,
+				t_warehouse=warehouse,
+				quality_inspection=new_qi_doc.name,
+				batch_no=batch_no
+			)
+		]
+	))
+
+	try:
+		stock_entry_out.insert()
+		stock_entry_out.submit()
+		stock_entry_in.insert()
+		frappe.db.commit()
+	except Exception:
+		frappe.db.rollback()
+
+	return batch_no
 
 def purchase_receipt_validate(doc, method):
 	'''Checks if quality inspection is set for Items that require inspection.
