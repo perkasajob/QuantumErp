@@ -13,6 +13,7 @@ def daily():
 @frappe.whitelist()
 def quality_inspection_scheduler(today=nowdate()):
 	month_map = {'Monthly': 30, 'Quarterly': 3*30, 'Half-yearly': 6*30, 'Yearly': 12*30}
+	ql_settings = frappe.get_doc('QL Settings')
 
 	qis = frappe.db.sql("""select `tabQuality Inspection`.name as qi, `tabQuality Inspection`.retest_period as retest_period, `tabQuality Inspection`.modified as date, \
 		batch_id, sum(`tabStock Ledger Entry`.actual_qty) as qty \
@@ -33,10 +34,10 @@ def quality_inspection_scheduler(today=nowdate()):
 			qi_doc = frappe.get_doc('Quality Inspection', qi.qi)
 			cnt = frappe.db.count('Quality Inspection', filters={'batch_no': qi_doc.batch_no})
 			new_qi_doc = frappe.copy_doc(qi_doc)
-			new_qi_doc.update({"completion_status": "Not Started", "status": "Rejected", "retest": cnt, "report_date":add_days(datetime.now(), days_offset).date() })
+			new_qi_doc.update({"completion_status": "Not Started", "status": "Rejected", "retest": cnt, "report_date":add_days(datetime.now(), days_offset).date(), "inspected_by": ql_settings.qi_inspected_by_default, "vat": math.ceil(qi.qty/(new_qi_doc.vat_qty or 1)), "received_qty": qi.qty })
 			try:
 				new_qi_doc.insert()
-				new_qi_doc.add_comment('Comment', text=qi_doc.name + ' scheduled retest #' + str(cnt))
+				new_qi_doc.add_comment('Comment', text=qi_doc.name + ' Scheduled Retest #' + str(cnt))
 				frappe.db.commit()
 			except frappe.DuplicateEntryError:
 				pass
