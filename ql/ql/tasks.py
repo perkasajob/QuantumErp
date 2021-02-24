@@ -22,7 +22,7 @@ def quality_inspection_scheduler(today=nowdate()):
 				on (`tabBatch`.batch_id = `tabStock Ledger Entry`.batch_no ) \
 			join `tabQuality Inspection` ignore index (item_code) \
 				on (`tabBatch`.batch_id = `tabQuality Inspection`.batch_no ) \
-		where (`tabBatch`.expiry_date >= CURDATE()) and `tabStock Ledger Entry`.actual_qty > 0 and `tabQuality Inspection`.retest_period > '' \
+		where (`tabBatch`.expiry_date >= CURDATE()) and `tabStock Ledger Entry`.actual_qty > 0 and `tabQuality Inspection`.retest_period > '' and `tabQuality Inspection`.status = 'Accepted' and `tabQuality Inspection`.retest = 0 \
 		group by batch_id \
 		order by `tabBatch`.expiry_date ASC, `tabBatch`.creation ASC;""", as_dict=True)
 
@@ -34,7 +34,7 @@ def quality_inspection_scheduler(today=nowdate()):
 			qi_doc = frappe.get_doc('Quality Inspection', qi.qi)
 			cnt = frappe.db.count('Quality Inspection', filters={'batch_no': qi_doc.batch_no})
 			new_qi_doc = frappe.copy_doc(qi_doc)
-			new_qi_doc.update({"completion_status": "Not Started", "status": "Rejected", "retest": cnt, "report_date":add_days(datetime.now(), days_offset).date(), "inspected_by": ql_settings.qi_inspected_by_default, "vat": math.ceil(qi.qty/(new_qi_doc.vat_qty or 1)), "received_qty": qi.qty })
+			new_qi_doc.update({"completion_status": "Not Started", "status": "Rejected", "retest": cnt, "report_date":add_days(datetime.now(), days_offset).date(), "inspected_by": ql_settings.qi_inspected_by_default, "vat": math.ceil(qi.qty/(new_qi_doc.vat_qty or 1)), "received_qty": qi.qty, "retest_period": "" })
 			try:
 				new_qi_doc.insert()
 				new_qi_doc.add_comment('Comment', text=qi_doc.name + ' Scheduled Retest #' + str(cnt))
