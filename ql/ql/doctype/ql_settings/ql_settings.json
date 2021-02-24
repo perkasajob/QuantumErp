@@ -5,7 +5,9 @@
  "engine": "InnoDB",
  "field_order": [
   "dept_abbr",
-  "qi_warehouse"
+  "qi_warehouse",
+  "qi_reject_warehouse",
+  "qi_inspected_by_default"
  ],
  "fields": [
   {
@@ -18,10 +20,22 @@
    "fieldtype": "Link",
    "label": "QI Warehouse",
    "options": "Warehouse"
+  },
+  {
+   "fieldname": "qi_reject_warehouse",
+   "fieldtype": "Link",
+   "label": "QI Reject Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "qi_inspected_by_default",
+   "fieldtype": "Link",
+   "label": "QI Inspected By Default",
+   "options": "User"
   }
  ],
  "issingle": 1,
- "modified": "2021-01-23 11:28:44.810846",
+ "modified": "2021-02-24 16:43:18.859084",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "QL Settings",

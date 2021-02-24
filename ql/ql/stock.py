@@ -77,13 +77,15 @@ def create_inspection(batch_no, item_code, warehouse, qty, new_batch_id=None): #
 	cnt = len(qi_doc)
 	if cnt > 0:
 		new_qi_doc = frappe.copy_doc(frappe.get_doc('Quality Inspection', qi_doc[0].name))
-		new_qi_doc.update({"name": batch_no + '_D'+ str(cnt), "completion_status": "Not Started", "status": "Rejected", "report_date": datetime.now().date() })
+		new_qi_doc.update({"name": batch_no + '_D'+ str(cnt), "completion_status": "Not Started", "status": "Rejected", "report_date": datetime.now().date(), "received_qty": float(qty or 0), "inspected_by": ql_settings.qi_inspected_by_default })
 	else:
 		new_qi_doc = frappe.get_doc(dict(
 			doctype='Quality Inspection',
 			name= batch_no + '_D'+ str(cnt),
 			completion_status= "Not Started",
 			status= "Rejected",
+			received_qty= float(qty or 0),
+			inspected_by= ql_settings.qi_inspected_by_default,
 			report_date= datetime.now().date()
 		))
 
@@ -116,7 +118,46 @@ def create_inspection(batch_no, item_code, warehouse, qty, new_batch_id=None): #
 	except Exception:
 		frappe.db.rollback()
 
-	return batch_no
+	return new_qi_doc
+
+
+
+@frappe.whitelist()
+def qi_reject(batch_no, item_code, qty, new_batch_id=None):
+	ql_settings = frappe.get_doc('QL Settings')
+	batch = frappe.get_doc(dict(doctype='Batch', item=item_code, batch_id=new_batch_id)).insert()
+
+	company = frappe.db.get_value('Stock Ledger Entry', dict(
+			item_code=item_code,
+			batch_no=batch_no,
+			warehouse=ql_settings.qi_warehouse
+		), ['company'])
+
+	stock_entry = frappe.get_doc(dict(
+		doctype='Stock Entry',
+		purpose='Repack',
+		to_warehouse = ql_settings.qi_reject_warehouse,
+		company=company,
+		items=[
+			dict(
+				item_code=item_code,
+				qty=float(qty or 0),
+				s_warehouse=ql_settings.qi_warehouse,
+				batch_no=batch_no
+			),
+			dict(
+				item_code=item_code,
+				qty=float(qty or 0),
+				t_warehouse=ql_settings.qi_reject_warehouse,
+				batch_no=batch.name
+			),
+		]
+	))
+	stock_entry.set_stock_entry_type()
+	stock_entry.insert()
+	stock_entry.submit()
+
+	return stock_entry
 
 def purchase_receipt_validate(doc, method):
 	'''Checks if quality inspection is set for Items that require inspection.

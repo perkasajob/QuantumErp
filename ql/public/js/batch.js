@@ -8,14 +8,9 @@ frappe.ui.form.on('Batch', {
 				var $btn = $(this);
 				frappe.prompt([{
 					fieldname: 'qty',
-					label: __('New Batch Qty'),
+					label: __('Inspect Qty'),
 					fieldtype: 'Float',
 					'default': $btn.attr('data-qty')
-				},
-				{
-					fieldname: 'new_batch_id',
-					label: __('New Batch ID (Optional)'),
-					fieldtype: 'Data',
 				}],
 				(data) => {
 					frappe.call({
@@ -25,11 +20,11 @@ frappe.ui.form.on('Batch', {
 							batch_no: frm.doc.name,
 							qty: data.qty,
 							warehouse: $btn.attr('data-warehouse'),
-							new_batch_id: data.new_batch_id
+							// new_batch_id: data.new_batch_id
 						},
 						callback: (r) => {
-							console.log(r)
-							debugger
+							if(r?.message)
+								frappe.msgprint(`Quality Inspection <a href= "#Form/Quality Inspection/${r.message.name}">${r.message.name}</a> Created`)
 							frm.refresh();
 						},
 					});
@@ -50,13 +45,13 @@ function batch_inspect(e) {
 		var $btn = $(this);
 		frappe.prompt([{
 			fieldname: 'qty',
-			label: __('New Batch Qty'),
+			label: __('Inspect Qty'),
 			fieldtype: 'Float',
 			'default': $btn.attr('data-qty')
 		},
 		{
 			fieldname: 'new_batch_id',
-			label: __('New Batch ID (Optional)'),
+			label: __('Inspect ID (Optional)'),
 			fieldtype: 'Data',
 		}],
 		(data) => {
@@ -74,8 +69,8 @@ function batch_inspect(e) {
 				},
 			});
 		},
-		__('Split Batch'),
-		__('Split')
+		__('Inspect Batch'),
+		__('Inspect')
 		);
 	})
 }

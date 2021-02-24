@@ -4,9 +4,12 @@ frappe.ui.form.on('Quality Inspection', {
 		if(!frm.doc.quality_inspection_template)
 			frm.set_value("quality_inspection_template",frm.doc.item_code)
 		if(frm.doc.batch_no && !frm.doc.expired_date){
-			let ed = frm.doc.frappe.get_doc('Batch',frm.doc.batch_no)
-			frm.set_value('expired_date', ed.expiry_date)
+			let ed = frappe.get_doc('Batch',frm.doc.batch_no)
+			if(ed) frm.set_value('expired_date', ed.expiry_date)
 		}
+	},
+	refresh(frm){
+		set_reject_btn(frm)
 	},
     validate(frm) {
 		set_month_code(cur_frm)
@@ -22,10 +25,62 @@ frappe.ui.form.on('Quality Inspection', {
 	vat(frm) {
 		set_sample_size(cur_frm)
 	},
+	vat_sample_qty(frm) {
+		set_sample_size(cur_frm)
+	},
+	vat_qty(frm) {
+		set_sample_size(cur_frm)
+	},
 	before_submit(frm){
 		frm.set_value('completion_status', 'Completed')
 	}
 })
+
+function set_reject_btn(frm){
+    frm.add_custom_button(__('Reject'), function(){
+        reject_item(frm);
+	});
+}
+
+function reject_item(frm){
+	{
+		frm.set_value('status', 'Rejected')
+		frappe.prompt([{
+			fieldname: 'qty',
+			label: __('Reject Qty'),
+			fieldtype: 'Float',
+			'default': frm.doc.received_qty
+		},
+		{
+			fieldname: 'new_batch_id',
+			label: __('Reject Batch ID'),
+			fieldtype: 'Data',
+			'default': frm.doc.batch_no + 'x'
+		}],
+		(data) => {
+			if(data.qty <= 0 && data.qty > frm.doc.received_qty){
+				frappe.msgprint('quantity cannot exceed received quantity')
+				return
+			}
+			frappe.call({
+				method: 'ql.ql.stock.qi_reject',
+				args: {
+					item_code: frm.doc.item_code,
+					batch_no: frm.doc.batch_no,
+					qty: data.qty,
+					new_batch_id: data.new_batch_id
+				},
+				callback: (r) => {
+					frappe.msgprint(`Stock Entry <a href= "#Form/Stock Entry/${r.message.name}">${r.message.name}</a> Created`)
+					frm.refresh();
+				},
+			});
+		},
+		__('Reject Batch'),
+		__('Reject')
+		);
+	}
+}
 
 function check_expiry_date(frm){
 	if(!frm.doc.expired_date){
@@ -110,15 +165,16 @@ function test_criteria(frm){
 }
 
 function set_sample_size(frm){
+	debugger
 	if(frm.doc.sample_type == 'N'){
-		if(frm.doc.received_qty > 4)
-			frm.set_value('sample_size', Math.round(Math.sqrt(frm.doc.received_qty)+1)*frm.doc.vat)
+		if(frm.doc.vat > 4)
+			frm.set_value('sample_size', Math.round(Math.sqrt(frm.doc.vat)+1)*frm.doc.vat_sample_qty)
 		else
-			frm.set_value('sample_size', frm.doc.received_qty*frm.doc.vat)
+			frm.set_value('sample_size', frm.doc.vat*frm.doc.vat_sample_qty)
 	}else if(frm.doc.sample_type == 'P'){
-		frm.set_value('sample_size', Math.ceil(0.4*Math.sqrt(frm.doc.received_qty))*frm.doc.vat)
+		frm.set_value('sample_size', Math.ceil(0.4*Math.sqrt(frm.doc.vat))*frm.doc.vat_sample_qty)
 	}else if(frm.doc.sample_type == 'R'){
-		frm.set_value('sample_size', Math.ceil(1.5*Math.sqrt(frm.doc.received_qty))*frm.doc.vat)
+		frm.set_value('sample_size', Math.ceil(1.5*Math.sqrt(frm.doc.vat))*frm.doc.vat_sample_qty)
 	}else if(frm.doc.sample_type == 'Military General'){
 		ISO2859milGeneral(frm)
 	}else if(frm.doc.sample_type == 'Military Special'){
@@ -160,7 +216,7 @@ function ISO2859milGeneral(frm){
 	} else {
 		size = 1250
 	}
-	frm.set_value('sample_size', size*frm.doc.vat)
+	frm.set_value('sample_size', size)
 }
 
 function ISO2859milSpecial(frm){
@@ -197,5 +253,5 @@ function ISO2859milSpecial(frm){
 	} else {
 		size = 13
 	}
-	frm.set_value('sample_size', size*frm.doc.vat)
+	frm.set_value('sample_size', size)
 }
