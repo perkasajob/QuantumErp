@@ -135,16 +135,18 @@ function test_criteria(frm){
     for(let i=0;i<10;i++){
         let reading = frm.selected_doc['reading_'+ cstr(i+1)]
         if(frm.selected_doc.status == "Accepted" && reading != undefined){
-            let criteria = frm.selected_doc.value.replaceAll(' ','').replaceAll('%','')
-            if(criteria.match(/\<=x|\<x/)){
-                criteria = criteria.replace('<x<','<'+cstr(reading)+"&&"+cstr(reading)+'<').replace('<=x<','<='+cstr(reading)+"&&"+cstr(reading)+'<')
+            let criteria = frm.selected_doc.value.replaceAll(' ','').replaceAll(/[a-zA-z]+?\d|[a-zA-z]+|%/g,'')
+			// let criteria1 = criteria.match(/(-?\d+(?:[\.,]\d+)?)|[<>=]/g).join('')
+			if(criteria){
+                criteria = criteria.replace('<<','<'+cstr(reading)+"&&"+cstr(reading)+'<').replace('<=<','<='+cstr(reading)+"&&"+cstr(reading)+'<')
             } else if(criteria.match(/^\<|^\>/)){
-                criteria = reading + criteria
+                criteria = reading + criteria.match(/[<>=]+[-+]?[0-9]*\.?[0-9]+/g)
             } else if(!isNaN(criteria)){
                 criteria = reading +'==' + criteria
             } else {
                 criteria = null
             }
+
             if(criteria){
                 let result = eval(criteria)
                 if(!result)
