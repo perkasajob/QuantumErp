@@ -159,6 +159,15 @@ def qi_reject(batch_no, item_code, qty, new_batch_id=None):
 
 	return stock_entry
 
+
+@frappe.whitelist()
+def get_bom_uom(work_order):
+	qis = frappe.db.sql("""SELECT item_code,uom,`tabBOM Item`.stock_uom FROM `tabWork Order` \
+		INNER JOIN `tabBOM Item` ON `tabWork Order`.bom_no=`tabBOM Item`.parent \
+		WHERE `tabWork Order`.NAME="{}" AND `tabBOM Item`.stock_uom=uom;""".format(work_order), as_dict=True)
+	return qis
+
+
 def purchase_receipt_validate(doc, method):
 	'''Checks if quality inspection is set for Items that require inspection.
 		On submit, throw an exception'''

@@ -174,6 +174,8 @@ async function create_inspection(frm, o){
 				reference_name: frm.doc.name,
 				inspected_by: frappe.user.name,
 				received_qty: o.received_qty,
+				vat: o.vat,
+				vat_qty: o.vat_qty,
 				sample_size: 0,
 				batch_no: o.batch_no,
 				month_code:a[(new Date()).getMonth()]

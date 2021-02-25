@@ -27,7 +27,7 @@ app_logo_url = '/assets/ql/images/logo.png'
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Purchase Receipt" : "public/js/purchase_receipt.js", "Quality Inspection" : "public/js/quality_inspection.js","Material Request" : "public/js/material_request.js","Stock Entry" : "public/js/stock_entry.js","Batch" : "public/js/batch.js","Job Card" : "public/js/job_card.js"}
+doctype_js = {"Purchase Receipt" : "public/js/purchase_receipt.js", "Quality Inspection" : "public/js/quality_inspection.js","Material Request" : "public/js/material_request.js","Stock Entry" : "public/js/stock_entry.js","Batch" : "public/js/batch.js","Job Card" : "public/js/job_card.js","Pick List" : "public/js/pick_list.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
 # doctype_js = {"Kanban Board" : "public/js/kanban_board.js"}
@@ -132,6 +132,11 @@ scheduler_events = {
 # override_doctype_dashboards = {
 # 	"Task": "ql.task.get_dashboard_data"
 # }
+
+override_doctype_class = {
+	'Work Order': 'ql.ql.work_order.QLWorkOrder',
+	'Job Card': 'ql.ql.job_card.QLJobCard'
+}
 
 default_mail_footer = """
     <div>
