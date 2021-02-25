@@ -6,7 +6,7 @@ frappe.ui.form.on('Material Request', {
 	},
 	validate(frm){
 	    if(!frm.doc.department){
-	        var msg = "Department must be fislled"
+	        var msg = "Department must be filled"
 			frappe.msgprint(msg);
             throw msg;
 		}
