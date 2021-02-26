@@ -14,6 +14,7 @@ class QLWorkOrder(WorkOrder):
 		self.calculate_operating_cost_ql()
 
 	def calculate_operating_cost_ql(self):
+		self.planned_operating_cost, self.actual_operating_cost = 0.0, 0.0
 		for d in self.get("operations"):
 			d.planned_operating_cost = flt(d.hour_rate) * (flt(d.time_in_mins) / 60.0)
 			d.actual_operating_cost = flt(d.hour_rate) * (flt(d.actual_operation_time) / 60.0)
@@ -23,5 +24,4 @@ class QLWorkOrder(WorkOrder):
 
 		variable_cost = self.actual_operating_cost if self.actual_operating_cost \
 			else self.planned_operating_cost
-		frappe.msgprint("HELLo")
-		self.total_operating_cost = 123456789 #flt(self.additional_operating_cost) + flt(variable_cost)
+		self.total_operating_cost = flt(self.additional_operating_cost) + flt(variable_cost)

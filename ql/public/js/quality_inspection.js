@@ -28,7 +28,7 @@ frappe.ui.form.on('Quality Inspection', {
 	vat_sample_qty(frm) {
 		set_sample_size(cur_frm)
 	},
-	vat_qty(frm) {
+	vat_sample(frm) {
 		set_sample_size(cur_frm)
 	},
 	before_submit(frm){
@@ -167,16 +167,20 @@ function test_criteria(frm){
 }
 
 function set_sample_size(frm){
-	debugger
 	if(frm.doc.sample_type == 'N'){
-		if(frm.doc.vat > 4)
-			frm.set_value('sample_size', Math.round(Math.sqrt(frm.doc.vat)+1)*frm.doc.vat_sample_qty)
-		else
-			frm.set_value('sample_size', frm.doc.vat*frm.doc.vat_sample_qty)
+		if(frm.doc.vat > 4){
+			frm.set_value('vat_sample', Math.round(Math.sqrt(frm.doc.vat)+1))
+			frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
+		}else{
+			frm.set_value('vat_sample', frm.doc.vat)
+			frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
+		}
 	}else if(frm.doc.sample_type == 'P'){
-		frm.set_value('sample_size', Math.ceil(0.4*Math.sqrt(frm.doc.vat))*frm.doc.vat_sample_qty)
+		frm.set_value('vat_sample', Math.ceil(0.4*Math.sqrt(frm.doc.vat)))
+		frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
 	}else if(frm.doc.sample_type == 'R'){
-		frm.set_value('sample_size', Math.ceil(1.5*Math.sqrt(frm.doc.vat))*frm.doc.vat_sample_qty)
+		frm.set_value('vat_sample', Math.ceil(1.5*Math.sqrt(frm.doc.vat)))
+		frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
 	}else if(frm.doc.sample_type == 'Military General'){
 		ISO2859milGeneral(frm)
 	}else if(frm.doc.sample_type == 'Military Special'){

@@ -164,7 +164,7 @@ def qi_reject(batch_no, item_code, qty, new_batch_id=None):
 def get_bom_uom(work_order):
 	qis = frappe.db.sql("""SELECT item_code,uom,`tabBOM Item`.stock_uom FROM `tabWork Order` \
 		INNER JOIN `tabBOM Item` ON `tabWork Order`.bom_no=`tabBOM Item`.parent \
-		WHERE `tabWork Order`.NAME="{}" AND `tabBOM Item`.stock_uom=uom;""".format(work_order), as_dict=True)
+		WHERE `tabWork Order`.NAME="{}" AND `tabBOM Item`.stock_uom<>uom;""".format(work_order), as_dict=True)
 	return qis
 
 
