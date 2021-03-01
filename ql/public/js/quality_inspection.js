@@ -172,7 +172,7 @@ function set_sample_size(frm){
 			frm.set_value('vat_sample', Math.round(Math.sqrt(frm.doc.vat)+1))
 			frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
 		}else{
-			frm.set_value('vat_sample', frm.doc.vat)
+			frm.set_value('vat_sample', 4)
 			frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
 		}
 	}else if(frm.doc.sample_type == 'P'){
