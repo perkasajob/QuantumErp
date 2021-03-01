@@ -168,7 +168,7 @@ function test_criteria(frm){
 
 function set_sample_size(frm){
 	if(frm.doc.sample_type == 'N'){
-		if(frm.doc.vat > 4){
+		if(frm.doc.vat > 16){
 			frm.set_value('vat_sample', Math.round(Math.sqrt(frm.doc.vat)+1))
 			frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
 		}else{
