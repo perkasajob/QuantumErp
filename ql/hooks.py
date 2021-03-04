@@ -133,6 +133,10 @@ scheduler_events = {
 # 	"Task": "ql.task.get_dashboard_data"
 # }
 
+override_whitelisted_methods = {
+	"frappe.desk.query_report.run": "ql.ql.events.run"
+}
+
 override_doctype_class = {
 	'Work Order': 'ql.ql.work_order.QLWorkOrder',
 	'Job Card': 'ql.ql.job_card.QLJobCard'
