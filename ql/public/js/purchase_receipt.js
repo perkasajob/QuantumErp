@@ -9,9 +9,13 @@ frappe.ui.form.on('Purchase Receipt', {
 		}
 	},
 	validate(frm) {
-	    frm.doc.items.forEach((o,i)=>{if(!o.purchase_order_item)frm.doc.items.splice(i)}) // remove items without PO reference
+	    frm.doc.items.forEach((o,i)=>{
+			if(!o.purchase_order_item)frm.doc.items.splice(i);
+			set_batch_freeitem(frm, o);
+		}) // remove items without PO reference
 		check_POqty(frm, true)
 		check_expiry_date(cur_frm)
+		create_freeitem_stock(frm)
 	},
 	before_submit(frm){
 	   check_POqty(frm, true)
@@ -130,9 +134,16 @@ async function check_POqty(frm, validation){
 async function create_batch_inspection(frm){
     if(frm.doc.__islocal)
 		return
+	let processed_items = []
 	for (let o of  cur_frm.doc.items){
 		console.log('Item: ' + o.item_name)
-		if(!Object.keys(o).includes("batch_no") || !o.batch_no){
+		let prev_item = processed_items.find(item=>item.item_code == o.item_code)
+		if(prev_item){
+			let idx = prev_item.idx - 1
+			frappe.model.set_value(o.doctype, o.name, 'batch_no', frm.doc.items[idx].batch_no)
+			frappe.model.set_value(o.doctype, o.name, 'quality_inspection', frm.doc.items[idx].quality_inspection)
+			cur_frm.refresh_field("items")
+		} else if((!Object.keys(o).includes("batch_no") || !o.batch_no)){
 			let has_batch_no = (await frappe.db.get_value('Item',o.item_code,'has_batch_no')).message.has_batch_no
 			let batch_count = (await frappe.db.count('Batch'))
 			if(has_batch_no){
@@ -157,6 +168,26 @@ async function create_batch_inspection(frm){
 		} else { // create inspection only
 			await create_inspection(cur_frm, o)
 		}
+		if(o.batch_no || o.quality_inspection){
+			processed_items.push(o)
+		}
+		set_batch_freeitem(frm, o)
+	}
+}
+
+
+function set_batch_freeitem(frm, o){
+	for (let fri of  frm.doc.free_items){
+		if(o.item_code == fri.item_code){
+			frappe.model.set_value(fri.doctype, fri.name, 'batch_no', o.batch_no)
+			frappe.model.set_value(fri.doctype, fri.name, 'quality_inspection', o.quality_inspection)
+		}
+	}
+}
+
+function create_freeitem_stock(frm){
+	for (let fri of  frm.doc.free_items){
+
 	}
 }
 

@@ -32,13 +32,26 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 't_warehouse': ql_settings.qi_warehouse, 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no }) #, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection'
 				need_inspection = True
 
-	if not need_inspection:
-		return stock_entry
+	stock_entry_fi = frappe.new_doc("Stock Entry")
+	stock_entry_fi.purpose = "Material Receipt"
+	stock_entry_fi.stock_entry_type = "Material Receipt"
+	stock_entry_fi.to_warehouse = doc.set_warehouse
+
+	for d in doc.get('free_items'):
+		if not stock_entry_fi.to_warehouse:
+			stock_entry_fi.to_warehouse = d.warehouse
+		stock_entry_fi.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 't_warehouse': d.warehouse, 'qty': d.received_qty, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no, 'quality_inspection': d.quality_inspection })
+
 
 	try:
-		stock_entry.insert(ignore_permissions=True)
-		stock_entry.add_comment('Comment', text=doc.name)
-		stock_entry.submit()
+		if need_inspection:
+			stock_entry.insert(ignore_permissions=True)
+			stock_entry.add_comment('Comment', text=doc.name)
+			stock_entry.submit()
+		if len(stock_entry_fi.get('items')) > 0 :
+			stock_entry_fi.insert(ignore_permissions=True)
+			stock_entry_fi.add_comment('Comment', text=doc.name)
+			stock_entry_fi.submit()
 		frappe.db.commit()
 	except Exception:
 		frappe.db.rollback()
