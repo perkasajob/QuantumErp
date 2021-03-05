@@ -34,6 +34,19 @@ frappe.ui.form.on('Batch', {
 				);
 			})
 		});
+	},
+	refresh(frm){
+		if(!frm.is_new() && frappe.user.has_role("Accounts Manager") == undefined) {
+			frm.add_custom_button(__("View Ledger QL"), () => {
+				frappe.route_options = {
+					batch_no: frm.doc.name
+				};
+				frappe.set_route("query-report", "Stock Ledger QL");
+			});
+			setTimeout(() => {
+				$("[data-label='View%20Ledger']").remove()
+			}, 3);
+		}
 	}
 })
 
@@ -74,3 +87,4 @@ function batch_inspect(e) {
 		);
 	})
 }
+

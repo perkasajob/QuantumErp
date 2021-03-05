@@ -53,6 +53,9 @@ def run(report_name, filters=None, user=None, ignore_prepared_report=False, cust
 
 	allowed_roles= ['Accounts Manager']
 
+	if "result" not in result:
+		return result
+
 	for ar in allowed_roles:
 		if ar in frappe.get_roles():
 			return result

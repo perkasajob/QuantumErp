@@ -1,4 +1,24 @@
+// erpnext.stock.PurchaseReceiptController.prototype.show_stock_ledger = function() {
+// 		var me = this;
+// 		if(this.frm.doc.docstatus===1) {
+// 			cur_frm.add_custom_button(__("Stock Ledger QL2"), function() {
+// 				frappe.route_options = {
+// 					voucher_no: me.frm.doc.name,
+// 					from_date: me.frm.doc.posting_date,
+// 					to_date: me.frm.doc.posting_date,
+// 					company: me.frm.doc.company
+// 				};
+// 				frappe.set_route("query-report", "Stock Ledger QL");
+// 			}, __("View"));
+// 		}
+
+// 	}
+
+
 frappe.ui.form.on('Purchase Receipt', {
+	onload(frm){
+
+	},
 	onload_post_render(frm){
 		set_query_inspection(frm)
 	},
@@ -7,6 +27,7 @@ frappe.ui.form.on('Purchase Receipt', {
 		if(frappe.user.has_role('WH') ||frappe.user.has_role('QC')){
 			set_auto_batch_insp_btn(frm)
 		}
+		show_stock_ledger(frm)
 	},
 	validate(frm) {
 	    frm.doc.items.forEach((o,i)=>{
@@ -19,8 +40,41 @@ frappe.ui.form.on('Purchase Receipt', {
 	},
 	before_submit(frm){
 	   check_POqty(frm, true)
-	}
+	},
+
 })
+
+
+
+function show_stock_ledger(frm){
+	var me = this;
+	if(frm.doc.docstatus===1) {
+		if(frappe.user.has_role("Accounts Manager") == undefined){
+			cur_frm.add_custom_button(__("Stock Ledger QL"), function() {
+				frappe.route_options = {
+					voucher_no: frm.doc.name,
+					from_date: frm.doc.posting_date,
+					to_date: frm.doc.posting_date,
+					company: frm.doc.company
+				};
+				frappe.set_route("query-report", "Stock Ledger QL");
+			}, __("View"));
+			cur_frm.add_custom_button(__("General Ledger QL"), function() {
+				frappe.route_options = {
+					"voucher_no": frm.doc.name,
+					"from_date": frm.doc.available_for_use_date,
+					"to_date": frm.doc.available_for_use_date,
+					"company": frm.doc.company
+				};
+				frappe.set_route("query-report", "General Ledger QL");
+			}, __("View"));
+			setTimeout(() => {
+				$("[data-label='Stock%20Ledger']").remove()
+				$("[data-label='General%20Ledger']").remove()
+			}, 3);
+		}
+	}
+}
 
 function set_query_inspection(frm){
 	frm.set_query("quality_inspection",'items', function(doc, cdt, cdn){

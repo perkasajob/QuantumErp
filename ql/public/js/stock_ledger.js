@@ -4,3 +4,6 @@ frappe.ui.form.on('Stock Ledger', {
 		console.log("Hello Stock Ledger")
 	}
 })
+
+frappe.msgprint("Hello")
+console.log("Hello Stock Ledger")
