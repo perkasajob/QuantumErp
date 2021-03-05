@@ -137,12 +137,12 @@ function test_criteria(frm){
         if(frm.selected_doc.status == "Accepted" && reading != undefined){
             let criteria = frm.selected_doc.value.replaceAll(' ','').replaceAll(/[a-zA-z]+?\d|[a-zA-z]+|%/g,'')
 			// let criteria1 = criteria.match(/(-?\d+(?:[\.,]\d+)?)|[<>=]/g).join('')
-			if(criteria){
-                criteria = criteria.replace('<<','<'+cstr(reading)+"&&"+cstr(reading)+'<').replace('<=<','<='+cstr(reading)+"&&"+cstr(reading)+'<')
-            } else if(criteria.match(/^\<|^\>/)){
-                criteria = reading + criteria.match(/[<>=]+[-+]?[0-9]*\.?[0-9]+/g)
+		    if(criteria.match(/^\<|^\>/)){
+				criteria = reading + criteria.match(/[<>=]+[-+]?[0-9]*\.?[0-9]+/g)
             } else if(!isNaN(criteria)){
                 criteria = reading +'==' + criteria
+			} else if(criteria.match(/[<=>]/g)){
+                criteria = criteria.replace('<<','<'+cstr(reading)+"&&"+cstr(reading)+'<').replace('<=<','<='+cstr(reading)+"&&"+cstr(reading)+'<')
             } else {
                 criteria = null
             }
