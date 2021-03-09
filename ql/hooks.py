@@ -24,7 +24,7 @@ app_logo_url = '/assets/ql/images/logo.png'
 # web_include_js = "/assets/ql/js/ql.js"
 
 # include js in page
-page_js = {"Stock Ledger" : "public/js/stock_ledger.js"}
+# page_js = {"Stock Ledger" : "public/js/stock_ledger.js"}
 
 # include js in doctype views
 doctype_js = {"Purchase Receipt" : "public/js/purchase_receipt.js", "Quality Inspection" : "public/js/quality_inspection.js","Material Request" : "public/js/material_request.js","Stock Entry" : "public/js/stock_entry.js","Batch" : "public/js/batch.js","Job Card" : "public/js/job_card.js","Pick List" : "public/js/pick_list.js","Warehouse" : "public/js/warehouse.js"}

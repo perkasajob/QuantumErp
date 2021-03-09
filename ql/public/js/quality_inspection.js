@@ -169,11 +169,12 @@ function set_sample_size(frm){
 	if(frm.doc.sample_type == 'N'){
 		if(frm.doc.vat > 16){
 			frm.set_value('vat_sample', Math.round(Math.sqrt(frm.doc.vat)+1))
-			frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
+		}else if(frm.doc.vat < 5){
+			frm.set_value('vat_sample', frm.doc.vat)
 		}else{
 			frm.set_value('vat_sample', 4)
-			frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
 		}
+		frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
 	}else if(frm.doc.sample_type == 'P'){
 		frm.set_value('vat_sample', Math.ceil(0.4*Math.sqrt(frm.doc.vat)))
 		frm.set_value('sample_size', frm.doc.vat_sample*frm.doc.vat_sample_qty)
