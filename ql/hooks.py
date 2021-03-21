@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from . import __version__ as app_version
+from erpnext.controllers.buying_controller import BuyingController
 
 app_name = "ql"
 app_title = "QL"
@@ -94,7 +95,13 @@ website_context = {
 #	}
 # }
 doc_events = {
+	# "*": {
+	# 	"before_save": "ql.overrides.before_save"
+	# },
 	"Sales Invoice": {
+		"validate": "ql.ql.sales.update_discount"
+	},
+	"Sales Order": {
 		"validate": "ql.ql.sales.update_discount"
 	},
 	"Material Request": {
@@ -142,6 +149,7 @@ override_doctype_class = {
 	'Job Card': 'ql.ql.job_card.QLJobCard'
 }
 
+#'erpnext.erpnext.utilities.transaction_base.'
 default_mail_footer = """
     <div>
         Sent via <a href="http://qs.quantum-laboratories.com//" target="_blank">Quantum Laboratories</a>

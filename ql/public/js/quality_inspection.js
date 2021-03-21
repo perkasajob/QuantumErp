@@ -1,8 +1,8 @@
 frappe.ui.form.on('Quality Inspection', {
 	onload(frm) {
 		frm.get_field("readings").grid.cannot_add_rows = true;
-		if(!frm.doc.quality_inspection_template)
-			frm.set_value("quality_inspection_template",frm.doc.item_code)
+		// if(!frm.doc.quality_inspection_template)
+		// 	frm.set_value("quality_inspection_template",frm.doc.item_code)
 		if(frm.doc.batch_no && !frm.doc.expired_date){
 			let ed = frappe.get_doc('Batch',frm.doc.batch_no)
 			if(ed) frm.set_value('expired_date', ed.expiry_date)
@@ -15,6 +15,7 @@ frappe.ui.form.on('Quality Inspection', {
 		set_month_code(cur_frm)
 		check_expiry_date(cur_frm)
 		set_sample_size(cur_frm)
+		auto_fill(cur_frm)
     },
 	sample_type(frm) {
 		set_sample_size(cur_frm)
@@ -163,6 +164,27 @@ function test_criteria(frm){
 	});
     frm.refresh()
 
+}
+
+
+function auto_fill(frm){
+	let fill_data = 0
+	if(!frm.doc.received_qty){
+		fill_data = 1
+	}
+
+	if(frm.doc.reference_type == "Purchase Receipt" && fill_data){
+		frappe.db.get_doc("Purchase Receipt", frm.doc.reference_name).then(r=>{
+			r.items.every(o=>{
+				if(o.quality_inspection == frm.doc.name){
+					["received_qty","vat","vat_qty","batch_no"].forEach(e=>{
+						frm.set_value(e, o[e])
+					})
+					return false
+				}
+			})
+		})
+	}
 }
 
 function set_sample_size(frm){

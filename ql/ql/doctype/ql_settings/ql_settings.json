@@ -7,7 +7,8 @@
   "dept_abbr",
   "qi_warehouse",
   "qi_reject_warehouse",
-  "qi_inspected_by_default"
+  "qi_inspected_by_default",
+  "carton_sizes"
  ],
  "fields": [
   {
@@ -32,10 +33,15 @@
    "fieldtype": "Link",
    "label": "QI Inspected By Default",
    "options": "User"
+  },
+  {
+   "fieldname": "carton_sizes",
+   "fieldtype": "Small Text",
+   "label": "Carton Sizes"
   }
  ],
  "issingle": 1,
- "modified": "2021-02-24 16:43:18.859084",
+ "modified": "2021-03-10 09:44:21.347357",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "QL Settings",

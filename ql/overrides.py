@@ -1,11 +1,4 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2020, Quantum Labs
-from __future__ import unicode_literals
-
-__version__ = '0.0.1'
-
 import frappe
-from frappe.utils import today, flt
 from frappe.utils import flt, get_link_to_form
 from dateutil.parser._parser import ParserError
 import operator
@@ -14,8 +7,11 @@ from dateutil import parser
 from six import iteritems, text_type, string_types, integer_types
 from erpnext.utilities.transaction_base import TransactionBase
 from frappe import _
-from erpnext.controllers.accounts_controller import AccountsController
 
+
+def before_save(doc, method):
+	TransactionBase.validate_rate_with_reference_doc = ql_validate_rate_with_reference_doc
+	frappe.utils.money_in_words = money_in_words
 
 def ql_validate_rate_with_reference_doc(self, ref_details):
 	buying_doctypes = ["Purchase Order", "Purchase Invoice", "Purchase Receipt"]
@@ -92,53 +88,3 @@ def money_in_words(number, main_currency = None, fraction_currency=None):
 			out = out + ' ' + _('and') + ' ' + _(in_words(fraction, in_million).title())
 	out = re.sub(r'(?<=Thousand).*', '', out)
 	return out + '.'
-
-
-def validate_multiple_billing(self, ref_dt, item_ref_dn, based_on, parentfield):
-	from erpnext.controllers.status_updater import get_allowance_for
-	item_allowance = {}
-	global_qty_allowance, global_amount_allowance = None, None
-
-	for item in self.get("items"):
-		if item.get(item_ref_dn):
-			ref_amt = flt(frappe.db.get_value(ref_dt + " Item",
-				item.get(item_ref_dn), based_on), self.precision(based_on, item))
-			if not ref_amt:
-				frappe.msgprint(
-					_("Warning: System will not check overbilling since amount for Item {0} in {1} is zero")
-						.format(item.item_code, ref_dt))
-			else:
-				already_billed = frappe.db.sql("""
-					select sum(%s)
-					from `tab%s`
-					where %s=%s and docstatus=1 and parent != %s
-				""" % (based_on, self.doctype + " Item", item_ref_dn, '%s', '%s'),
-					(item.get(item_ref_dn), self.name))[0][0]
-
-				total_billed_amt = flt(flt(already_billed) + flt(item.get(based_on)),
-					self.precision(based_on, item))
-
-				allowance, item_allowance, global_qty_allowance, global_amount_allowance = \
-					get_allowance_for(item.item_code, item_allowance, global_qty_allowance, global_amount_allowance, "amount")
-
-				max_allowed_amt = flt(ref_amt * (100 + allowance) / 100)
-
-				if total_billed_amt < 0 and max_allowed_amt < 0:
-					# while making debit note against purchase return entry(purchase receipt) getting overbill error
-					total_billed_amt = abs(total_billed_amt)
-					max_allowed_amt = abs(max_allowed_amt)
-
-				if total_billed_amt - max_allowed_amt > 5:
-					frappe.throw(_("Cannot overbill for Item {0} in row {1} more than {2}. To allow over-billing, please set allowance in Accounts Settings")
-						.format(item.item_code, item.idx, max_allowed_amt))
-
-@frappe.whitelist()
-def get_logged_user_dept():
-	# if "SM" in frappe.get_roles(frappe.session.user):
-	# 	return True
-    return frappe.db.sql("select dept_code from `tabDepartment` dept left join `tabEmployee` emp ON emp.department = dept.name where emp.user_id='{0}'".format(frappe.session.user), as_dict=1)
-
-
-TransactionBase.validate_rate_with_reference_doc = ql_validate_rate_with_reference_doc
-frappe.utils.money_in_words = money_in_words
-AccountsController.validate_multiple_billing = validate_multiple_billing
