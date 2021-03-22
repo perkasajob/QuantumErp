@@ -16,6 +16,8 @@ from erpnext.utilities.transaction_base import TransactionBase
 from frappe import _
 from erpnext.controllers.accounts_controller import AccountsController
 from ql.overrides import ql_validate_rate_with_reference_doc, money_in_words, validate_multiple_billing
+from frappe.model.base_document import get_controller
+
 
 @frappe.whitelist()
 def get_logged_user_dept():
@@ -23,7 +25,7 @@ def get_logged_user_dept():
 	# 	return True
     return frappe.db.sql("select dept_code from `tabDepartment` dept left join `tabEmployee` emp ON emp.department = dept.name where emp.user_id='{0}'".format(frappe.session.user), as_dict=1)
 
-
+frappe.model.base_document.get_controller = get_controller
 TransactionBase.validate_rate_with_reference_doc = ql_validate_rate_with_reference_doc
 frappe.utils.money_in_words = money_in_words
 AccountsController.validate_multiple_billing = validate_multiple_billing

@@ -6,8 +6,51 @@ import re, datetime, math, time
 from dateutil import parser
 from six import iteritems, text_type, string_types, integer_types
 from erpnext.utilities.transaction_base import TransactionBase
+from frappe.model.base_document import BaseDocument, _classes
+from frappe.modules import load_doctype_module
 from frappe import _
 
+
+def get_controller(doctype):
+	"""Returns the **class** object of the given DocType.
+	For `custom` type, returns `frappe.model.document.Document`.
+
+	:param doctype: DocType name as string."""
+	from frappe.model.document import Document
+	from frappe.utils.nestedset import NestedSet
+	global _classes
+
+	if not doctype in _classes:
+		module_name, custom = frappe.db.get_value("DocType", doctype, ("module", "custom"), cache=True) \
+			or ["Core", False]
+
+		if custom:
+			if frappe.db.field_exists("DocType", "is_tree"):
+				is_tree = frappe.db.get_value("DocType", doctype, "is_tree", cache=True)
+			else:
+				is_tree = False
+			_class = NestedSet if is_tree else Document
+		else: #PJOB: replacement ===
+			class_overrides = frappe.get_hooks('override_doctype_class')
+			if class_overrides and class_overrides.get(doctype):
+				import_path = class_overrides[doctype][-1]
+				module_path, classname = import_path.rsplit('.', 1)
+				module = frappe.get_module(module_path)
+				if not hasattr(module, classname):
+					raise ImportError('{0}: {1} does not exist in module {2}'.format(doctype, classname, module_path))
+			else:
+				module = load_doctype_module(doctype, module_name)
+				classname = doctype.replace(" ", "").replace("-", "")
+
+			if hasattr(module, classname):
+				_class = getattr(module, classname)
+				if issubclass(_class, BaseDocument):
+					_class = getattr(module, classname)
+				else:
+					raise ImportError(doctype)
+			else:
+				raise ImportError(doctype)
+		return _class
 
 def ql_validate_rate_with_reference_doc(self, ref_details):
 	buying_doctypes = ["Purchase Order", "Purchase Invoice", "Purchase Receipt"]
