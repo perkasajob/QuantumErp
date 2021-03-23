@@ -10,6 +10,7 @@ from frappe.utils import nowdate, cstr, flt, cint, now, getdate
 from frappe import throw, _
 from frappe.utils import formatdate, get_number_format_info
 from six import iteritems
+from erpnext.controllers.buying_controller import BuyingController
 
 
 
