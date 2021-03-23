@@ -32,7 +32,6 @@ function check_supplier_release(frm){
 					frappe.validated = false;
 					lock_items += e.item + ","
 				}
-				frappe.validated = false;
 				if(!frappe.validated){
 					frappe.msgprint(lock_items + " not yet released by QA")
 				}
