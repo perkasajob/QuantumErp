@@ -18,7 +18,7 @@ function check_supplier_release(frm){
 		args: {
 			doctype: "Supplier Release",
 			filters:{
-				'supplier': 'PT JAYATAMA SELARAS',//frm.doc.supplier,
+				'supplier': frm.doc.supplier,
 				'released': 0
 			},
 			fields:['item']
