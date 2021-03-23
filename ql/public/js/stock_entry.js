@@ -93,8 +93,9 @@ $.extend(cur_frm.cscript,{
 		// 	}).data;
 		//  };
 		debugger
+		let header = "------- Mixed Content -------\n"
 		volume_details = volume_details.replace(/------- Mixed Content -------\n(.*\n)+/gmi,'')
-		volume_details += "------- Mixed Content -------\n"
+		volume_details += header
 		groupSimilar(boxes).forEach((o, i)=>{
 			str += '<tr><td>'+o[0]  + '</td><td>'+ o[1] +'</td><td>'+ o[2] +'</td></tr>'
 			volume_details += `${o[2]} Carton ${o[0]}, Volume ${o[1]}%\n`

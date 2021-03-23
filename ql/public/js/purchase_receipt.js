@@ -231,6 +231,8 @@ async function create_batch_inspection(frm){
 
 
 function set_batch_freeitem(frm, o){
+	if (!frm.doc.hasOwnProperty("free_items"))
+		return
 	for (let fri of  frm.doc.free_items){
 		if(o.item_code == fri.item_code){
 			frappe.model.set_value(fri.doctype, fri.name, 'batch_no', o.batch_no)
@@ -240,6 +242,8 @@ function set_batch_freeitem(frm, o){
 }
 
 function create_freeitem_stock(frm){
+	if (!frm.doc.hasOwnProperty("free_items"))
+		return
 	for (let fri of  frm.doc.free_items){
 
 	}
