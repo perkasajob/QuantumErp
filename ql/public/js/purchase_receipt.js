@@ -201,7 +201,7 @@ async function create_batch_inspection(frm){
 			let has_batch_no = (await frappe.db.get_value('Item',o.item_code,'has_batch_no')).message.has_batch_no
 			// let batch_count = (await frappe.db.count('Batch'))
 			if(has_batch_no){
-				let a = ['A','B','C','D','E','F','G','H','J','K','L','N']
+				let a = await ql.get_month_code()
 				let batch_pre = a[(new Date()).getMonth()]+moment().format('YYMM')
 				let batch_count = (await frappe.db.count('Batch', {filters:{'batch_id': ['like',batch_pre+'%']}}))
 				let doc = (await frappe.db.insert({

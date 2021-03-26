@@ -21,28 +21,25 @@ function set_auto_batch_insp_btn(frm){
 
 function set_vol_calc(frm){
     frm.add_custom_button(__('Vol'), function(){
-		frappe.db.get_single_value('QL Settings', 'carton_sizes')
-		.then(r => {
-			let str = ""
-			volume_details = ""
-			var sizes = JSON.parse("{"+r+"}")
-			counts = sizes
-			frm.doc.items.forEach(i => {
-				let nrof_dcarton = Math.ceil((i.volume_per_unit*i.qty)/sizes[i.default_carton])
-				let rest = (i.volume_per_unit*i.qty) % sizes[i.default_carton]
-				rests += rest
-				str += '<tr><td>'+i.item_name  + '</td><td>'+ (i.volume_per_unit*i.qty) +'</td><td style="text-align:right">'+i.default_carton +'</td><td style="text-align:right">'+i.qty+'</td><td style="text-align:right">'+nrof_dcarton+'</td></tr>'
-				volume_details += `${nrof_dcarton} Carton ${i.item_name}\n`
-			});
-			str = '<table class="table" id="prqty"><thead><tr><th>Item Name</th><th>Volume</th><th>Carton</th><th>Qty</th><th>Carton Qty</th></tr></thead><tbody>'+str+'</tbody></table>' + '<table class="table" id="calc"><thead><tr><th>Carton</th><th>Vol %</th><th>Qty</th></tr></thead><tbody id="tbodyCalc"></tbody></table><button class="btn btn-primary btn-sm primary-action" onclick="cur_frm.cscript.caculateBox(true)" ><i class="visible-xs octicon octicon-lock"></i><span class="hidden-xs" data-label="Compute" >C<span class="alt-underline">o</span>mpute</span></button>'
-			frappe.msgprint({
-				"title": "Carton Calculator",
-				"message": str,
-				"indicator": "red"
-			})
-			setTimeout(function(){ frm.cscript.caculateBox(false)}, 1000);
-
+		var sizes = (async () => {await ql.get_carton_size()})
+		let str = ""
+		volume_details = ""
+		counts = sizes
+		frm.doc.items.forEach(i => {
+			let nrof_dcarton = Math.ceil((i.volume_per_unit*i.qty)/sizes[i.default_carton])
+			let rest = (i.volume_per_unit*i.qty) % sizes[i.default_carton]
+			rests += rest
+			str += '<tr><td>'+i.item_name  + '</td><td>'+ (i.volume_per_unit*i.qty) +'</td><td style="text-align:right">'+i.default_carton +'</td><td style="text-align:right">'+i.qty+'</td><td style="text-align:right">'+nrof_dcarton+'</td></tr>'
+			volume_details += `${nrof_dcarton} Carton ${i.item_name}\n`
+		});
+		str = '<table class="table" id="prqty"><thead><tr><th>Item Name</th><th>Volume</th><th>Carton</th><th>Qty</th><th>Carton Qty</th></tr></thead><tbody>'+str+'</tbody></table>' + '<table class="table" id="calc"><thead><tr><th>Carton</th><th>Vol %</th><th>Qty</th></tr></thead><tbody id="tbodyCalc"></tbody></table><button class="btn btn-primary btn-sm primary-action" onclick="cur_frm.cscript.caculateBox(true)" ><i class="visible-xs octicon octicon-lock"></i><span class="hidden-xs" data-label="Compute" >C<span class="alt-underline">o</span>mpute</span></button>'
+		frappe.msgprint({
+			"title": "Carton Calculator",
+			"message": str,
+			"indicator": "red"
 		})
+		setTimeout(function(){ frm.cscript.caculateBox(false)}, 1000);
+
 	});
 }
 
@@ -139,7 +136,7 @@ $.extend(cur_frm.cscript,{
 
 async function create_batch_inspection(frm){
 	let o = frm.doc.items[frm.doc.items.length - 1]
-	let a = ['A','B','C','D','E','F','G','H','J','K','L','N']
+	let a = await ql.get_month_code()
 	// let batch_no = (await frappe.db.get_value('Work Order', frm.doc.work_order, 'batch_no')).message.batch_no
 	let qi_inspected_by_default = (await frappe.db.get_single_value ("QL Settings","qi_inspected_by_default"))
 	let shelf_life = (await frappe.db.get_value('BOM', frm.doc.bom_no, 'shelf_life_in_days')).message.shelf_life_in_days
