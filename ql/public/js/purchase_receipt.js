@@ -199,13 +199,15 @@ async function create_batch_inspection(frm){
 			cur_frm.refresh_field("items")
 		} else if((!Object.keys(o).includes("batch_no") || !o.batch_no)){
 			let has_batch_no = (await frappe.db.get_value('Item',o.item_code,'has_batch_no')).message.has_batch_no
-			let batch_count = (await frappe.db.count('Batch'))
+			// let batch_count = (await frappe.db.count('Batch'))
 			if(has_batch_no){
 				let a = ['A','B','C','D','E','F','G','H','J','K','L','N']
+				let batch_pre = a[(new Date()).getMonth()]+moment().format('YYMM')
+				let batch_count = (await frappe.db.count('Batch', {filters:{'batch_id': ['like',batch_pre+'%']}}))
 				let doc = (await frappe.db.insert({
 					doctype: 'Batch',
 					item: o.item_code,
-					batch_id: a[(new Date()).getMonth()]+moment().format('YYMM')+genNum(batch_count+1, 3),
+					batch_id: batch_pre + genNum(batch_count+1, 3),
 					// inspection: inspection_nr,
 					month_code:a[(new Date()).getMonth()]
 				}))
