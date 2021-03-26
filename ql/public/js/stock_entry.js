@@ -92,7 +92,7 @@ $.extend(cur_frm.cscript,{
 		// 	   map: new Map()
 		// 	}).data;
 		//  };
-		debugger
+
 		let header = "------- Mixed Content -------\n"
 		volume_details = volume_details.replace(/------- Mixed Content -------\n(.*\n)+/gmi,'')
 		volume_details += header
@@ -139,10 +139,22 @@ $.extend(cur_frm.cscript,{
 
 async function create_batch_inspection(frm){
 	let o = frm.doc.items[frm.doc.items.length - 1]
-	let batch_no = (await frappe.db.get_value('Work Order', frm.doc.work_order, 'batch_no')).message.batch_no
+	let a = ['A','B','C','D','E','F','G','H','J','K','L','N']
+	// let batch_no = (await frappe.db.get_value('Work Order', frm.doc.work_order, 'batch_no')).message.batch_no
 	let qi_inspected_by_default = (await frappe.db.get_single_value ("QL Settings","qi_inspected_by_default"))
+	let shelf_life = (await frappe.db.get_value('BOM', frm.doc.bom_no, 'shelf_life_in_days')).message.shelf_life_in_days
+	var exp_date = frappe.datetime.add_days(frappe.datetime.now_date(), shelf_life)
+	let batch_pre = o.item_code+moment().format('YY').substr(-1)+a[(new Date()).getMonth()]
+	let batch_count = (await frappe.db.count('Batch', {filters:{'batch_id': ['like',batch_pre+'%']}}))
 
-	frappe.model.set_value(o.doctype, o.name, 'batch_no', batch_no)
+	let doc = (await frappe.db.insert({
+		doctype: 'Batch',
+		item: o.item_code,
+		batch_id: batch_pre+genNum(batch_count+1, 3),
+		expiry_date: exp_date
+	}))
+	o.batch_no = doc.name
+	frappe.model.set_value(o.doctype, o.name, 'batch_no', doc.name)
 
 	if(!Object.keys(o).includes("quality_inspection") || !o.quality_inspection){
 		let a = ['SE_A','SE_B','SE_C','SE_D','SE_E','SE_F','SE_G','SE_H','SE_J','SE_K','SE_L','SE_N']
@@ -168,4 +180,13 @@ async function create_batch_inspection(frm){
 function sum_volume(frm){
 	let vol = frm.doc.items.map((o)=>{ return o.qty * o.volume_per_unit * o.conversion_factor }).reduce((total,o)=>{return total + o})
 	frm.set_value('total_net_volume', vol)
+}
+
+function genNum(number, length)
+{
+    var str = '' + number%Math.pow(10,length);
+    while (str.length < length) {
+        str = '0' + str;
+    }
+    return str;
 }
