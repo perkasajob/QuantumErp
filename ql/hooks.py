@@ -29,7 +29,7 @@ app_include_js = ["/assets/ql/js/base_control.js"]
 # page_js = {"Stock Ledger" : "public/js/stock_ledger.js"}
 
 # include js in doctype views
-doctype_js = {"Purchase Receipt" : "public/js/purchase_receipt.js", "Quality Inspection" : "public/js/quality_inspection.js","Material Request" : "public/js/material_request.js","Stock Entry" : "public/js/stock_entry.js","Batch" : "public/js/batch.js","Job Card" : "public/js/job_card.js","Pick List" : "public/js/pick_list.js","Warehouse" : "public/js/warehouse.js"}
+doctype_js = {"Purchase Receipt" : "public/js/purchase_receipt.js", "Quality Inspection" : "public/js/quality_inspection.js","Material Request" : "public/js/material_request.js","Stock Entry" : "public/js/stock_entry.js","Batch" : "public/js/batch.js","Job Card" : "public/js/job_card.js","Pick List" : "public/js/pick_list.js","Warehouse" : "public/js/warehouse.js","BOM" : "public/js/bom.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
 # doctype_js = {"Kanban Board" : "public/js/kanban_board.js"}
