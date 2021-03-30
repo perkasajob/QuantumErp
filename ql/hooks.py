@@ -147,7 +147,8 @@ override_whitelisted_methods = {
 
 override_doctype_class = {
 	'Work Order': 'ql.ql.work_order.QLWorkOrder',
-	'Job Card': 'ql.ql.job_card.QLJobCard'
+	'Job Card': 'ql.ql.job_card.QLJobCard',
+	'Job Card': 'ql.ql.stock_entry.QLStockEntry'
 }
 
 #'erpnext.erpnext.utilities.transaction_base.'

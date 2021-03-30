@@ -229,3 +229,4 @@ def purchase_receipt_validate(doc, method):
 	# 		qi.inspection_type = 'Incoming'
 	# 		qi.reference_type = 'Purchase Receipt'
 	# 		qi.save()
+

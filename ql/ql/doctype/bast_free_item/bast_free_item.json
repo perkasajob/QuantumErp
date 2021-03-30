@@ -1,0 +1,575 @@
+{
+ "autoname": "hash",
+ "creation": "2021-03-29 13:38:51.341121",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "barcode",
+  "section_break_2",
+  "item_code",
+  "supplier_part_no",
+  "column_break_2",
+  "item_name",
+  "section_break_4",
+  "description",
+  "item_group",
+  "brand",
+  "image_section",
+  "image",
+  "image_view",
+  "manufacture_details",
+  "manufacturer",
+  "column_break_16",
+  "manufacturer_part_no",
+  "received_and_accepted",
+  "received_qty",
+  "qty",
+  "rejected_qty",
+  "col_break2",
+  "uom",
+  "stock_uom",
+  "conversion_factor",
+  "retain_sample",
+  "sample_quantity",
+  "discount_percentage",
+  "discount_amount",
+  "section_break_29",
+  "item_weight_details",
+  "weight_per_unit",
+  "total_weight",
+  "column_break_41",
+  "weight_uom",
+  "warehouse_and_reference",
+  "warehouse",
+  "rejected_warehouse",
+  "purchase_order",
+  "material_request",
+  "column_break_40",
+  "is_fixed_asset",
+  "asset_location",
+  "asset_category",
+  "schedule_date",
+  "quality_inspection",
+  "stock_qty",
+  "purchase_order_item",
+  "material_request_item",
+  "purchase_receipt_item",
+  "bom",
+  "serial_no",
+  "batch_no",
+  "column_break_48",
+  "rejected_serial_no",
+  "expense_account",
+  "include_exploded_items",
+  "accounting_dimensions_section",
+  "project",
+  "dimension_col_break",
+  "section_break_80",
+  "page_break"
+ ],
+ "fields": [
+  {
+   "fieldname": "barcode",
+   "fieldtype": "Data",
+   "label": "Barcode"
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "bold": 1,
+   "columns": 3,
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Item Code",
+   "oldfieldname": "item_code",
+   "oldfieldtype": "Link",
+   "options": "Item",
+   "print_width": "100px",
+   "reqd": 1,
+   "search_index": 1,
+   "width": "100px"
+  },
+  {
+   "fieldname": "supplier_part_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Supplier Part Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_global_search": 1,
+   "label": "Item Name",
+   "oldfieldname": "item_name",
+   "oldfieldtype": "Data",
+   "print_hide": 1,
+   "reqd": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break",
+   "label": "Description"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description",
+   "oldfieldname": "description",
+   "oldfieldtype": "Text",
+   "print_width": "300px",
+   "reqd": 1,
+   "width": "300px"
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Item Group",
+   "oldfieldname": "item_group",
+   "oldfieldtype": "Link",
+   "options": "Item Group",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "brand",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Brand",
+   "oldfieldname": "brand",
+   "oldfieldtype": "Link",
+   "options": "Brand",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "image_section",
+   "fieldtype": "Section Break",
+   "label": "Image"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach",
+   "hidden": 1,
+   "label": "Image"
+  },
+  {
+   "fieldname": "image_view",
+   "fieldtype": "Image",
+   "label": "Image View",
+   "options": "image",
+   "print_hide": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "manufacture_details",
+   "fieldtype": "Section Break",
+   "label": "Manufacture"
+  },
+  {
+   "fieldname": "manufacturer",
+   "fieldtype": "Link",
+   "label": "Manufacturer",
+   "options": "Manufacturer"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "manufacturer_part_no",
+   "fieldtype": "Data",
+   "label": "Manufacturer Part Number"
+  },
+  {
+   "fieldname": "received_and_accepted",
+   "fieldtype": "Section Break",
+   "label": "Received and Accepted"
+  },
+  {
+   "bold": 1,
+   "fieldname": "received_qty",
+   "fieldtype": "Float",
+   "label": "Received Quantity",
+   "oldfieldname": "received_qty",
+   "oldfieldtype": "Currency",
+   "print_hide": 1,
+   "print_width": "100px",
+   "reqd": 1,
+   "width": "100px"
+  },
+  {
+   "columns": 2,
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Accepted Quantity",
+   "oldfieldname": "qty",
+   "oldfieldtype": "Currency",
+   "print_width": "100px",
+   "width": "100px"
+  },
+  {
+   "fieldname": "rejected_qty",
+   "fieldtype": "Float",
+   "label": "Rejected Quantity",
+   "oldfieldname": "rejected_qty",
+   "oldfieldtype": "Currency",
+   "print_hide": 1,
+   "print_width": "100px",
+   "width": "100px"
+  },
+  {
+   "fieldname": "col_break2",
+   "fieldtype": "Column Break",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "oldfieldname": "uom",
+   "oldfieldtype": "Link",
+   "options": "UOM",
+   "print_width": "100px",
+   "reqd": 1,
+   "width": "100px"
+  },
+  {
+   "fieldname": "stock_uom",
+   "fieldtype": "Link",
+   "label": "Stock UOM",
+   "oldfieldname": "stock_uom",
+   "oldfieldtype": "Data",
+   "options": "UOM",
+   "print_hide": 1,
+   "print_width": "100px",
+   "read_only": 1,
+   "reqd": 1,
+   "width": "100px"
+  },
+  {
+   "fieldname": "conversion_factor",
+   "fieldtype": "Float",
+   "label": "Conversion Factor",
+   "oldfieldname": "conversion_factor",
+   "oldfieldtype": "Currency",
+   "print_hide": 1,
+   "print_width": "100px",
+   "reqd": 1,
+   "width": "100px"
+  },
+  {
+   "default": "0",
+   "fetch_from": "item_code.retain_sample",
+   "fieldname": "retain_sample",
+   "fieldtype": "Check",
+   "label": "Retain Sample",
+   "read_only": 1
+  },
+  {
+   "depends_on": "retain_sample",
+   "fetch_from": "item_code.sample_quantity",
+   "fieldname": "sample_quantity",
+   "fieldtype": "Int",
+   "label": "Sample Quantity"
+  },
+  {
+   "depends_on": "price_list_rate",
+   "fieldname": "discount_percentage",
+   "fieldtype": "Percent",
+   "label": "Discount on Price List Rate (%)",
+   "print_hide": 1
+  },
+  {
+   "depends_on": "price_list_rate",
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Amount",
+   "options": "currency"
+  },
+  {
+   "fieldname": "section_break_29",
+   "fieldtype": "Section Break"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "item_weight_details",
+   "fieldtype": "Section Break",
+   "label": "Item Weight Details"
+  },
+  {
+   "fieldname": "weight_per_unit",
+   "fieldtype": "Float",
+   "label": "Weight Per Unit"
+  },
+  {
+   "fieldname": "total_weight",
+   "fieldtype": "Float",
+   "label": "Total Weight",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_41",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "weight_uom",
+   "fieldtype": "Link",
+   "label": "Weight UOM",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "warehouse_and_reference",
+   "fieldtype": "Section Break",
+   "label": "Warehouse and Reference"
+  },
+  {
+   "bold": 1,
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Accepted Warehouse",
+   "oldfieldname": "warehouse",
+   "oldfieldtype": "Link",
+   "options": "Warehouse",
+   "print_hide": 1,
+   "print_width": "100px",
+   "width": "100px"
+  },
+  {
+   "fieldname": "rejected_warehouse",
+   "fieldtype": "Link",
+   "label": "Rejected Warehouse",
+   "no_copy": 1,
+   "oldfieldname": "rejected_warehouse",
+   "oldfieldtype": "Link",
+   "options": "Warehouse",
+   "print_hide": 1,
+   "print_width": "100px",
+   "width": "100px"
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "no_copy": 1,
+   "oldfieldname": "prevdoc_docname",
+   "oldfieldtype": "Link",
+   "options": "Purchase Order",
+   "print_width": "150px",
+   "read_only": 1,
+   "search_index": 1,
+   "width": "150px"
+  },
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Material Request",
+   "options": "Material Request"
+  },
+  {
+   "fieldname": "column_break_40",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_fixed_asset",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Fixed Asset",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "depends_on": "is_fixed_asset",
+   "fieldname": "asset_location",
+   "fieldtype": "Link",
+   "label": "Asset Location",
+   "options": "Location"
+  },
+  {
+   "depends_on": "is_fixed_asset",
+   "fetch_from": "item_code.asset_category",
+   "fieldname": "asset_category",
+   "fieldtype": "Link",
+   "in_preview": 1,
+   "label": "Asset Category",
+   "options": "Asset Category",
+   "read_only": 1
+  },
+  {
+   "fieldname": "schedule_date",
+   "fieldtype": "Date",
+   "label": "Required By",
+   "oldfieldname": "schedule_date",
+   "oldfieldtype": "Date",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "quality_inspection",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Quality Inspection",
+   "no_copy": 1,
+   "oldfieldname": "qa_no",
+   "oldfieldtype": "Link",
+   "options": "Quality Inspection",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "stock_qty",
+   "fieldtype": "Float",
+   "label": "Qty as per Stock UOM",
+   "oldfieldname": "stock_qty",
+   "oldfieldtype": "Currency",
+   "print_hide": 1,
+   "print_width": "100px",
+   "read_only": 1,
+   "width": "100px"
+  },
+  {
+   "fieldname": "purchase_order_item",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Purchase Order Item",
+   "no_copy": 1,
+   "oldfieldname": "prevdoc_detail_docname",
+   "oldfieldtype": "Data",
+   "print_hide": 1,
+   "print_width": "150px",
+   "read_only": 1,
+   "search_index": 1,
+   "width": "150px"
+  },
+  {
+   "fieldname": "material_request_item",
+   "fieldtype": "Data",
+   "label": "Material Request Item"
+  },
+  {
+   "fieldname": "purchase_receipt_item",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Purchase Receipt Item",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "bom",
+   "fieldtype": "Link",
+   "label": "BOM",
+   "no_copy": 1,
+   "options": "BOM",
+   "print_hide": 1
+  },
+  {
+   "depends_on": "eval:!doc.is_fixed_asset",
+   "fieldname": "serial_no",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Serial No",
+   "no_copy": 1,
+   "oldfieldname": "serial_no",
+   "oldfieldtype": "Text"
+  },
+  {
+   "depends_on": "eval:!doc.is_fixed_asset",
+   "fieldname": "batch_no",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Batch No",
+   "no_copy": 1,
+   "oldfieldname": "batch_no",
+   "oldfieldtype": "Link",
+   "options": "Batch",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "column_break_48",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:!doc.is_fixed_asset",
+   "fieldname": "rejected_serial_no",
+   "fieldtype": "Small Text",
+   "label": "Rejected Serial No",
+   "no_copy": 1,
+   "print_hide": 1
+  },
+  {
+   "fieldname": "expense_account",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Expense Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:parent.is_subcontracted == 'Yes'",
+   "fieldname": "include_exploded_items",
+   "fieldtype": "Check",
+   "label": "Include Exploded Items",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "accounting_dimensions_section",
+   "fieldtype": "Section Break",
+   "label": "Accounting Dimensions"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "dimension_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_80",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "page_break",
+   "fieldtype": "Check",
+   "label": "Page Break",
+   "oldfieldname": "page_break",
+   "oldfieldtype": "Check",
+   "print_hide": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2021-03-29 13:38:51.341121",
+ "modified_by": "Administrator",
+ "module": "QL",
+ "name": "BAST Free Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

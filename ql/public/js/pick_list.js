@@ -25,10 +25,16 @@ function convertUom(frm) {
 				frm.doc.locations.forEach(l=>{
 					if(o.item_code == l.item_code){
 						l.uom = o.uom
+						let row = l
+						if (row.uom) {
+							get_item_details(row.item_code, row.uom).then(data => {
+								frappe.model.set_value(l.doctype, l.name, 'conversion_factor', data.conversion_factor);
+							});
+						}
 					}
 				})
 			});
-			frm.refresh();
+			frm.refresh_field("locations")
 		},
 	});
 }

@@ -3,6 +3,7 @@ frappe.ui.form.on('Material Request', {
 		if(!frm.doc.requestee){
 			frm.set_value("requestee", frappe.user.full_name())
 		}
+		mr_set_buttons(frm)
 	},
 	validate(frm){
 	    if(!frm.doc.department){
@@ -29,6 +30,16 @@ frappe.ui.form.on('Material Request', {
 		});
 	}
 })
+
+
+function mr_set_buttons(frm){
+	if (frm.doc.docstatus == 1 && frm.doc.status != 'Stopped') {
+			if (frm.doc.material_request_type === "Purchase") {
+				frm.add_custom_button(__('BAST'),
+					() => frm.events.make_purchase_order(frm), __('Create'));
+			}
+		}
+}
 
 frappe.ui.form.on('Purchase Invoice', {
 	refresh(frm) {
