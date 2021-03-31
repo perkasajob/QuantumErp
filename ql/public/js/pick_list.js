@@ -22,13 +22,12 @@ function convertUom(frm) {
 		callback: (r) => {
 			console.log(r)
 			r.message.forEach(o => {
-				frm.doc.locations.forEach(l=>{
-					if(o.item_code == l.item_code){
-						l.uom = o.uom
-						let row = l
+				frm.doc.locations.forEach(row =>{
+					if(o.item_code == row.item_code){
+						row.uom = o.uom
 						if (row.uom) {
 							get_item_details(row.item_code, row.uom).then(data => {
-								frappe.model.set_value(l.doctype, l.name, 'conversion_factor', data.conversion_factor);
+								frappe.model.set_value(row.doctype, row.name, 'conversion_factor', data.conversion_factor);
 							});
 						}
 					}
