@@ -136,24 +136,30 @@ $.extend(cur_frm.cscript,{
 
 async function create_batch_inspection(frm){
 	let o = frm.doc.items[frm.doc.items.length - 1]
-	let a = await ql.get_month_code()
-	// let batch_no = (await frappe.db.get_value('Work Order', frm.doc.work_order, 'batch_no')).message.batch_no
-	let qi_inspected_by_default = (await frappe.db.get_single_value ("QL Settings","qi_inspected_by_default"))
-	let shelf_life = (await frappe.db.get_value('BOM', frm.doc.bom_no, 'shelf_life_in_days')).message.shelf_life_in_days
-	var exp_date = frappe.datetime.add_days(frappe.datetime.now_date(), shelf_life)
-	let batch_pre = o.item_code+moment().format('YY').substr(-1)+a[(new Date()).getMonth()]
-	let batch_count = (await frappe.db.count('Batch', {filters:{'batch_id': ['like',batch_pre+'%']}}))
+	if(frm.doc.batch_no)
+		frappe.model.set_value(o.doctype, o.name, 'batch_no', frm.doc.batch_no)
+	else {
+		let a = await ql.get_month_code()
+		// let batch_no = (await frappe.db.get_value('Work Order', frm.doc.work_order, 'batch_no')).message.batch_no
+		let qi_inspected_by_default = (await frappe.db.get_single_value ("QL Settings","qi_inspected_by_default"))
+		let shelf_life = (await frappe.db.get_value('BOM', frm.doc.bom_no, 'shelf_life_in_days')).message.shelf_life_in_days
+		var exp_date = frappe.datetime.add_days(frappe.datetime.now_date(), shelf_life)
+		let batch_pre = o.item_code+moment().format('YY').substr(-1)+a[(new Date()).getMonth()]
+		let batch_count = (await frappe.db.count('Batch', {filters:{'batch_id': ['like',batch_pre+'%']}}))
 
-	let doc = (await frappe.db.insert({
-		doctype: 'Batch',
-		item: o.item_code,
-		batch_id: batch_pre+genNum(batch_count+1, 3),
-		expiry_date: exp_date
-	}))
-	o.batch_no = doc.name
-	frappe.model.set_value(o.doctype, o.name, 'batch_no', doc.name)
+		let doc = (await frappe.db.insert({
+			doctype: 'Batch',
+			item: o.item_code,
+			batch_id: batch_pre+genNum(batch_count+1, 3),
+			expiry_date: exp_date
+		}))
+		o.batch_no = doc.name
+		frappe.model.set_value(o.doctype, o.name, 'batch_no', doc.name)
+	}
 
-	if(!Object.keys(o).includes("quality_inspection") || !o.quality_inspection){
+	if(!Object.keys(o).includes("quality_inspection") || !o.quality_inspection||frm.doc.inspection_required){
+		let qi_inspected_by_default = (await frappe.db.get_doc('QL Settings')).qi_inspected_by_default
+		debugger
 		let a = ['SE_A','SE_B','SE_C','SE_D','SE_E','SE_F','SE_G','SE_H','SE_J','SE_K','SE_L','SE_N']
 		let doc = (await frappe.db.insert({
 			doctype: 'Quality Inspection',
@@ -162,7 +168,7 @@ async function create_batch_inspection(frm){
 			reference_type: 'Stock Entry',
 			reference_name: frm.doc.name,
 			inspected_by: qi_inspected_by_default,
-			received_qty: o.received_qty,
+			received_qty: o.qty,
 			sample_size: 0,
 			batch_no: o.batch_no,
 			month_code:a[(new Date()).getMonth()]
@@ -172,6 +178,7 @@ async function create_batch_inspection(frm){
 		cur_frm.refresh_field("items")
 		frappe.msgprint(`Quality Inspection ${doc.name} is Created`)
 	}
+	cur_frm.save()
 }
 
 function sum_volume(frm){
