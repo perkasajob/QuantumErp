@@ -4,6 +4,11 @@ frappe.ui.form.on('Material Request', {
 			frm.set_value("requestee", frappe.user.full_name())
 		}
 		mr_set_buttons(frm)
+		if (!frm.doc.__islocal){
+			frm.add_custom_button(__('UoM'), function(){
+				convertUom(frm);
+			});
+		}
 	},
 	validate(frm){
 	    if(!frm.doc.department){
@@ -28,6 +33,59 @@ frappe.ui.form.on('Material Request', {
 				frm.set_df_property("department", "read_only", dept ? 1 : 0);
 			frm.set_value("department", dept)
 		});
+	},
+	get_items_from_bom(frm){
+		var d = new frappe.ui.Dialog({
+			title: __("Get Items from BOM"),
+			fields: [
+				{"fieldname":"bom", "fieldtype":"Link", "label":__("BOM"),
+					options:"BOM", reqd: 1, get_query: function() {
+						return {filters: { docstatus:1 }};
+					}},
+				{"fieldname":"warehouse", "fieldtype":"Link", "label":__("Warehouse"),
+					options:"Warehouse", reqd: 1},
+				{"fieldname":"qty", "fieldtype":"Float", "label":__("Quantity"),
+					reqd: 1, "default": 1},
+				{"fieldname":"fetch_exploded", "fieldtype":"Check",
+					"label":__("Fetch exploded BOM (including sub-assemblies)"), "default":1},
+				{fieldname:"fetch", "label":__("Get Items from BOM"), "fieldtype":"Button"}
+			]
+		});
+
+		d.get_input("fetch").on("click", function() {
+			var values = d.get_values();
+			frm.set_value('bom_no', values.bom)
+			if(!values) return;
+			values["company"] = frm.doc.company;
+			if(!frm.doc.company) frappe.throw(__("Company field is required"));
+			frappe.call({
+				method: "erpnext.manufacturing.doctype.bom.bom.get_bom_items",
+				args: values,
+				callback: function(r) {
+					if (!r.message) {
+						frappe.throw(__("BOM does not contain any stock item"));
+					} else {
+						erpnext.utils.remove_empty_first_row(frm, "items");
+						$.each(r.message, function(i, item) {
+							console.log(item)
+							var d = frappe.model.add_child(cur_frm.doc, "Material Request Item", "items");
+							d.item_code = item.item_code;
+							d.item_name = item.item_name;
+							d.description = item.description;
+							d.warehouse = values.warehouse;
+							d.uom = item.stock_uom;
+							d.stock_uom = item.stock_uom;
+							d.conversion_factor = 1;
+							d.qty = item.qty;
+							d.project = item.project;
+						});
+					}
+					d.hide();
+					refresh_field("items");
+				}
+			});
+		});
+		d.show();
 	}
 })
 
@@ -78,4 +136,41 @@ function dept_list_func(frm){
 		if (!frm.doc.__islocal)
 	        frm.set_df_property("department", "read_only", dept ? 1 : 0);
     });
+}
+
+function convertUom(frm) {
+	// split - ask for new qty and batch ID (optional)
+	// and make stock entry via batch.batch_split
+	frappe.call({
+		method: 'ql.ql.stock.get_bom_uom',
+		args: {
+			work_order: "",
+			material_request: frm.doc.name
+		},
+		callback: (r) => {
+			r.message.forEach(o => {
+				frm.doc.items.forEach(row =>{
+					if(o.item_code == row.item_code){
+						row.uom = o.uom
+						if (row.uom) {
+							get_item_details(row.item_code, row.uom).then(data => {
+								row.qty =  row.qty/data.conversion_factor
+								frappe.model.set_value(row.doctype, row.name, 'conversion_factor', data.conversion_factor);
+							});
+						}
+					}
+				})
+			});
+			frm.refresh_field("locations")
+		},
+	});
+}
+
+function get_item_details(item_code, uom=null) {
+	if (item_code) {
+		return frappe.xcall('erpnext.stock.doctype.pick_list.pick_list.get_item_details', {
+			item_code,
+			uom
+		});
+	}
 }

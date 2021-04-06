@@ -6,10 +6,9 @@ frappe.ui.form.on('Stock Entry', {
     validate(frm) {
 		sum_volume(frm)
     },
-	onload(frm){
+	onload_post_render(frm){
 		if(frm.doc.pick_list)
 			frappe.db.get_doc("Pick List", frm.doc.pick_list).then(o =>{
-				console.log(o)
 				frm.set_value("batch_no", o.batch_no)
 			})
 	},

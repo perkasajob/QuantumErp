@@ -174,10 +174,16 @@ def qi_reject(batch_no, item_code, qty, new_batch_id=None):
 
 
 @frappe.whitelist()
-def get_bom_uom(work_order):
-	qis = frappe.db.sql("""SELECT item_code,uom,`tabBOM Item`.stock_uom FROM `tabWork Order` \
-		INNER JOIN `tabBOM Item` ON `tabWork Order`.bom_no=`tabBOM Item`.parent \
-		WHERE `tabWork Order`.NAME="{}" AND `tabBOM Item`.stock_uom<>uom;""".format(work_order), as_dict=True)
+def get_bom_uom(work_order, material_request):
+	if work_order :
+		qis = frappe.db.sql("""SELECT item_code,uom,`tabBOM Item`.stock_uom FROM `tabWork Order` \
+			INNER JOIN `tabBOM Item` ON `tabWork Order`.bom_no=`tabBOM Item`.parent \
+			WHERE `tabWork Order`.NAME="{}" AND `tabBOM Item`.stock_uom<>uom;""".format(work_order), as_dict=True)
+	else :
+		qis = frappe.db.sql("""SELECT item_code,uom,`tabBOM Item`.stock_uom FROM `tabMaterial Request` \
+			INNER JOIN `tabBOM Item` ON `tabMaterial Request`.bom_no=`tabBOM Item`.parent \
+			WHERE `tabMaterial Request`.NAME="{}" AND `tabBOM Item`.stock_uom<>uom;""".format(material_request), as_dict=True)
+
 	return qis
 
 

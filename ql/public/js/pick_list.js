@@ -5,9 +5,6 @@ frappe.ui.form.on('Pick List', {
 		// set_query_inspection(frm)
 	},
 	refresh(frm) {
-		frm.add_custom_button(__('UoM'), function(){
-			convertUom(frm);
-		});
 	}
 })
 
@@ -17,7 +14,8 @@ function convertUom(frm) {
 	frappe.call({
 		method: 'ql.ql.stock.get_bom_uom',
 		args: {
-			work_order: frm.doc.work_order,
+			work_order: frm.doc.work_order || "",
+			material_request: frm.doc.material_request || ""
 		},
 		callback: (r) => {
 			console.log(r)
@@ -28,6 +26,7 @@ function convertUom(frm) {
 						if (row.uom) {
 							get_item_details(row.item_code, row.uom).then(data => {
 								frappe.model.set_value(row.doctype, row.name, 'conversion_factor', data.conversion_factor);
+								frappe.model.set_value(row.doctype, row.name, 'qty', row.qty/data.conversion_factor);
 							});
 						}
 					}
@@ -36,4 +35,13 @@ function convertUom(frm) {
 			frm.refresh_field("locations")
 		},
 	});
+}
+
+function get_item_details(item_code, uom=null) {
+	if (item_code) {
+		return frappe.xcall('erpnext.stock.doctype.pick_list.pick_list.get_item_details', {
+			item_code,
+			uom
+		});
+	}
 }
