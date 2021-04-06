@@ -6,7 +6,7 @@ import re, datetime, math, time
 from dateutil import parser
 from six import iteritems, text_type, string_types, integer_types
 from erpnext.utilities.transaction_base import TransactionBase
-from frappe.model.base_document import BaseDocument, _classes
+from frappe.model.base_document import BaseDocument
 from frappe.modules import load_doctype_module
 from frappe import _
 

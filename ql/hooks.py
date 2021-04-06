@@ -151,7 +151,7 @@ override_doctype_class = {
 	'Stock Entry': 'ql.ql.stock_entry.QLStockEntry'
 }
 
-before_migrate = "ql.migrate.before_migrate"
+# before_migrate = "ql.migrate.before_migrate"
 
 #'erpnext.erpnext.utilities.transaction_base.'
 default_mail_footer = """
