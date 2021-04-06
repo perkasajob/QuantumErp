@@ -5,7 +5,24 @@ frappe.ui.form.on('Stock Entry', {
 	},
     validate(frm) {
 		sum_volume(frm)
-    }
+    },
+	onload(frm){
+		if(frm.doc.pick_list)
+			frappe.db.get_doc("Pick List", frm.doc.pick_list).then(o =>{
+				console.log(o)
+				frm.set_value("batch_no", o.batch_no)
+			})
+	},
+	work_order(frm){
+		frappe.db.get_doc("Work Order", frm.doc.work_order).then(o =>{
+			console.log(o)
+		})
+	},
+	pick_list(frm){
+		frappe.db.get_doc("Pick List", frm.doc.pick_list).then(o =>{
+			console.log(o)
+		})
+	},
 })
 
 
@@ -159,7 +176,6 @@ async function create_batch_inspection(frm){
 
 	if(!Object.keys(o).includes("quality_inspection") || !o.quality_inspection||frm.doc.inspection_required){
 		let qi_inspected_by_default = (await frappe.db.get_doc('QL Settings')).qi_inspected_by_default
-		debugger
 		let a = ['SE_A','SE_B','SE_C','SE_D','SE_E','SE_F','SE_G','SE_H','SE_J','SE_K','SE_L','SE_N']
 		let doc = (await frappe.db.insert({
 			doctype: 'Quality Inspection',
