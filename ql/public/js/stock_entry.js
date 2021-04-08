@@ -175,9 +175,9 @@ async function create_batch_inspection(frm){
 
 	if(!Object.keys(o).includes("quality_inspection") || !o.quality_inspection||frm.doc.inspection_required){
 		let qi_inspected_by_default = (await frappe.db.get_doc('QL Settings')).qi_inspected_by_default
-		let a = ['SE_A','SE_B','SE_C','SE_D','SE_E','SE_F','SE_G','SE_H','SE_J','SE_K','SE_L','SE_N']
 		let doc = (await frappe.db.insert({
 			doctype: 'Quality Inspection',
+			naming_series : 'SE-.batch_no.-.##',
 			item_code: o.item_code,
 			inspection_type: 'In Process',
 			reference_type: 'Stock Entry',
@@ -185,8 +185,7 @@ async function create_batch_inspection(frm){
 			inspected_by: qi_inspected_by_default,
 			received_qty: o.qty,
 			sample_size: 0,
-			batch_no: o.batch_no,
-			month_code:a[(new Date()).getMonth()]
+			batch_no: o.batch_no
 		}))
 		o.quality_inspection = doc.name
 		frappe.model.set_value(o.doctype, o.name, 'quality_inspection', doc.name)

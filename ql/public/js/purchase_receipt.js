@@ -256,7 +256,7 @@ async function create_inspection(frm, o){
     if(!Object.keys(o).includes("quality_inspection") || !o.quality_inspection){
 		let inspection_required = (await frappe.db.get_value('Item',o.item_code,'inspection_required_before_purchase')).message.inspection_required_before_purchase;
 		if(inspection_required){
-			let a = ['PR_A','PR_B','PR_C','PR_D','PR_E','PR_F','PR_G','PR_H','PR_J','PR_K','PR_L','PR_N']
+			// let a = ['PR_A','PR_B','PR_C','PR_D','PR_E','PR_F','PR_G','PR_H','PR_J','PR_K','PR_L','PR_N']
 			let doc = (await frappe.db.insert({
 				doctype: 'Quality Inspection',
 				item_code: o.item_code,
@@ -269,7 +269,7 @@ async function create_inspection(frm, o){
 				vat_qty: o.vat_qty,
 				sample_size: 0,
 				batch_no: o.batch_no,
-				month_code:a[(new Date()).getMonth()]
+				naming_series : 'PR-.batch_no.-.##'
 			}))
 			o.quality_inspection = doc.name
 			frappe.model.set_value(o.doctype, o.name, 'quality_inspection', doc.name)
