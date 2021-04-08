@@ -128,6 +128,13 @@ frappe.ui.form.on('Quality Inspection Reading', {
 	},
 	reading_10(frm){
 	  test_criteria(cur_frm)
+	},
+	status(frm){
+		frm.set_value('status', "Accepted")
+		frm.doc.readings.forEach(o => {
+			if(o.status == "Rejected")
+				frm.set_value('status', "Rejected")
+		});
 	}
 })
 
@@ -157,10 +164,10 @@ function test_criteria(frm){
         }
     }
 
-	frm.doc.status = "Accepted"
+	frm.set_value('status', "Accepted")
 	frm.doc.readings.forEach(o => {
 		if(o.status == "Rejected")
-			frm.doc.status = "Rejected"
+			frm.set_value('status', "Rejected")
 	});
     frm.refresh()
 
