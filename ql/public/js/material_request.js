@@ -4,11 +4,6 @@ frappe.ui.form.on('Material Request', {
 			frm.set_value("requestee", frappe.user.full_name())
 		}
 		mr_set_buttons(frm)
-		if (!frm.doc.__islocal){
-			frm.add_custom_button(__('UoM'), function(){
-				convertUom(frm);
-			});
-		}
 	},
 	validate(frm){
 	    if(!frm.doc.department){
@@ -97,6 +92,19 @@ function mr_set_buttons(frm){
 					() => frm.events.make_purchase_order(frm), __('Create'));
 			}
 		}
+	if (frm.doc.docstatus == 0 && frm.doc.status != 'Stopped') {
+		frm.add_custom_button(__('Set Rq Date'),
+			() => {frappe.prompt({
+						label: 'Required Date',
+						fieldname: 'date',
+						fieldtype: 'Date'
+					}, (values) => {
+						frm.set_value("schedule_date", values.date)
+						set_schedule_date(frm)
+					})
+				}
+			);
+	}
 }
 
 frappe.ui.form.on('Purchase Invoice', {
@@ -173,4 +181,21 @@ function get_item_details(item_code, uom=null) {
 			uom
 		});
 	}
+}
+
+function set_schedule_date(frm) {
+	if(frm.doc.schedule_date){
+		copy_value_in_all_rows(frm.doc, frm.doc.doctype, frm.doc.name, "items", "schedule_date");
+	}
+}
+
+function copy_value_in_all_rows(doc, dt, dn, table_fieldname, fieldname) {
+	var d = locals[dt][dn];
+	if(d[fieldname]){
+		var cl = doc[table_fieldname] || [];
+		for(var i = 0; i < cl.length; i++) {
+			cl[i][fieldname] = d[fieldname];
+		}
+	}
+	refresh_field(table_fieldname);
 }

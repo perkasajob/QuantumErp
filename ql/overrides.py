@@ -9,7 +9,12 @@ from erpnext.utilities.transaction_base import TransactionBase
 from frappe.model.base_document import BaseDocument
 from frappe.modules import load_doctype_module
 from frappe import _
+from erpnext.controllers.buying_controller import get_items_from_bom
+from erpnext.stock.stock_ledger import get_valuation_rate
+from erpnext.stock.doctype.stock_entry.stock_entry import get_used_alternative_items
 
+
+_classes = {}
 
 def get_controller(doctype):
 	"""Returns the **class** object of the given DocType.
@@ -167,3 +172,95 @@ def validate_multiple_billing(self, ref_dt, item_ref_dn, based_on, parentfield):
 				if total_billed_amt - max_allowed_amt > 5:
 					frappe.throw(_("Cannot overbill for Item {0} in row {1} more than {2}. To allow over-billing, please set allowance in Accounts Settings")
 						.format(item.item_code, item.idx, max_allowed_amt))
+
+
+def update_raw_materials_supplied_based_on_bom(self, item, raw_material_table):
+		exploded_item = 1
+		frappe.msgprint("OVERRIDE is called !")
+		if hasattr(item, 'include_exploded_items'):
+			exploded_item = item.get('include_exploded_items')
+
+		bom_items = get_items_from_bom(item.item_code, item.bom, exploded_item)
+		bom = frappe.get_doc('BOM', item.bom)
+		frappe.msgprint(item.bom)
+		# quantity
+
+		used_alternative_items = []
+		if self.doctype == 'Purchase Receipt' and item.purchase_order:
+			used_alternative_items = get_used_alternative_items(purchase_order = item.purchase_order)
+
+		raw_materials_cost = 0
+		items = list(set([d.item_code for d in bom_items]))
+		item_wh = frappe._dict(frappe.db.sql("""select i.item_code, id.default_warehouse
+			from `tabItem` i, `tabItem Default` id
+			where id.parent=i.name and id.company=%s and i.name in ({0})"""
+			.format(", ".join(["%s"] * len(items))), [self.company] + items))
+
+		for bom_item in bom_items:
+			if self.doctype == "Purchase Order":
+				reserve_warehouse = bom_item.source_warehouse or item_wh.get(bom_item.item_code)
+				if frappe.db.get_value("Warehouse", reserve_warehouse, "company") != self.company:
+					reserve_warehouse = None
+
+			conversion_factor = item.conversion_factor
+			if (self.doctype == 'Purchase Receipt' and item.purchase_order and
+				bom_item.item_code in used_alternative_items):
+				alternative_item_data = used_alternative_items.get(bom_item.item_code)
+				bom_item.item_code = alternative_item_data.item_code
+				bom_item.item_name = alternative_item_data.item_name
+				bom_item.stock_uom = alternative_item_data.stock_uom
+				conversion_factor = alternative_item_data.conversion_factor
+				bom_item.description = alternative_item_data.description
+
+			# check if exists
+			exists = 0
+			for d in self.get(raw_material_table):
+				if d.main_item_code == item.item_code and d.rm_item_code == bom_item.item_code \
+					and d.reference_name == item.name:
+						rm, exists = d, 1
+						break
+
+			if not exists:
+				rm = self.append(raw_material_table, {})
+
+			required_qty = 123.00 #flt(flt(bom_item.qty_consumed_per_unit) * bom.quantity *
+				#flt(conversion_factor), rm.precision("required_qty"))
+			rm.reference_name = item.name
+			rm.bom_detail_no = bom_item.name
+			rm.main_item_code = item.item_code
+			rm.rm_item_code = bom_item.item_code
+			rm.stock_uom = bom_item.stock_uom
+			rm.required_qty = required_qty
+			if self.doctype == "Purchase Order" and not rm.reserve_warehouse:
+				rm.reserve_warehouse = reserve_warehouse
+
+			rm.conversion_factor = conversion_factor
+
+			if self.doctype in ["Purchase Receipt", "Purchase Invoice"]:
+				rm.consumed_qty = required_qty
+				rm.description = bom_item.description
+				if item.batch_no and frappe.db.get_value("Item", rm.rm_item_code, "has_batch_no") and not rm.batch_no:
+					rm.batch_no = item.batch_no
+
+			# get raw materials rate
+			if self.doctype == "Purchase Receipt":
+				from erpnext.stock.utils import get_incoming_rate
+				rm.rate = get_incoming_rate({
+					"item_code": bom_item.item_code,
+					"warehouse": self.supplier_warehouse,
+					"posting_date": self.posting_date,
+					"posting_time": self.posting_time,
+					"qty": -1 * required_qty,
+					"serial_no": rm.serial_no
+				})
+				if not rm.rate:
+					rm.rate = get_valuation_rate(bom_item.item_code, self.supplier_warehouse,
+						self.doctype, self.name, currency=self.company_currency, company = self.company)
+			else:
+				rm.rate = bom_item.rate
+
+			rm.amount = required_qty * flt(rm.rate)
+			raw_materials_cost += flt(rm.amount)
+
+		if self.doctype in ("Purchase Receipt", "Purchase Invoice"):
+			item.rm_supp_cost = raw_materials_cost

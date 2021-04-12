@@ -12,7 +12,7 @@ frappe.ui.form.on('Quality Inspection', {
 		set_reject_btn(frm)
 	},
     validate(frm) {
-		set_month_code(cur_frm)
+		// set_month_code(cur_frm)
 		check_expiry_date(cur_frm)
 		set_sample_size(cur_frm)
 		auto_fill(cur_frm)
