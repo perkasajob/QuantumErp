@@ -176,13 +176,12 @@ def validate_multiple_billing(self, ref_dt, item_ref_dn, based_on, parentfield):
 
 def update_raw_materials_supplied_based_on_bom(self, item, raw_material_table):
 		exploded_item = 1
-		frappe.msgprint("OVERRIDE is called !")
+		print("Override update_raw_materials_supplied_based_on_bom")
 		if hasattr(item, 'include_exploded_items'):
 			exploded_item = item.get('include_exploded_items')
 
 		bom_items = get_items_from_bom(item.item_code, item.bom, exploded_item)
 		bom = frappe.get_doc('BOM', item.bom)
-		frappe.msgprint(item.bom)
 		# quantity
 
 		used_alternative_items = []
@@ -223,8 +222,10 @@ def update_raw_materials_supplied_based_on_bom(self, item, raw_material_table):
 			if not exists:
 				rm = self.append(raw_material_table, {})
 
-			required_qty = 123.00 #flt(flt(bom_item.qty_consumed_per_unit) * bom.quantity *
-				#flt(conversion_factor), rm.precision("required_qty"))
+			returned_qty = 0.0 if not hasattr(rm, "returned_qty") or rm.returned_qty is None  else rm.returned_qty
+
+			required_qty = flt(flt(bom_item.qty_consumed_per_unit) * bom.quantity *
+				flt(conversion_factor), rm.precision("required_qty")) -  returned_qty
 			rm.reference_name = item.name
 			rm.bom_detail_no = bom_item.name
 			rm.main_item_code = item.item_code

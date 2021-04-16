@@ -1,4 +1,14 @@
 frappe.ui.form.on('Stock Entry', {
+	onload(frm){
+		frm.set_indicator_formatter('item_code',
+			function(doc) {
+				if (!doc.s_warehouse) {
+					return 'blue';
+				} else { //fix due to conversion factor rounding, introduce tolerance 0.002
+					return (doc.qty<=doc.actual_qty + 0.002) ? "green" : "orange"
+				}
+			})
+	},
 	refresh(frm) {
 		set_auto_batch_insp_btn(frm)
 		set_vol_calc(frm)
@@ -163,6 +173,7 @@ async function create_batch_inspection(frm){
 		let batch_pre = o.item_code+moment().format('YY').substr(-1)+a[(new Date()).getMonth()]
 		let batch_count = (await frappe.db.count('Batch', {filters:{'batch_id': ['like',batch_pre+'%']}}))
 
+		debugger
 		let doc = (await frappe.db.insert({
 			doctype: 'Batch',
 			item: o.item_code,
@@ -173,7 +184,7 @@ async function create_batch_inspection(frm){
 		frappe.model.set_value(o.doctype, o.name, 'batch_no', doc.name)
 	}
 
-	if(!Object.keys(o).includes("quality_inspection") || !o.quality_inspection||frm.doc.inspection_required){
+	if((!Object.keys(o).includes("quality_inspection") || !o.quality_inspection ) && frm.doc.inspection_required){
 		let qi_inspected_by_default = (await frappe.db.get_doc('QL Settings')).qi_inspected_by_default
 		let doc = (await frappe.db.insert({
 			doctype: 'Quality Inspection',

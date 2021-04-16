@@ -30,4 +30,4 @@ frappe.model.base_document.get_controller = get_controller
 TransactionBase.validate_rate_with_reference_doc = ql_validate_rate_with_reference_doc
 frappe.utils.money_in_words = money_in_words
 AccountsController.validate_multiple_billing = validate_multiple_billing
-# BuyingController.update_raw_materials_supplied_based_on_bom = update_raw_materials_supplied_based_on_bom
+BuyingController.update_raw_materials_supplied_based_on_bom = update_raw_materials_supplied_based_on_bom

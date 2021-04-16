@@ -25,3 +25,10 @@ class QLWorkOrder(WorkOrder):
 		variable_cost = self.actual_operating_cost if self.actual_operating_cost \
 			else self.planned_operating_cost
 		self.total_operating_cost = flt(self.additional_operating_cost) + flt(variable_cost)
+
+
+def work_order_validate(doc, method):
+
+	total_operating_cost = frappe.db.sql(""" select ifnull(sum(wo.total_operating_cost), 0) FROM `tabWork Order` wo WHERE wo.project = %s """, doc.project, as_list=1)
+
+	frappe.db.set_value('Project', doc.project, 'total_operating_cost', total_operating_cost)
