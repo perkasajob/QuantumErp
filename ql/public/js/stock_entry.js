@@ -39,7 +39,7 @@ function set_auto_batch_insp_btn(frm){
     frm.add_custom_button(__('Auto'), function(){
 		(async () => {
 			await create_batch_inspection(frm)
-			cur_frm.save();
+			console.log('Finished created Batch & QI !!!! ')
 		})();
 	});
 }
@@ -161,19 +161,42 @@ $.extend(cur_frm.cscript,{
 
 
 async function create_batch_inspection(frm){
-	let o = frm.doc.items[frm.doc.items.length - 1]
+	let a = await ql.get_month_code()
+	let qi_inspected_by_default = (await frappe.db.get_doc('QL Settings')).qi_inspected_by_default
+	if(frm.doc.purpose == "Manufacture"){
+		let o = frm.doc.items[frm.doc.items.length - 1]
+		await create_batch_inspection_item(frm, o, a, qi_inspected_by_default)
+		cur_frm.save();
+	} else {
+		frappe.confirm('This will create batches & QI all items, Are you sure you want to proceed ?',
+		() => {
+			(async () => {
+			for(let i=0;i< frm.doc.items.length;i++){
+				try{
+					await create_batch_inspection_item(frm,frm.doc.items[i], a, qi_inspected_by_default)
+				} catch(e) {console.log(e)}
+			}
+			cur_frm.save();
+			})();
+		}, () => {
+		})
+
+	}
+}
+
+async function create_batch_inspection_item(frm, o, a, qi_inspected_by_default){
 	if(frm.doc.batch_no)
 		frappe.model.set_value(o.doctype, o.name, 'batch_no', frm.doc.batch_no)
 	else {
-		let a = await ql.get_month_code()
 		// let batch_no = (await frappe.db.get_value('Work Order', frm.doc.work_order, 'batch_no')).message.batch_no
-		let qi_inspected_by_default = (await frappe.db.get_single_value ("QL Settings","qi_inspected_by_default"))
 		let shelf_life = (await frappe.db.get_value('BOM', frm.doc.bom_no, 'shelf_life_in_days')).message.shelf_life_in_days
+		if(!shelf_life){
+			shelf_life = (await frappe.db.get_value('Item', frm.doc.item_code, 'shelf_life_in_days')).message.shelf_life_in_days
+		}
 		var exp_date = frappe.datetime.add_days(frappe.datetime.now_date(), shelf_life)
 		let batch_pre = o.item_code+moment().format('YY').substr(-1)+a[(new Date()).getMonth()]
 		let batch_count = (await frappe.db.count('Batch', {filters:{'batch_id': ['like',batch_pre+'%']}}))
 
-		debugger
 		let doc = (await frappe.db.insert({
 			doctype: 'Batch',
 			item: o.item_code,
@@ -185,7 +208,6 @@ async function create_batch_inspection(frm){
 	}
 
 	if((!Object.keys(o).includes("quality_inspection") || !o.quality_inspection ) && frm.doc.inspection_required){
-		let qi_inspected_by_default = (await frappe.db.get_doc('QL Settings')).qi_inspected_by_default
 		let doc = (await frappe.db.insert({
 			doctype: 'Quality Inspection',
 			naming_series : 'SE-.batch_no.-.##',
@@ -203,7 +225,6 @@ async function create_batch_inspection(frm){
 		cur_frm.refresh_field("items")
 		frappe.msgprint(`Quality Inspection ${doc.name} is Created`)
 	}
-	cur_frm.save()
 }
 
 function sum_volume(frm){
