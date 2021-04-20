@@ -12,6 +12,8 @@ from frappe import _
 from erpnext.controllers.buying_controller import get_items_from_bom
 from erpnext.stock.stock_ledger import get_valuation_rate
 from erpnext.stock.doctype.stock_entry.stock_entry import get_used_alternative_items
+from erpnext.controllers.buying_controller import BuyingController
+from erpnext.buying.utils import validate_for_items
 
 
 _classes = {}
@@ -265,3 +267,33 @@ def update_raw_materials_supplied_based_on_bom(self, item, raw_material_table):
 
 		if self.doctype in ("Purchase Receipt", "Purchase Invoice"):
 			item.rm_supp_cost = raw_materials_cost
+
+
+def buyingcontroller_validate(self):
+	super(BuyingController, self).validate()
+	if getattr(self, "supplier", None) and not self.supplier_name:
+		self.supplier_name = frappe.db.get_value("Supplier", self.supplier, "supplier_name")
+
+	self.validate_items()
+	self.set_qty_as_per_stock_uom()
+	self.validate_stock_or_nonstock_items()
+	self.validate_warehouse()
+	self.set_supplier_address()
+	self.validate_asset_return()
+
+	if self.doctype=="Purchase Invoice":
+		self.validate_purchase_receipt_if_update_stock()
+
+	if self.doctype=="Purchase Receipt" or (self.doctype=="Purchase Invoice" and self.update_stock):
+		# self.validate_purchase_return()
+		self.validate_rejected_warehouse()
+		self.validate_accepted_rejected_qty()
+		validate_for_items(self)
+
+		#sub-contracting
+		self.validate_for_subcontracting()
+		# self.create_raw_materials_supplied("supplied_items")
+		self.set_landed_cost_voucher_amount()
+
+	if self.doctype in ("Purchase Receipt", "Purchase Invoice") and self.is_subcontracted=="No":
+		self.update_valuation_rate("items")

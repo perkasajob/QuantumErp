@@ -20,8 +20,8 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 	# doc = frappe.get_doc('Purchase Receipt', pr)
 	ql_settings = frappe.get_doc('QL Settings')
 	stock_entry = frappe.new_doc("Stock Entry")
-	stock_entry.purpose = "Material Transfer"
-	stock_entry.stock_entry_type = "Material Transfer"
+	stock_entry.purpose = "Material Issue"
+	stock_entry.stock_entry_type = "Material Issue"
 	stock_entry.to_warehouse = ql_settings.qi_warehouse
 	need_inspection = False
 
