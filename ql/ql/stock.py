@@ -11,6 +11,8 @@ from frappe import throw, _
 from frappe.utils import formatdate, get_number_format_info
 from six import iteritems
 from datetime import datetime
+from six import string_types
+from erpnext.buying.doctype.purchase_order.purchase_order import get_item_details
 
 
 @frappe.whitelist()
@@ -235,4 +237,65 @@ def purchase_receipt_validate(doc, method):
 	# 		qi.inspection_type = 'Incoming'
 	# 		qi.reference_type = 'Purchase Receipt'
 	# 		qi.save()
+
+
+@frappe.whitelist()
+def make_rm_stock_entry(purchase_order, rm_items):
+	project = ""
+
+	if isinstance(rm_items, string_types):
+		rm_items_list = json.loads(rm_items)
+	else:
+		frappe.throw(_("No Items available for transfer"))
+
+	if rm_items_list:
+		fg_items = list(set(d["item_code"] for d in rm_items_list))
+	else:
+		frappe.throw(_("No Items selected for transfer"))
+
+	if purchase_order:
+		purchase_order = frappe.get_doc("Purchase Order", purchase_order)
+		for item in purchase_order.items: #pjob
+			if item.project :
+				project = item.project
+				break
+
+	if fg_items:
+		items = tuple(set(d["rm_item_code"] for d in rm_items_list))
+		item_wh = get_item_details(items)
+
+		stock_entry = frappe.new_doc("Stock Entry")
+		stock_entry.purpose = "Send to Subcontractor"
+		stock_entry.purchase_order = purchase_order.name
+		stock_entry.supplier = purchase_order.supplier
+		stock_entry.supplier_name = purchase_order.supplier_name
+		stock_entry.supplier_address = purchase_order.supplier_address
+		stock_entry.address_display = purchase_order.address_display
+		stock_entry.company = purchase_order.company
+		stock_entry.project = project
+		stock_entry.to_warehouse = purchase_order.supplier_warehouse
+		stock_entry.set_stock_entry_type()
+
+		for item_code in fg_items:
+			for rm_item_data in rm_items_list:
+				if rm_item_data["item_code"] == item_code:
+					rm_item_code = rm_item_data["rm_item_code"]
+					items_dict = {
+						rm_item_code: {
+							"po_detail": rm_item_data.get("name"),
+							"item_name": rm_item_data["item_name"],
+							"description": item_wh.get(rm_item_code, {}).get('description', ""),
+							'qty': rm_item_data["qty"],
+							'from_warehouse': rm_item_data["warehouse"],
+							'stock_uom': rm_item_data["stock_uom"],
+							'main_item_code': rm_item_data["item_code"],
+							'allow_alternative_item': item_wh.get(rm_item_code, {}).get('allow_alternative_item')
+						}
+					}
+					stock_entry.add_to_stock_entry_detail(items_dict)
+					stock_entry.items
+		return stock_entry.as_dict()
+	else:
+		frappe.throw(_("No Items selected for transfer"))
+	return purchase_order.name
 

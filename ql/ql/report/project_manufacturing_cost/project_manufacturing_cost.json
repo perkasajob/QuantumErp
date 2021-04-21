@@ -1,0 +1,30 @@
+{
+ "add_total_row": 0,
+ "creation": "2021-04-20 16:35:40.729921",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "idx": 0,
+ "is_standard": "Yes",
+ "javascript": "frappe.query_reports[\"Project Manufacturing Cost\"] = {\r\n\t\"filters\": [\r\n\t\t{\r\n\t\t\t\"fieldname\":\"start_date\",\r\n\t\t\t\"label\": \"Start Date\",\r\n\t\t\t\"fieldtype\": \"Date\",\r\n\t\t\t\"width\": \"80\",\r\n\t\t\t\"reqd\": 1,\r\n\t\t\t\"default\": frappe.datetime.get_today(),\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"fieldname\":\"end_date\",\r\n\t\t\t\"label\": \"End Date\",\r\n\t\t\t\"fieldtype\": \"Date\",\r\n\t\t\t\"width\": \"80\",\r\n\t\t\t\"reqd\": 1,\r\n\t\t\t\"default\": frappe.datetime.get_today(),\r\n\t\t}\r\n\t]\r\n};",
+ "letter_head": "Quantum Labs LH",
+ "modified": "2021-04-20 17:28:23.965293",
+ "modified_by": "Administrator",
+ "module": "QL",
+ "name": "Project Manufacturing Cost",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT * FROM (\r\nSELECT p.name as \"Project:Link/Project:100\",\r\n    p.modified as \"Modified:Date:100\",\r\n    se.bom_no as \"BOM:Link/BOM:100\",\r\n    b.operating_cost as \"Plan Operating Cost:Currency:100\", \r\n    b.raw_material_cost as \"Plan Material Cost:Currency:100\",\r\n    (p.total_operating_cost-b.operating_cost ) as \"Delta Operating Cost:Currency:100\",\r\n    (p.total_consumed_material_cost-b.raw_material_cost ) as \"Delta Material Cost:Currency:100\",\r\n    p.total_operating_cost as \"Real Operating Cost:Currency:100\",\r\n    p.total_consumed_material_cost as \"Real Consumed Cost:Currency:100\"\r\n    from tabProject p LEFT JOIN `tabStock Entry` se ON se.project = p.name JOIN tabBOM b ON b.name = se.bom_no WHERE se.purpose=\"Manufacture\" AND p.modified between %(start_date)s and %(end_date)s\r\nUNION\r\nSELECT p.name as \"Project:Link/Project:100\",\r\n    p.modified as \"Modified:Date:100\",\r\n    po.bom as \"BOM:Link/BOM:100\", \r\n    b.operating_cost as \"Plan Operating Cost:Currency:100\", \r\n    b.raw_material_cost as \"Plan Material Cost:Currency:100\",\r\n    (p.total_operating_cost-b.operating_cost ) as \"Delta Operating Cost:Currency:100\",\r\n    (p.total_consumed_material_cost-b.raw_material_cost ) as \"Delta Material Cost:Currency:100\",\r\n    (total_purchase_cost+p.total_operating_cost)  as \"Real Operating Cost:Currency:100\",\r\n    p.total_consumed_material_cost as \"Real Consumed Cost:Currency:100\" \r\n    from tabProject p LEFT JOIN `tabPurchase Order Item` po ON po.project = p.name LEFT JOIN tabBOM b ON b.name = po.bom WHERE po.bom IS not NULL AND p.modified between %(start_date)s and %(end_date)s\r\n) prj\r\nORDER BY 2 DESC",
+ "ref_doctype": "Project",
+ "report_name": "Project Manufacturing Cost",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "Projects Manager"
+  },
+  {
+   "role": "Projects User"
+  }
+ ]
+}

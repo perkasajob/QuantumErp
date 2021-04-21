@@ -30,10 +30,13 @@ frappe.ui.form.on('Purchase Receipt', {
 		show_stock_ledger(frm)
 	},
 	validate(frm) {
+		let project = ""
 	    frm.doc.items.forEach((o,i)=>{
 			if(!o.purchase_order_item)frm.doc.items.splice(i);
 			set_batch_freeitem(frm, o);
+			if(!project)project=o.project
 		}) // remove items without PO reference
+		frm.set_value('project', project)
 		check_POqty(frm, true)
 		check_expiry_date(cur_frm)
 		create_freeitem_stock(frm)
