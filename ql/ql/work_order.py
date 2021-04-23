@@ -26,6 +26,30 @@ class QLWorkOrder(WorkOrder):
 			else self.planned_operating_cost
 		self.total_operating_cost = flt(self.additional_operating_cost) + flt(variable_cost)
 
+	def get_status(self, status=None):
+		'''Return the status based on stock entries against this work order'''
+		if not status:
+			status = self.status
+
+		if self.docstatus==0:
+			status = 'Draft'
+		elif self.docstatus==1:
+			if status != 'Stopped':
+				stock_entries = frappe._dict(frappe.db.sql("""select purpose, sum(fg_completed_qty)
+					from `tabStock Entry` where work_order=%s and docstatus=1
+					group by purpose""", self.name))
+
+				status = "Not Started"
+				if stock_entries:
+					status = "In Process"
+					produced_qty = stock_entries.get("Manufacture")
+					if flt(produced_qty) >= flt(self.qty) and "Material Consumption for Manufacture" in stock_entries.keys(): #PJOB
+						status = "Completed"
+		else:
+			status = 'Cancelled'
+
+		return status
+
 
 def work_order_validate(doc, method):
 
