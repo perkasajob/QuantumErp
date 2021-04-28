@@ -882,14 +882,14 @@ class QLStockEntry(StockController):
 			if self.purpose in ["Material Issue", "Material Transfer", "Manufacture", "Repack",
 					"Send to Subcontractor", "Material Transfer for Manufacture", "Material Consumption for Manufacture"]:
 
-				if self.work_order and self.purpose == "Material Transfer for Manufacture":
-					item_dict = self.get_pending_raw_materials()
-					if self.to_warehouse and self.pro_doc:
-						for item in itervalues(item_dict):
-							item["to_warehouse"] = self.pro_doc.wip_warehouse
-					self.add_to_stock_entry_detail(item_dict)
+				# if self.work_order and self.purpose == "Material Transfer for Manufacture":
+				# 	item_dict = self.get_pending_raw_materials()
+				# 	if self.to_warehouse and self.pro_doc:
+				# 		for item in itervalues(item_dict):
+				# 			item["to_warehouse"] = self.pro_doc.wip_warehouse
+				# 	self.add_to_stock_entry_detail(item_dict)
 
-				elif (self.work_order and (self.purpose == "Manufacture"
+				if (self.work_order and (self.purpose == "Manufacture"
 						or self.purpose == "Material Consumption for Manufacture") and not self.pro_doc.skip_transfer
 					and self.flags.backflush_based_on == "Material Transferred for Manufacture"):
 					self.get_transfered_raw_materials()

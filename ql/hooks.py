@@ -147,6 +147,8 @@ scheduler_events = {
 override_whitelisted_methods = {
 	"frappe.desk.query_report.run": "ql.ql.events.run",
 	"erpnext.buying.doctype.purchase_order.purchase_order.make_rm_stock_entry" :"ql.ql.stock.make_rm_stock_entry",
+	"erpnext.stock.doctype.pick_list.pick_list.create_stock_entry" :"ql.ql.pick_list.create_stock_entry",
+	# "erpnext.manufacturing.doctype.work_order.work_order.create_pick_list" :"ql.ql.work_order.create_pick_list",
 }
 
 override_doctype_class = {

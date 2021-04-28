@@ -32,6 +32,10 @@ frappe.ui.form.on('Stock Entry', {
 			console.log(o)
 		})
 	},
+	purpose(frm){
+		if(frm.doc.purpose = "Manufacture")
+			frm.set_value('inspection_required', 1)
+	},
 })
 
 

@@ -16,10 +16,16 @@ function uom_convert(frm){
 		label: __('Density'),
 		fieldtype: 'Float',
 		'default': 1
+	},
+	{
+		fieldname: 'qty_per_box',
+		label: __('Qty per Box'),
+		fieldtype: 'Int',
+		'default': 1
 	}],
 	(data) => {
 		frm.doc.time_logs.forEach(o => {
-			o.completed_qty = o.completed_qty / (data.density||1)
+			o.completed_qty = o.completed_qty / (data.density||1)/ (data.qty_per_box||1)
 		});
 		frm.refresh()
 		frm.scroll_to_field("time_logs");
