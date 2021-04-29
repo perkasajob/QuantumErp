@@ -128,7 +128,7 @@ class QLWorkOrder(WorkOrder):
 			# if returned_qty > 0 :
 			mstr += d.item_code + " : " + str(returned_qty) + " \n"
 			remains_qty = d.transferred_qty - d.consumed_qty - returned_qty
-			if remains_qty < 0:
+			if remains_qty < 0.000001:
 				frappe.throw(d.item_code + " : " + str(remains_qty))
 
 			d.db_set('returned_qty', returned_qty)
