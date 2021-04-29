@@ -41,7 +41,7 @@ class QLWorkOrder(WorkOrder):
 			status = 'Draft'
 		elif self.docstatus==1:
 			if status != 'Stopped':
-				stock_entries = frappe._dict(frappe.db.sql("""select purpose, sum(fg_completed_qty), from_warehouse
+				stock_entries = frappe._dict(frappe.db.sql("""select purpose, sum(fg_completed_qty)
 					from `tabStock Entry` where work_order=%s and docstatus=1
 					group by purpose""", self.name))
 
@@ -49,8 +49,8 @@ class QLWorkOrder(WorkOrder):
 				if stock_entries:
 					status = "In Process"
 					produced_qty = stock_entries.get("Manufacture")
-					if flt(produced_qty) >= flt(self.qty) and "Material Transfer" in stock_entries.keys() : #PJOB
-						if stock_entries.get("from_warehouse")[:16] == "Work-in-Progress" :
+					if flt(produced_qty) >= flt(self.qty) and "Material Transfer" in stock_entries.keys() and "Material Consumption for Manufacture" in stock_entries.keys() : #PJOB
+						# if stock_entries.get("from_warehouse")[:16] == "Work-in-Progress" :
 							status = "Completed"
 		else:
 			status = 'Cancelled'
