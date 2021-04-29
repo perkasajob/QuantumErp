@@ -41,7 +41,7 @@ class QLWorkOrder(WorkOrder):
 			status = 'Draft'
 		elif self.docstatus==1:
 			if status != 'Stopped':
-				stock_entries = frappe._dict(frappe.db.sql("""select purpose, sum(fg_completed_qty)
+				stock_entries = frappe._dict(frappe.db.sql("""select purpose, sum(fg_completed_qty), from_warehouse
 					from `tabStock Entry` where work_order=%s and docstatus=1
 					group by purpose""", self.name))
 
@@ -49,8 +49,9 @@ class QLWorkOrder(WorkOrder):
 				if stock_entries:
 					status = "In Process"
 					produced_qty = stock_entries.get("Manufacture")
-					if flt(produced_qty) >= flt(self.qty) and "Material Consumption for Manufacture" in stock_entries.keys(): #PJOB
-						status = "Completed"
+					if flt(produced_qty) >= flt(self.qty) and "Material Transfer" in stock_entries.keys() : #PJOB
+						if stock_entries.get("from_warehouse")[:16] == "Work-in-Progress" :
+							status = "Completed"
 		else:
 			status = 'Cancelled'
 
@@ -74,9 +75,9 @@ class QLWorkOrder(WorkOrder):
 				and purpose=%s""", (self.name, purpose))[0][0])
 
 			completed_qty = self.qty + (allowance_percentage/100 * self.qty)
-			if qty > completed_qty: #pjob
-				frappe.throw(_("{0} ({1}) cannot be greater than planned quantity ({2}) in Work Order {3}").format(\
-					self.meta.get_label(fieldname), qty, completed_qty, self.name), StockOverProductionError)
+			# if qty > completed_qty: #pjob
+			# 	frappe.throw(_("{0} ({1}) cannot be greater than planned quantity ({2}) in Work Order {3}").format(\
+			# 		self.meta.get_label(fieldname), qty, completed_qty, self.name), StockOverProductionError)
 
 			if fieldname == "material_transferred_for_manufacturing": #PjoB
 				if not self.material_transferred_for_manufacturing:

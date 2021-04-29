@@ -183,7 +183,7 @@ class QLStockEntry(StockController):
 			self.work_order, "update_consumed_material_cost_in_project")):
 			return
 
-		if self.project: #JOB
+		if self.project: #PJOB
 
 			# amount = frappe.db.sql(""" select ifnull(sum(sed.amount), 0)
 			# 	from
