@@ -5,8 +5,8 @@ frappe.ui.form.on('Pick List', {
 		// set_query_inspection(frm)
 	},
 	refresh(frm) {
-		// if(frm.doc.docstatus == 1)
-		// 	frm.add_custom_button(__('Stock Entry'), () => frm.trigger('create_stock_entry'), __('Create'));
+		if(frm.doc.docstatus == 1)
+			frm.add_custom_button(__('Stock Entry'), () => frm.trigger('create_stock_entry'), __('Create'));
 	}
 })
 
