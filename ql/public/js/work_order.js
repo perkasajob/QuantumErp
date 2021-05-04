@@ -11,6 +11,9 @@ frappe.ui.form.on('Work Order', {
 			frm.add_custom_button(__('Create Pick List'), function() {
 				create_pick_list(frm);
 			});
+			frm.add_custom_button(__('Close'), function() {
+				close_work_order(frm);
+			});
 			// this.frm.add_custom_button(__('Material Request'),
 			// 	function() {
 			// 		erpnext.utils.map_current_doc({
@@ -32,14 +35,42 @@ frappe.ui.form.on('Work Order', {
 	},
 })
 
-function create_pick_list(frm) {  // , purpose='Material Transfer for Manufacture'
-	    frappe.xcall('ql.ql.work_order.create_pick_list', {
-				'source_name': frm.doc.name,
-				'for_qty': frm.doc.qty
-		}).then(pick_list => {
-			frappe.model.sync(pick_list);
-			frappe.set_route('Form', pick_list.doctype, pick_list.name);
+
+function close_work_order(frm) {  // , purpose='Material Transfer for Manufacture'
+	let reserved_mstr = "<div>Reserved WH qty</div>"; let remains_mstr = "<div>Remains WH Qty</div>"
+	let total_remains_qty = 0.0; let total_reserved_items = 0.0
+	frm.doc.required_items.forEach(d => {
+		if (d.reserved_qty > 0.01){
+			reserved_mstr += `<div>#Row${d.idx}: ${d.item_code} : ${d.reserved_qty}</div>`
+			total_reserved_items += d.reserved_qty
+		}
+	 	if(d.remains_qty > 0.01){
+	 		remains_mstr += `<div>#Row${d.idx}: ${d.item_code} : ${d.remains_qty}</div>`
+	 		total_remains_qty += d.remains_qty
+		 }
+	});
+	if(total_remains_qty + total_reserved_items > 0.01){
+		frappe.msgprint(remains_mstr)
+		frappe.msgprint(reserved_mstr)
+	} else {
+
+		frappe.xcall('ql.ql.work_order.close_work_order', {
+			'work_order': frm.doc,
+		}).then(work_order => {
+			console.log(work_order)
 		});
+
+	}
+}
+
+function create_pick_list(frm) {  // , purpose='Material Transfer for Manufacture'
+	frappe.xcall('ql.ql.work_order.create_pick_list', {
+			'source_name': frm.doc.name,
+			'for_qty': frm.doc.qty
+	}).then(pick_list => {
+		frappe.model.sync(pick_list);
+		frappe.set_route('Form', pick_list.doctype, pick_list.name);
+	});
 }
 
 

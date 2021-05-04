@@ -48,10 +48,23 @@ class QLWorkOrder(WorkOrder):
 				status = "Not Started"
 				if stock_entries:
 					status = "In Process"
-					produced_qty = stock_entries.get("Manufacture")
-					if flt(produced_qty) >= flt(self.qty) and "Material Transfer" in stock_entries.keys() and "Material Consumption for Manufacture" in stock_entries.keys() : #PJOB
-						# if stock_entries.get("from_warehouse")[:16] == "Work-in-Progress" :
-							status = "Completed"
+					total_remains_reserved = 0.0
+					for d in self.required_items:
+						if d.reserved_qty > 0.001:
+							total_remains_reserved += d.reserved_qty
+						if d.remains_qty > 0.001:
+							total_remains_reserved += d.remains_qty
+					if total_remains_reserved < 0.01:
+						status = "Completed"
+					# if total_remains_qty:
+					# 	frappe.throw("Still remain in WIP: {0} qty \n {2}".format(total_remains_qty, remains_mstr))
+
+					# if total_reserved_items:
+					# 	frappe.throw("Still remain in Simpanan wh: {0} qty \n {2}".format(total_reserved_items, reserved_mstr))
+
+					# produced_qty = stock_entries.get("Manufacture")
+					# if flt(produced_qty) >= flt(self.qty) and "Material Transfer" in stock_entries.keys() and "Material Consumption for Manufacture" in stock_entries.keys() : #PJOB
+					# 		status = "Completed"
 		else:
 			status = 'Cancelled'
 
@@ -105,6 +118,7 @@ class QLWorkOrder(WorkOrder):
 			# calculate transferred qty based on submitted stock entries
 			self.update_transaferred_qty_for_required_items()
 			self.update_remains_qty_for_required_items()
+			self.update_reserve_remains_qty_for_required_items()
 
 			# update in bin
 			self.update_reserved_qty_for_production()
@@ -128,15 +142,68 @@ class QLWorkOrder(WorkOrder):
 			# if returned_qty > 0 :
 			mstr += d.item_code + " : " + str(returned_qty) + " \n"
 			remains_qty = d.transferred_qty - d.consumed_qty - returned_qty
-			if remains_qty < -0.000001:
-				frappe.throw(d.item_code + " : " + str(remains_qty))
+			if remains_qty < -0.00001:
+				frappe.throw("Cannot have negative stock Item " + d.item_code + " : " + str(remains_qty))
 
 			d.db_set('returned_qty', returned_qty)
 			d.db_set('remains_qty', remains_qty)
-		frappe.msgprint(mstr)
+		# frappe.msgprint(mstr)
+
+	def update_reserve_remains_qty_for_required_items(self):
+		mstr = ""
+		for d in self.required_items:
+			transferred_qty = frappe.db.sql('''select sum(qty)
+				from `tabStock Entry` entry, `tabStock Entry Detail` detail
+				where
+					entry.work_order = "{name}" and entry.purpose = "Material Transfer"
+					and entry.docstatus = 1
+					and detail.parent = entry.name
+					and detail.t_warehouse like "G Simpanan%"
+					and (detail.item_code = "{item}" or detail.original_item = "{item}")'''.format(
+						name = self.name,
+						item = d.item_code
+				))[0][0] or 0.0
+
+			returned_qty = frappe.db.sql('''select sum(qty)
+				from `tabStock Entry` entry, `tabStock Entry Detail` detail
+				where
+					entry.work_order = "{name}" and entry.purpose IN ('Material Transfer for Manufacture', 'Material Transfer')
+					and entry.docstatus = 1
+					and detail.parent = entry.name
+					and detail.s_warehouse like "G Simpanan%"
+					and (detail.item_code = "{item}" or detail.original_item = "{item}")'''.format(
+						name = self.name,
+						item = d.item_code
+				))[0][0] or 0.0
+			# returned_qty = returned_qty if returned_qty else 0.0
+
+			# if returned_qty > 0 :
+			mstr += d.item_code + " : " + str(returned_qty) + " \n"
+			reserved_qty = transferred_qty - returned_qty
+			if reserved_qty < -0.00001:
+				frappe.throw("Cannot have negative stock Item " + d.item_code + " : " + str(reserved_qty))
+
+			# d.db_set('returned_qty', returned_qty)
+			d.db_set('reserved_qty', reserved_qty)
 
 
 def work_order_validate(doc, method):
+	# reserved_mstr = remains_mstr = ""
+	# total_remains_qty = total_reserved_items = 0.0
+	# for d in doc.required_items:
+	# 	if d.reserved_qty > 0.01:
+	# 		reserved_mstr += "#Row{0}: {1} reserved wh qty {2} \n".format(d.idx, d.item_code, d.reserved_qty)
+	# 		total_reserved_items += d.reserved_qty
+	# 	if d.remains_qty > 0.01:
+	# 		remains_mstr += "#Row{0}: {1} reserved wh qty {2} \n".format(d.idx, d.item_code, d.remains_qty)
+	# 		total_remains_qty += d.remains_qty
+
+	# if total_remains_qty > 0.01:
+	# 	frappe.throw("Still remain in WIP: {0} qty \n {2}".format(total_remains_qty, remains_mstr))
+
+	# if total_reserved_items > 0.01:
+	# 	frappe.throw("Still remain in Simpanan wh: {0} qty \n {2}".format(total_reserved_items, reserved_mstr))
+
 
 	total_operating_cost = frappe.db.sql(""" select ifnull(sum(wo.total_operating_cost), 0) FROM `tabWork Order` wo WHERE wo.project = %s """, doc.project, as_list=1)
 
@@ -174,3 +241,14 @@ def create_pick_list(source_name, target_doc=None, for_qty=None):
 	doc.set_item_locations()
 
 	return doc
+
+
+@frappe.whitelist()
+def close_work_order(work_order):
+	work_order = frappe.get_doc(json.loads(work_order))
+	total_reserved_items = 0.0
+	for ri in work_order.required_items:
+		total_reserved_items += (ri.reserved_qty + ri.remains_qty )
+	if(total_reserved_items < 0.01)	:
+		work_order.db_set("status", "Completed")
+	return work_order
