@@ -48,14 +48,14 @@ class QLWorkOrder(WorkOrder):
 				status = "Not Started"
 				if stock_entries:
 					status = "In Process"
-					total_remains_reserved = 0.0
-					for d in self.required_items:
-						if d.reserved_qty > 0.001:
-							total_remains_reserved += d.reserved_qty
-						if d.remains_qty > 0.001:
-							total_remains_reserved += d.remains_qty
-					if total_remains_reserved < 0.01:
-						status = "Completed"
+					# total_remains_reserved = 0.0
+					# for d in self.required_items:
+					# 	if d.reserved_qty > 0.001:
+					# 		total_remains_reserved += d.reserved_qty
+					# 	if d.remains_qty > 0.001:
+					# 		total_remains_reserved += d.remains_qty
+					# if total_remains_reserved < 0.01:
+					# 	status = "Completed"
 					# if total_remains_qty:
 					# 	frappe.throw("Still remain in WIP: {0} qty \n {2}".format(total_remains_qty, remains_mstr))
 
@@ -188,22 +188,6 @@ class QLWorkOrder(WorkOrder):
 
 
 def work_order_validate(doc, method):
-	# reserved_mstr = remains_mstr = ""
-	# total_remains_qty = total_reserved_items = 0.0
-	# for d in doc.required_items:
-	# 	if d.reserved_qty > 0.01:
-	# 		reserved_mstr += "#Row{0}: {1} reserved wh qty {2} \n".format(d.idx, d.item_code, d.reserved_qty)
-	# 		total_reserved_items += d.reserved_qty
-	# 	if d.remains_qty > 0.01:
-	# 		remains_mstr += "#Row{0}: {1} reserved wh qty {2} \n".format(d.idx, d.item_code, d.remains_qty)
-	# 		total_remains_qty += d.remains_qty
-
-	# if total_remains_qty > 0.01:
-	# 	frappe.throw("Still remain in WIP: {0} qty \n {2}".format(total_remains_qty, remains_mstr))
-
-	# if total_reserved_items > 0.01:
-	# 	frappe.throw("Still remain in Simpanan wh: {0} qty \n {2}".format(total_reserved_items, reserved_mstr))
-
 
 	total_operating_cost = frappe.db.sql(""" select ifnull(sum(wo.total_operating_cost), 0) FROM `tabWork Order` wo WHERE wo.project = %s """, doc.project, as_list=1)
 
