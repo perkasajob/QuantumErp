@@ -196,8 +196,10 @@ def work_order_validate(doc, method):
 @frappe.whitelist()
 def create_pick_list(source_name, target_doc=None, for_qty=None):
 	for_qty = for_qty or json.loads(target_doc).get('for_qty')
+	max_finished_goods_qty = frappe.db.get_value('Work Order', source_name, 'qty')
 	def update_item_quantity(source, target, source_parent):
 		qty = flt(for_qty)
+		qty = flt(source.required_qty) / max_finished_goods_qty * flt(for_qty)
 		if qty:
 			target.qty = qty
 			target.stock_qty = qty
@@ -207,6 +209,7 @@ def create_pick_list(source_name, target_doc=None, for_qty=None):
 			target.project = source_parent.project
 		else:
 			target.delete()
+
 	doc = get_mapped_doc('Work Order', source_name, {
 		'Work Order': {
 			'doctype': 'Pick List',

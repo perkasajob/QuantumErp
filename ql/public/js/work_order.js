@@ -64,6 +64,7 @@ function close_work_order(frm) {  // , purpose='Material Transfer for Manufactur
 }
 
 function create_pick_list(frm) {  // , purpose='Material Transfer for Manufacture'
+	// erpnext.manufacturing.doctype.work_order.work_order.create_pick_list
 	frappe.xcall('ql.ql.work_order.create_pick_list', {
 			'source_name': frm.doc.name,
 			'for_qty': frm.doc.qty
