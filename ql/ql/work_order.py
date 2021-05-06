@@ -48,23 +48,6 @@ class QLWorkOrder(WorkOrder):
 				status = "Not Started"
 				if stock_entries:
 					status = "In Process"
-					# total_remains_reserved = 0.0
-					# for d in self.required_items:
-					# 	if d.reserved_qty > 0.001:
-					# 		total_remains_reserved += d.reserved_qty
-					# 	if d.remains_qty > 0.001:
-					# 		total_remains_reserved += d.remains_qty
-					# if total_remains_reserved < 0.01:
-					# 	status = "Completed"
-					# if total_remains_qty:
-					# 	frappe.throw("Still remain in WIP: {0} qty \n {2}".format(total_remains_qty, remains_mstr))
-
-					# if total_reserved_items:
-					# 	frappe.throw("Still remain in Simpanan wh: {0} qty \n {2}".format(total_reserved_items, reserved_mstr))
-
-					# produced_qty = stock_entries.get("Manufacture")
-					# if flt(produced_qty) >= flt(self.qty) and "Material Transfer" in stock_entries.keys() and "Material Consumption for Manufacture" in stock_entries.keys() : #PJOB
-					# 		status = "Completed"
 		else:
 			status = 'Cancelled'
 
@@ -137,9 +120,7 @@ class QLWorkOrder(WorkOrder):
 						name = self.name,
 						item = d.item_code
 				))[0][0] or 0.0
-			# returned_qty = returned_qty if returned_qty else 0.0
 
-			# if returned_qty > 0 :
 			mstr += d.item_code + " : " + str(returned_qty) + " \n"
 			remains_qty = d.transferred_qty - d.consumed_qty - returned_qty
 			if remains_qty < -0.00001:
@@ -147,7 +128,6 @@ class QLWorkOrder(WorkOrder):
 
 			d.db_set('returned_qty', returned_qty)
 			d.db_set('remains_qty', remains_qty)
-		# frappe.msgprint(mstr)
 
 	def update_reserve_remains_qty_for_required_items(self):
 		mstr = ""
@@ -175,15 +155,12 @@ class QLWorkOrder(WorkOrder):
 						name = self.name,
 						item = d.item_code
 				))[0][0] or 0.0
-			# returned_qty = returned_qty if returned_qty else 0.0
 
-			# if returned_qty > 0 :
 			mstr += d.item_code + " : " + str(returned_qty) + " \n"
 			reserved_qty = transferred_qty - returned_qty
 			if reserved_qty < -0.00001:
 				frappe.throw("Cannot have negative stock Item " + d.item_code + " : " + str(reserved_qty))
 
-			# d.db_set('returned_qty', returned_qty)
 			d.db_set('reserved_qty', reserved_qty)
 
 
@@ -198,7 +175,6 @@ def create_pick_list(source_name, target_doc=None, for_qty=None):
 	for_qty = for_qty or json.loads(target_doc).get('for_qty')
 	max_finished_goods_qty = frappe.db.get_value('Work Order', source_name, 'qty')
 	def update_item_quantity(source, target, source_parent):
-		qty = flt(for_qty)
 		qty = flt(source.required_qty) / max_finished_goods_qty * flt(for_qty)
 		if qty:
 			target.qty = qty
