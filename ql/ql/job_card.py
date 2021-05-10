@@ -19,8 +19,24 @@ class QLJobCard(JobCard):
 		self.update_work_order()
 		self.set_transferred_qty_ql()
 
+	def get_overlap_for(self, args):
+		existing = frappe.db.sql("""select jctl.idx as name from
+			`tabJob Card Time Log` jctl where
+			(
+				(%(from_time)s > jctl.from_time and %(from_time)s < jctl.to_time) or
+				(%(to_time)s > jctl.from_time and %(to_time)s < jctl.to_time) or
+				(%(from_time)s <= jctl.from_time and %(to_time)s >= jctl.to_time))
+			and jctl.idx!=%(idx)s and jctl.parent=%(parent)s""",
+			{
+				"from_time": args.from_time,
+				"to_time": args.to_time,
+				"idx": args.idx,
+				"parent": args.parent or "No Name"
+			}, as_dict=True)
+
+		return existing[0] if existing else None
+
 	def set_transferred_qty_ql(self, update_status=False):
-		frappe.msgprint('set_transferred_qty is called !!')
 		if not self.items:
 			self.transferred_qty = self.for_quantity if self.docstatus == 1 else 0
 

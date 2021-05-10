@@ -84,7 +84,15 @@ function create_stock_entry(frm) {
 	});
 }
 
-function make_se(frm, purpose) {
+erpnext.work_order.make_se = (frm, purpose) => {
+	var mstr = ""
+	frm.doc.required_items.forEach( d =>{
+		mstr += `<div>#Row${d.idx} ${d.item_code} requires additional : ${d.required_qty - d.transferred_qty}</div>`
+	})
+	if(mstr){
+		frappe.msgprint(mstr,"Validation")
+		return
+	}
 	this.show_prompt_for_qty_input(frm, purpose)
 		.then(data => {
 			return frappe.xcall('erpnext.manufacturing.doctype.work_order.work_order.make_stock_entry', {

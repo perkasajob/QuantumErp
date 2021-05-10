@@ -35,6 +35,10 @@ frappe.ui.form.on('Stock Entry', {
 	purpose(frm){
 		if(frm.doc.purpose = "Manufacture")
 			frm.set_value('inspection_required', 1)
+		if(frm.doc.purpose = "Material Transfer for Manufacture")
+			frm.set_value('inspection_required', 0)
+		if(frm.doc.purpose = "Material Transfer")
+			frm.set_value('inspection_required', 0)
 	},
 })
 

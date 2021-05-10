@@ -5,9 +5,12 @@
 import frappe, json
 from frappe.model.document import Document
 from frappe.utils import (flt, cint, time_diff_in_hours, get_datetime, getdate,
-	get_time, add_to_date, time_diff, add_days, get_datetime_str, get_link_to_form)
+	get_time, add_to_date, time_diff, add_days, get_datetime_str, get_link_to_form, new_line_sep)
+
 from erpnext.manufacturing.doctype.work_order.work_order import WorkOrder
 from frappe.model.mapper import get_mapped_doc
+from erpnext.manufacturing.doctype.work_order.work_order import get_item_details
+from frappe import _
 
 class OverProductionError(frappe.ValidationError): pass
 class StockOverProductionError(frappe.ValidationError): pass
@@ -169,6 +172,54 @@ def work_order_validate(doc, method):
 	total_operating_cost = frappe.db.sql(""" select ifnull(sum(wo.total_operating_cost), 0) FROM `tabWork Order` wo WHERE wo.project = %s """, doc.project, as_list=1)
 
 	frappe.db.set_value('Project', doc.project, 'total_operating_cost', total_operating_cost)
+
+
+@frappe.whitelist()
+def raise_work_orders(material_request):
+	mr= frappe.get_doc("Material Request", material_request)
+	errors =[]
+	work_orders = []
+	default_wip_warehouse = frappe.db.get_single_value("Manufacturing Settings", "default_wip_warehouse")
+
+	for d in mr.items:
+		if (d.stock_qty - d.ordered_qty) > 0:
+			if frappe.db.exists("BOM", {"item": d.item_code, "is_default": 1}):
+				wo_order = frappe.new_doc("Work Order")
+				wo_order.update({
+					"production_item": d.item_code,
+					"qty": d.stock_qty - d.ordered_qty,
+					"fg_warehouse": d.warehouse,
+					"wip_warehouse": default_wip_warehouse,
+					"description": d.description,
+					"stock_uom": d.stock_uom,
+					"expected_delivery_date": d.schedule_date,
+					"sales_order": d.sales_order,
+					"bom_no": get_item_details(d.item_code).bom_no,
+					"material_request": mr.name,
+					"material_request_item": d.name,
+					"planned_start_date": mr.transaction_date,
+					"company": mr.company,
+					"project": d.project,
+					"batch_no": mr.batch_no,
+				})
+
+				wo_order.set_work_order_operations()
+				wo_order.save()
+
+				work_orders.append(wo_order.name)
+			else:
+				errors.append(_("Row {0}: Bill of Materials not found for the Item {1}").format(d.idx, d.item_code))
+
+	if work_orders:
+		message = ["""<a href="#Form/Work Order/%s" target="_blank">%s</a>""" % \
+			(p, p) for p in work_orders]
+		frappe.msgprint(_("The following Work Orders were created:") + '\n' + new_line_sep(message))
+
+	if errors:
+		frappe.throw(_("Work Order cannot be created for following reason:") + '\n' + new_line_sep(errors))
+
+	return work_orders
+
 
 @frappe.whitelist()
 def create_pick_list(source_name, target_doc=None, for_qty=None):
