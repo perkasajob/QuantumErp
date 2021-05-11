@@ -8,6 +8,22 @@ frappe.ui.form.on('Stock Entry', {
 					return (doc.qty<=doc.actual_qty + 0.002) ? "green" : "orange"
 				}
 			})
+
+		// Remove QI on SE Target Duplicate
+		$("span[data-label=Duplicate]").parent().remove();
+		frm.page.add_menu_item(__('Duplicate'), function() {
+			console.log("duplicate is called")
+			var newdoc = frappe.model.copy_doc(frm.doc);
+			newdoc.idx = null;
+			newdoc.items.forEach(o => {
+				o.quality_inspection = ""
+			})
+			newdoc.__run_link_triggers = false;
+			if(onload) {
+				onload(newdoc);
+			}
+			frappe.set_route('Form', newdoc.doctype, newdoc.name);
+		});
 	},
 	refresh(frm) {
 		set_auto_batch_insp_btn(frm)
@@ -41,6 +57,7 @@ frappe.ui.form.on('Stock Entry', {
 			frm.set_value('inspection_required', 0)
 	},
 })
+
 
 
 function set_auto_batch_insp_btn(frm){
@@ -79,7 +96,6 @@ function set_vol_calc(frm){
 
 var volume_details
 var rests = 0
-var counts = {"a":1, "b":2, "c":3, "d":4, "e":5, "f":6, "g":7, "h":8,"i":9};
 
 $.extend(cur_frm.cscript,{
 	caculateBox : (isCartonRandom)=>{

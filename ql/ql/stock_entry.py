@@ -1069,7 +1069,7 @@ class QLStockEntry(StockController):
 		transferred_materials = frappe.db.sql("""
 			select
 				item_name, original_item, item_code, sum(qty) as qty, sed.t_warehouse as warehouse,
-				description, stock_uom, expense_account, cost_center
+				description, stock_uom, expense_account, cost_center, sed.batch_no as batch_no
 			from `tabStock Entry` se,`tabStock Entry Detail` sed
 			where
 				se.name = sed.parent and se.docstatus=1 and se.purpose='Material Transfer for Manufacture'
@@ -1162,7 +1162,8 @@ class QLStockEntry(StockController):
 						"stock_uom": item.stock_uom,
 						"expense_account": item.expense_account,
 						"cost_center": item.buying_cost_center,
-						"original_item": item.original_item
+						"original_item": item.original_item,
+						"batch_no": item.batch_no #pjob
 					}
 				})
 
@@ -1244,6 +1245,7 @@ class QLStockEntry(StockController):
 			se_child.subcontracted_item = item_dict[d].get("main_item_code")
 			se_child.cost_center = (item_dict[d].get("cost_center") or
 				get_default_cost_center(item_dict[d], company = self.company))
+			se_child.batch_no = item_dict[d].get("batch_no") #pjob
 
 			for field in ["idx", "po_detail", "original_item",
 				"expense_account", "description", "item_name"]:
