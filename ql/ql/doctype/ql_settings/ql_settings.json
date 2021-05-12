@@ -6,6 +6,7 @@
  "field_order": [
   "dept_abbr",
   "month_code",
+  "scrap_allowance",
   "qi_warehouse",
   "qi_reject_warehouse",
   "qi_inspected_by_default",
@@ -44,10 +45,15 @@
    "fieldname": "month_code",
    "fieldtype": "Data",
    "label": "Month Code"
+  },
+  {
+   "fieldname": "scrap_allowance",
+   "fieldtype": "Percent",
+   "label": "Scrap Allowance"
   }
  ],
  "issingle": 1,
- "modified": "2021-03-26 12:52:45.927397",
+ "modified": "2021-05-12 11:34:57.193892",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "QL Settings",

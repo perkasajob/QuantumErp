@@ -101,9 +101,35 @@ erpnext.work_order.make_se = (frm, purpose) => {
 				'qty': data.qty
 			});
 		}).then(stock_entry => {
+			r.message.batch_no = frm.doc.batch_no
 			frappe.model.sync(stock_entry);
 			frappe.set_route('Form', stock_entry.doctype, stock_entry.name);
 		});
 
+}
+
+erpnext.work_order.make_consumption_se = function(frm, backflush_raw_materials_based_on) {
+	if(!frm.doc.skip_transfer){
+		var max = (backflush_raw_materials_based_on === "Material Transferred for Manufacture") ?
+			flt(frm.doc.material_transferred_for_manufacturing) - flt(frm.doc.produced_qty) :
+			flt(frm.doc.qty) - flt(frm.doc.produced_qty);
+			// flt(frm.doc.qty) - flt(frm.doc.material_transferred_for_manufacturing);
+	} else {
+		var max = flt(frm.doc.qty) - flt(frm.doc.produced_qty);
+	}
+
+	frappe.call({
+		method:"erpnext.manufacturing.doctype.work_order.work_order.make_stock_entry",
+		args: {
+			"work_order_id": frm.doc.name,
+			"purpose": "Material Consumption for Manufacture",
+			"qty": max
+		},
+		callback: function(r) {
+			r.message.batch_no = frm.doc.batch_no
+			var doclist = frappe.model.sync(r.message);
+			frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+		}
+	});
 }
 

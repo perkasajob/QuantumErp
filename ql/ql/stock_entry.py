@@ -103,6 +103,7 @@ class QLStockEntry(StockController):
 		self.update_quality_inspection()
 		if self.work_order and self.purpose == "Manufacture":
 			self.update_so_in_serial_number()
+			self.update_scrap_percentage()
 
 	def on_cancel(self):
 
@@ -177,6 +178,17 @@ class QLStockEntry(StockController):
 				frappe.throw(_("Row {0}: UOM Conversion Factor is mandatory").format(item.idx))
 			item.transfer_qty = flt(flt(item.qty) * flt(item.conversion_factor),
 				self.precision("transfer_qty", item))
+
+
+	def update_scrap_percentage(self):
+		if self.project:
+			out_qty = 0
+			for item in self.get("items"):
+				if item.t_warehouse:
+					out_qty += item.qty
+			scrap_qty = (1.0-flt(out_qty/self.get('fg_completed_qty')))*100
+			frappe.db.set_value('Project', self.project, 'scrap_qty', scrap_qty)
+
 
 	def update_cost_in_project(self):
 		if (self.work_order and not frappe.db.get_value("Work Order",

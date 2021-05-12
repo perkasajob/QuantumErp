@@ -33,6 +33,23 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 			if (quality_inspection.sample_size > 0):
 				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 't_warehouse': ql_settings.qi_warehouse, 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no }) #, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection'
 				need_inspection = True
+		if doc.is_subcontracted and d.project:
+			pri_qty = frappe.db.sql(""" select ifnull(sum(pri.qty), 0)
+				from
+					`tabPurchase Receipt` pr, `tabPurchase Receipt Item` pri
+				where
+					pri.project = %s and pri.parent = pr.name and pr.docstatus = 1
+					""", d.project, as_list=1)
+			pri_qty = pri_qty[0][0] if pri_qty else 0
+			mri_qty = frappe.db.sql(""" select ifnull(sum(mri.qty), 0)
+				from
+					`tabMaterial Request` mr, `tabMaterial Request Item` mri
+				where
+					mri.project = %s and mri.parent = mr.name and mr.docstatus = 1
+					""", d.project, as_list=1)
+			mri_qty = mri_qty[0][0] if mri_qty else 0
+			scrap_qty = (1.0-flt(pri_qty/mri_qty))*100
+			frappe.db.set_value('Project', d.project, 'scrap_qty', scrap_qty)
 
 	stock_entry_fi = frappe.new_doc("Stock Entry")
 	stock_entry_fi.purpose = "Material Receipt"
