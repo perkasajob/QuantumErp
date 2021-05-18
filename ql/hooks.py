@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from . import __version__ as app_version
-from erpnext.controllers.buying_controller import BuyingController
 
 app_name = "ql"
 app_title = "QL"
