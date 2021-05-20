@@ -14,4 +14,4 @@ from six import iteritems
 
 
 def update_discount(doc, method):
-	doc.db_set('discount_amount', math.ceil(doc.discount + doc.discount_margin/100 * (doc.total-doc.discount)))
+	doc.db_set('discount_amount', math.ceil(doc.mdp_discount_amount + doc.mdp_discount_margin/100 * (doc.total-doc.mdp_discount_amount)))

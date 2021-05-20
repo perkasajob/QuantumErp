@@ -87,13 +87,16 @@ function create_stock_entry(frm) {
 erpnext.work_order.make_se = (frm, purpose) => {
 	var mstr = ""
 	frm.doc.required_items.forEach( d =>{
-		mstr += `<div>#Row${d.idx} ${d.item_code} requires additional : ${d.required_qty - d.transferred_qty}</div>`
+		let diff = d.transferred_qty - d.required_qty
+		if(diff < -0.01)
+			mstr += `<div>#Row${d.idx} ${d.item_code} requires additional : ${diff}</div>`
 	})
 	if(mstr){
 		frappe.msgprint(mstr,"Validation")
 		return
 	}
-	this.show_prompt_for_qty_input(frm, purpose)
+
+	erpnext.work_order.show_prompt_for_qty_input(frm, purpose)
 		.then(data => {
 			return frappe.xcall('erpnext.manufacturing.doctype.work_order.work_order.make_stock_entry', {
 				'work_order_id': frm.doc.name,
@@ -101,7 +104,7 @@ erpnext.work_order.make_se = (frm, purpose) => {
 				'qty': data.qty
 			});
 		}).then(stock_entry => {
-			r.message.batch_no = frm.doc.batch_no
+			stock_entry.batch_no = frm.doc.batch_no
 			frappe.model.sync(stock_entry);
 			frappe.set_route('Form', stock_entry.doctype, stock_entry.name);
 		});
