@@ -10,7 +10,8 @@
   "qi_warehouse",
   "qi_reject_warehouse",
   "qi_inspected_by_default",
-  "carton_sizes"
+  "carton_sizes",
+  "wip_reserve_warehouse"
  ],
  "fields": [
   {
@@ -50,10 +51,16 @@
    "fieldname": "scrap_allowance",
    "fieldtype": "Percent",
    "label": "Scrap Allowance"
+  },
+  {
+   "fieldname": "wip_reserve_warehouse",
+   "fieldtype": "Link",
+   "label": "WIP Reserve Warehouse",
+   "options": "Warehouse"
   }
  ],
  "issingle": 1,
- "modified": "2021-05-12 11:34:57.193892",
+ "modified": "2021-05-25 11:00:49.137442",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "QL Settings",

@@ -134,6 +134,7 @@ class QLWorkOrder(WorkOrder):
 
 	def update_reserve_remains_qty_for_required_items(self):
 		mstr = ""
+		ql_settings = frappe.get_doc('QL Settings')
 		for d in self.required_items:
 			transferred_qty = frappe.db.sql('''select sum(qty)
 				from `tabStock Entry` entry, `tabStock Entry Detail` detail
@@ -141,10 +142,11 @@ class QLWorkOrder(WorkOrder):
 					entry.work_order = "{name}" and entry.purpose = "Material Transfer"
 					and entry.docstatus = 1
 					and detail.parent = entry.name
-					and detail.t_warehouse like "G Simpanan%"
+					and detail.t_warehouse = "{wip_reserve_warehouse}"
 					and (detail.item_code = "{item}" or detail.original_item = "{item}")'''.format(
 						name = self.name,
-						item = d.item_code
+						item = d.item_code,
+						wip_reserve_warehouse = ql_settings.wip_reserve_warehouse
 				))[0][0] or 0.0
 
 			returned_qty = frappe.db.sql('''select sum(qty)
@@ -153,10 +155,11 @@ class QLWorkOrder(WorkOrder):
 					entry.work_order = "{name}" and entry.purpose IN ('Material Transfer for Manufacture', 'Material Transfer')
 					and entry.docstatus = 1
 					and detail.parent = entry.name
-					and detail.s_warehouse like "G Simpanan%"
+					and detail.s_warehouse = "{wip_reserve_warehouse}"
 					and (detail.item_code = "{item}" or detail.original_item = "{item}")'''.format(
 						name = self.name,
-						item = d.item_code
+						item = d.item_code,
+						wip_reserve_warehouse = ql_settings.wip_reserve_warehouse
 				))[0][0] or 0.0
 
 			mstr += d.item_code + " : " + str(returned_qty) + " \n"
