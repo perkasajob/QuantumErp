@@ -104,6 +104,8 @@ class QLStockEntry(StockController):
 		if self.work_order and self.purpose == "Manufacture":
 			self.update_so_in_serial_number()
 			self.update_scrap_percentage()
+			self.update_qi_consume()
+
 
 	def on_cancel(self):
 
@@ -188,6 +190,26 @@ class QLStockEntry(StockController):
 					out_qty += item.qty
 			scrap_qty = (1.0-flt(out_qty/self.get('fg_completed_qty')))*100
 			frappe.db.set_value('Project', self.project, 'scrap_qty', scrap_qty)
+
+	def update_qi_consume(self):
+		stock_entry = frappe.new_doc("Stock Entry")
+		stock_entry.purpose = "Material Issue"
+		stock_entry.stock_entry_type = "Material Issue"
+		need_inspection = False
+		for d in self.get('items'):
+			if (d.quality_inspection):
+				quality_inspection = frappe.get_doc('Quality Inspection', d.quality_inspection)
+				if (quality_inspection.sample_size > 0):
+					stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.t_warehouse, 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': self.name, 'batch_no': d.batch_no })
+					need_inspection = True
+		try:
+			if need_inspection:
+				stock_entry.insert(ignore_permissions=True)
+				stock_entry.add_comment('Comment', text=self.name+ ": QI Consumption")
+				stock_entry.submit()
+			frappe.db.commit()
+		except Exception:
+			frappe.db.rollback()
 
 
 	def update_cost_in_project(self):

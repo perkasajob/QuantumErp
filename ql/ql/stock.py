@@ -31,7 +31,7 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 		if (d.quality_inspection):
 			quality_inspection = frappe.get_doc('Quality Inspection', d.quality_inspection)
 			if (quality_inspection.sample_size > 0):
-				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 't_warehouse': ql_settings.qi_warehouse, 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no }) #, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection'
+				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no }) #, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection'
 				need_inspection = True
 		if doc.is_subcontracted and d.project:
 			pri_qty = frappe.db.sql(""" select ifnull(sum(pri.qty), 0)
@@ -61,15 +61,14 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 			stock_entry_fi.to_warehouse = d.warehouse
 		stock_entry_fi.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 't_warehouse': d.warehouse, 'qty': d.received_qty, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no, 'quality_inspection': d.quality_inspection })
 
-
 	try:
 		if need_inspection:
 			stock_entry.insert(ignore_permissions=True)
-			stock_entry.add_comment('Comment', text=doc.name)
+			stock_entry.add_comment('Comment', text=doc.name + ": QI Consumption")
 			stock_entry.submit()
 		if len(stock_entry_fi.get('items')) > 0 :
 			stock_entry_fi.insert(ignore_permissions=True)
-			stock_entry_fi.add_comment('Comment', text=doc.name)
+			stock_entry_fi.add_comment('Comment', text=doc.name + ": QI Consumption")
 			stock_entry_fi.submit()
 		frappe.db.commit()
 	except Exception:
