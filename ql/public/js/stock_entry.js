@@ -29,7 +29,11 @@ frappe.ui.form.on('Stock Entry', {
 		set_vol_calc(frm)
 	},
     validate(frm) {
-		sum_volume(frm)
+		sum_volume(frm);
+
+		(async () => {
+			await backdate_batch_no(frm)
+		})();
     },
 	onload_post_render(frm){
 		if(frm.doc.pick_list && !frm.doc.work_order)
@@ -253,6 +257,18 @@ async function create_batch_inspection_item(frm, o, a, qi_inspected_by_default){
 function sum_volume(frm){
 	let vol = frm.doc.items.map((o)=>{ return o.qty * o.volume_per_unit * o.conversion_factor }).reduce((total,o)=>{return total + o})
 	frm.set_value('total_net_volume', vol)
+}
+
+async function backdate_batch_no(frm){
+	if(frm.doc.batch_no && frm.doc.set_posting_time){
+		let a = await ql.get_month_code()
+		let month = a.indexOf(frm.doc.batch_no.charAt(0))
+		let batch_date = new Date("20"+frm.doc.batch_no.substr(1,2), month-1, frm.doc.batch_no.substr(3,2))
+		if(new Date(cur_frm.doc.posting_date) < batch_date){
+			frappe.validated = false
+			frappe.msgprint("Posting date cannot be earlier than batch date")
+		}
+	}
 }
 
 function genNum(number, length)
