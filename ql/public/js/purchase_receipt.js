@@ -267,7 +267,7 @@ async function create_inspection(frm, o){
 				reference_type: 'Purchase Receipt',
 				reference_name: frm.doc.name,
 				inspected_by: frappe.user.name,
-				received_qty: o.received_qty,
+				received_qty: o.received_qty * o.conversion_factor,
 				vat: o.vat,
 				vat_qty: o.vat_qty,
 				sample_size: 0,
