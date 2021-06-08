@@ -4,9 +4,17 @@ frappe.ui.form.on('Pick List', {
 	onload_post_render(frm){
 		// set_query_inspection(frm)
 	},
+	onload(frm){
+		if(!frm.doc.requestee){
+			frm.set_value("requestee", frappe.user.full_name())
+		}
+	},
 	refresh(frm) {
 		if(frm.doc.docstatus == 1)
 			frm.add_custom_button(__('Stock Entry'), () => frm.trigger('create_stock_entry'), __('Create'));
+		if(!frm.doc.requestee){
+			frm.set_value("requestee", frappe.user.full_name())
+		}
 	}
 })
 

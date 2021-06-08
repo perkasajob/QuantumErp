@@ -73,6 +73,7 @@ class QLStockEntry(StockController):
 		self.validate_difference_account()
 		self.set_job_card_data()
 		self.set_purpose_for_stock_entry()
+		self.validate_work_order_consumption()
 
 		if not self.from_bom:
 			self.fg_completed_qty = 0.0
@@ -105,6 +106,7 @@ class QLStockEntry(StockController):
 			self.update_so_in_serial_number()
 			self.update_scrap_percentage()
 			self.update_qi_consume()
+
 
 
 	def on_cancel(self):
@@ -371,6 +373,27 @@ class QLStockEntry(StockController):
 				self.check_duplicate_entry_for_work_order()
 		elif self.purpose != "Material Transfer":
 			self.work_order = None
+
+
+	def validate_work_order_consumption(self):
+		if self.purpose == "Material Consumption for Manufacture" and self.work_order:
+			error_str = ""
+			for d in self.get('items'):
+				total_supplied = frappe.db.sql("""select sum(transfer_qty)
+					from `tabStock Entry Detail`, `tabStock Entry`
+					where `tabStock Entry`.work_order = %s
+						and `tabStock Entry`.docstatus = 1
+						and `tabStock Entry`.purpose = "Material Transfer for Manufacture"
+						and `tabStock Entry Detail`.item_code = %s
+						and `tabStock Entry Detail`.parent = `tabStock Entry`.name""",
+							(self.work_order, d.item_code))[0][0]
+				if d.qty * d.conversion_factor > total_supplied + 0.001:
+					error_str += ("Transferred qty in row #{0} ({1}) must be {2} <= {3} \n").format(d.idx, d.item_code, d.qty, total_supplied)
+
+			if error_str:
+				frappe.throw(error_str)
+
+
 
 	def check_if_operations_completed(self):
 		"""Check if Time Sheets are completed against before manufacturing to capture operating costs."""

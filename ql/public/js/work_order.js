@@ -1,5 +1,10 @@
 
 frappe.ui.form.on('Work Order', {
+	onload(frm){
+		if(!frm.doc.requestee){
+			frm.set_value("requestee", frappe.user.full_name())
+		}
+	},
 	refresh(frm){
 		if(cur_frm.doc.status == "In Process"){
 			// WO allows to add Material Consumption after Manufacture, once Material Consumption is submitted, WO will complete
@@ -31,6 +36,9 @@ frappe.ui.form.on('Work Order', {
 			// 			}
 			// 		})
 			// 	});
+		}
+		if(!frm.doc.requestee){
+			frm.set_value("requestee", frappe.user.full_name())
 		}
 	},
 })
