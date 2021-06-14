@@ -14,6 +14,11 @@ from datetime import datetime
 from six import string_types
 from erpnext.buying.doctype.purchase_order.purchase_order import get_item_details
 
+from erpnext.controllers.stock_controller import StockController
+class QualityInspectionRequiredError(frappe.ValidationError): pass
+class QualityInspectionRejectedError(frappe.ValidationError): pass
+class QualityInspectionNotSubmittedError(frappe.ValidationError): pass
+
 
 @frappe.whitelist()
 def purchase_receipt_on_submit(doc, method): #pr, doc, method
@@ -47,8 +52,7 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 				where
 					mri.project = %s and mri.parent = mr.name and mr.docstatus = 1
 					""", d.project, as_list=1)
-			mri_qty = mri_qty[0][0] if mri_qty else 0
-			scrap_qty = (1.0-flt(pri_qty/mri_qty))*100
+			scrap_qty = (1.0-flt(pri_qty/mri_qty[0][0]))*100 if mri_qty[0][0] else 0
 			frappe.db.set_value('Project', d.project, 'scrap_qty', scrap_qty)
 
 	stock_entry_fi = frappe.new_doc("Stock Entry")
@@ -210,49 +214,29 @@ def purchase_receipt_validate(doc, method):
 		On submit, throw an exception'''
 	inspection_required_fieldname = None
 
-	# if self.doctype in ["Purchase Receipt", "Purchase Invoice"]:
-	# 	inspection_required_fieldname = "inspection_required_before_purchase"
-	# elif self.doctype in ["Delivery Note", "Sales Invoice"]:
-	# 	inspection_required_fieldname = "inspection_required_before_delivery"
+	# frappe.throw(_("Quality Inspection: "))
 
-	# if ((not inspection_required_fieldname and self.doctype != "Stock Entry") or
-	# 	(self.doctype == "Stock Entry" and not self.inspection_required) or
-	# 	(self.doctype in ["Sales Invoice", "Purchase Invoice"] and not self.update_stock)):
-	# 		return
+	if doc.doctype in ["Purchase Receipt", "Purchase Invoice"]:
+		inspection_required_fieldname = "inspection_required_before_purchase"
+	elif doc.doctype in ["Delivery Note", "Sales Invoice"]:
+		inspection_required_fieldname = "inspection_required_before_delivery"
 
-	# for d in self.get('items'):
-	# 	qa_required = False
-	# 	if (inspection_required_fieldname and not d.quality_inspection and
-	# 		frappe.db.get_value("Item", d.item_code, inspection_required_fieldname)):
-	# 		qa_required = True
-	# 	elif self.doctype == "Stock Entry" and not d.quality_inspection and d.t_warehouse:
-	# 		qa_required = True
-	# 	if self.docstatus == 1 and d.quality_inspection:
-	# 		qa_doc = frappe.get_doc("Quality Inspection", d.quality_inspection)
-	# 		if qa_doc.docstatus == 0:
-	# 			link = frappe.utils.get_link_to_form('Quality Inspection', d.quality_inspection)
-	# 			frappe.throw(_("Quality Inspection: {0} is not submitted for the item: {1} in row {2}").format(link, d.item_code, d.idx), QualityInspectionNotSubmittedError)
+	if ((not inspection_required_fieldname and doc.doctype != "Stock Entry") or
+		(doc.doctype == "Stock Entry" and not doc.inspection_required) or
+		(doc.doctype in ["Sales Invoice", "Purchase Invoice"] and not doc.update_stock)):
+			return
 
-	# 		qa_failed = any([r.status=="Rejected" for r in qa_doc.readings])
-	# 		if qa_failed:
-	# 			frappe.throw(_("Row {0}: Quality Inspection rejected for item {1}")
-	# 				.format(d.idx, d.item_code), QualityInspectionRejectedError)
-	# 	elif qa_required :
-	# 		action = frappe.get_doc('Stock Settings').action_if_quality_inspection_is_not_submitted
-	# 		if self.docstatus==1 and action == 'Stop':
-	# 			frappe.throw(_("Quality Inspection required for Item {0} to submit").format(frappe.bold(d.item_code)),
-	# 				exc=QualityInspectionRequiredError)
-	# 		else:
-	# 			frappe.msgprint(_("Create Quality Inspection for Item {0}").format(frappe.bold(d.item_code)))
-	# for item in doc.items:
-	# 	if not item.quality_inspection:
-	# 		qi = frappe.new_doc('Quality Inspection')
-	# 		qi.item_code = item.item_code
-	# 		qi.report_date = nowdate()
-	# 		qi.sample_size = 0.00
-	# 		qi.inspection_type = 'Incoming'
-	# 		qi.reference_type = 'Purchase Receipt'
-	# 		qi.save()
+	for d in doc.get('items'):
+		if doc.docstatus == 1 and d.quality_inspection:
+			qa_doc = frappe.get_doc("Quality Inspection", d.quality_inspection)
+			if qa_doc.docstatus == 0:
+				link = frappe.utils.get_link_to_form('Quality Inspection', d.quality_inspection)
+				frappe.throw(_("Quality Inspection: {0} is not submitted for the item: {1} in row {2}").format(link, d.item_code, d.idx), QualityInspectionNotSubmittedError)
+
+			qa_failed = qa_doc.status=="Rejected"
+			if qa_failed:
+				frappe.throw(_("Row {0}: Quality Inspection rejected for item {1}")
+					.format(d.idx, d.item_code), QualityInspectionRejectedError)
 
 
 @frappe.whitelist()

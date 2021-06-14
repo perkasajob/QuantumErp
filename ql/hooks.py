@@ -109,6 +109,7 @@ doc_events = {
 	},
 	"Purchase Receipt": {
 		"on_submit":"ql.ql.stock.purchase_receipt_on_submit",
+		"validate":"ql.ql.stock.purchase_receipt_validate",
 	},
 	"Work Order": {
 		"validate":"ql.ql.work_order.work_order_validate",
