@@ -11,6 +11,9 @@ frappe.ui.form.on('Material Request', {
 			frappe.msgprint(msg);
             throw msg;
 		}
+		if(!frm.doc.requestee){
+			frm.set_value("requestee", frappe.user.full_name())
+		}
 	},
 	onload(frm){
 		if(!frm.doc.requestee){
