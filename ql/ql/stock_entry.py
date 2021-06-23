@@ -19,6 +19,7 @@ from erpnext.stock.utils import get_bin
 from frappe.model.mapper import get_mapped_doc
 from erpnext.stock.doctype.serial_no.serial_no import update_serial_nos_after_submit, get_serial_nos
 from erpnext.stock.doctype.stock_reconciliation.stock_reconciliation import OpeningEntryAccountError
+from ql.overrides import stockcontroller_validate
 
 import json
 
@@ -36,11 +37,12 @@ form_grid_templates = {
 	"items": "templates/form_grid/stock_entry_grid.html"
 }
 
-class QLStockEntry(StockController):
 
+class QLStockEntry(StockController):
 	def __init__(self, *args, **kwargs):
 		"""To initialize the status updater."""
 		super(QLStockEntry, self).__init__(*args, **kwargs)
+
 		self.status_updater = []
 
 	def get_feed(self):
@@ -68,7 +70,8 @@ class QLStockEntry(StockController):
 		self.validate_finished_goods()
 		self.validate_with_material_request()
 		self.validate_batch()
-		self.validate_inspection()
+		# self.validate_inspection()
+		stockcontroller_validate(self)
 		self.validate_fg_completed_qty()
 		self.validate_difference_account()
 		self.set_job_card_data()
@@ -202,7 +205,7 @@ class QLStockEntry(StockController):
 			if (d.quality_inspection):
 				quality_inspection = frappe.get_doc('Quality Inspection', d.quality_inspection)
 				if (quality_inspection.sample_size > 0):
-					stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.t_warehouse, 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': self.name, 'batch_no': d.batch_no })
+					stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.t_warehouse, 'qty': quality_inspection.sample_size, 'conversion_factor': d.conversion_factor, 'uom': d.uom, 'remarks': self.name, 'batch_no': d.batch_no })
 					need_inspection = True
 		try:
 			if need_inspection:

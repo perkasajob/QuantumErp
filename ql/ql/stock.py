@@ -36,7 +36,7 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 		if (d.quality_inspection):
 			quality_inspection = frappe.get_doc('Quality Inspection', d.quality_inspection)
 			if (quality_inspection.sample_size > 0):
-				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 'qty': quality_inspection.sample_size, 'uom': d.uom, 'remarks': doc.name, 'batch_no': d.batch_no }) #, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection'
+				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 'qty': quality_inspection.sample_size, 'conversion_factor': d.conversion_factor, 'uom': d.stock_uom, 'remarks': doc.name, 'batch_no': d.batch_no }) #, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection'
 				need_inspection = True
 		if doc.is_subcontracted and d.project:
 			pri_qty = frappe.db.sql(""" select ifnull(sum(pri.qty), 0)
@@ -234,8 +234,8 @@ def purchase_receipt_validate(doc, method):
 				frappe.throw(_("Quality Inspection: {0} is not submitted for the item: {1} in row {2}").format(link, d.item_code, d.idx), QualityInspectionNotSubmittedError)
 
 			qa_failed = qa_doc.status=="Rejected"
-			if qa_failed:
-				frappe.throw(_("Row {0}: Quality Inspection rejected for item {1}")
+			if qa_failed and d.qty > 0:
+				frappe.message(_("Row {0}: Quality Inspection rejected for item {1}, set accepted qty to 0")
 					.format(d.idx, d.item_code), QualityInspectionRejectedError)
 
 
