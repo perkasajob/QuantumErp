@@ -16,6 +16,7 @@ from erpnext.controllers.buying_controller import BuyingController
 from erpnext.buying.utils import validate_for_items
 from erpnext.controllers.stock_controller import StockController
 
+
 class QualityInspectionRequiredError(frappe.ValidationError): pass
 class QualityInspectionRejectedError(frappe.ValidationError): pass
 class QualityInspectionNotSubmittedError(frappe.ValidationError): pass
@@ -352,3 +353,5 @@ def stockcontroller_validate(self):
 		validate_inspection(self)
 	self.validate_serialized_batch()
 	self.validate_customer_provided_item()
+
+
