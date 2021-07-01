@@ -28,6 +28,7 @@ def update_completed_with_draft_qty(self, mr_items=None, update_modified=True):
 						and material_request_item = %s and docstatus = 1 or docstatus = 0""",
 						(self.name, d.name))[0][0])
 
+					# frappe.msgprint("this is it !!")
 					if d.ordered_qty and d.ordered_qty > d.stock_qty:
 						frappe.throw(_("The total Issue / Transfer quantity {0} in Material Request {1}  \
 							cannot be greater than requested quantity {2} for Item {3}").format(d.ordered_qty, d.parent, d.qty, d.item_code))

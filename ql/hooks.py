@@ -157,6 +157,7 @@ override_doctype_class = {
 	'Job Card': 'ql.ql.job_card.QLJobCard',
 	'Stock Entry': 'ql.ql.stock_entry.QLStockEntry',
 	'Pick List': 'ql.ql.pick_list.QLPickList',
+	'Material Request': 'ql.ql.material_request.QLMaterialRequest',
 }
 
 before_migrate = "ql.migrate.before_migrate"
