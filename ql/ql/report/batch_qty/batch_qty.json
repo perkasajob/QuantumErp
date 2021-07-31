@@ -1,0 +1,32 @@
+{
+ "add_total_row": 0,
+ "creation": "2021-04-13 13:45:37.955501",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Quantum Labs LH",
+ "modified": "2021-07-31 14:09:46.438850",
+ "modified_by": "Administrator",
+ "module": "QL",
+ "name": "Batch Qty",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT\r\n  sle.posting_date as \"Date:Date:100\",\r\n  sle.batch_no as \"Batch No:Link/Batch:100\",\r\n  sle.item_code as \"Item:Link/Item:100\",\r\n  i.item_name as \"Item Name:Data:100\",\r\n  sle.warehouse as \"Warehouse:Link/Warehouse:200\",\r\n  SUM(sle.actual_qty) as \"Qty:Float:100\",\r\n  sle.stock_uom as \"UoM:Data:100\"\r\nFROM\r\n  `tabStock Ledger Entry` sle\r\n  INNER JOIN\r\n  `tabItem` i ON sle.item_code = i.item_code\r\nWHERE (sle.posting_date between %(start_date)s and %(end_date)s)\r\nGROUP BY sle.warehouse, sle.batch_no\r\nORDER BY sle.posting_date ASC",
+ "ref_doctype": "Stock Ledger Entry",
+ "report_name": "Batch Qty",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "WH"
+  }
+ ]
+}
