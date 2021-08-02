@@ -21,6 +21,14 @@ def get_data():
 						"doctype": "Purchase Order",
 						"onboard": 1,
 						"dependencies": ["Item","Material Request"],
+					},
+					{
+						"type": "report",
+						"is_query_report": True,
+						"name": "Batch Qty",
+						"doctype": "Stock Ledger Entry",
+						"onboard": 1,
+						"dependencies": ["Item"],
 					}
 				]
 			}
