@@ -20,12 +20,12 @@ frappe.query_reports["Batch Qty"] = {
 		"reqd": 1,
 		"default": frappe.datetime.get_today(),
 	  },
-	//   {
-	// 	"fieldname":"batch_no_flt",
-	// 	"label": "Batch No",
-	// 	"fieldtype": "Link",
-	// 	"options": "Batch",
-	// 	"width": "80"
-	//   }
+	  {
+		"fieldname":"batch_no_flt",
+		"label": "Batch No",
+		"fieldtype": "Link",
+		"options": "Batch",
+		"width": "80"
+	  }
 	]
   };
