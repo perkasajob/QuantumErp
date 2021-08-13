@@ -107,6 +107,11 @@ function mr_set_buttons(frm){
 					})
 				}
 			);
+		frm.add_custom_button(__('For Warehouse'),
+			() => {
+				set_for_warehouse(frm)
+			}
+		)
 	}
 }
 
@@ -192,7 +197,14 @@ function set_schedule_date(frm) {
 	}
 }
 
+function set_for_warehouse(frm) {
+	if(frm.doc.for_warehouse){
+		copy_value_in_all_rows_warehouse(frm.doc, frm.doc.doctype, frm.doc.name, "items", "for_warehouse");
+	}
+}
+
 function copy_value_in_all_rows(doc, dt, dn, table_fieldname, fieldname) {
+
 	var d = locals[dt][dn];
 	if(d[fieldname]){
 		var cl = doc[table_fieldname] || [];
@@ -200,5 +212,17 @@ function copy_value_in_all_rows(doc, dt, dn, table_fieldname, fieldname) {
 			cl[i][fieldname] = d[fieldname];
 		}
 	}
-	refresh_field(table_fieldname);
+	cur_frm.refresh_field(table_fieldname);
+}
+
+function copy_value_in_all_rows_warehouse(doc, dt, dn, table_fieldname, fieldname) {
+
+	var d = locals[dt][dn];
+	if(d[fieldname]){
+		var cl = doc[table_fieldname] || [];
+		for(var i = 0; i < cl.length; i++) {
+			cl[i]["warehouse"] = d[fieldname];
+		}
+	}
+	cur_frm.refresh_field(table_fieldname);
 }
