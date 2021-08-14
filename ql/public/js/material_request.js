@@ -84,7 +84,11 @@ frappe.ui.form.on('Material Request', {
 			});
 		});
 		d.show();
-	}
+	},
+	for_warehouse(frm){
+		// frm.set_value("for_warehouse", `D ${frm.doc.distributor_warehouse.substr(0,3)} - ${frappe.get_abbr(frappe.defaults.get_default("Company"))}`)
+		set_for_warehouse(frm)
+	},
 })
 
 
@@ -107,11 +111,11 @@ function mr_set_buttons(frm){
 					})
 				}
 			);
-		frm.add_custom_button(__('For Warehouse'),
-			() => {
-				set_for_warehouse(frm)
-			}
-		)
+		// frm.add_custom_button(__('For Warehouse'),
+		// 	() => {
+		// 		set_for_warehouse(frm)
+		// 	}
+		// )
 	}
 }
 
@@ -138,7 +142,7 @@ frappe.ui.form.on('Purchase Invoice', {
     	        frm.set_df_property("department", "read_only", dept ? 1 : 0);
     		frm.set_value("department", dept)
         });
-	}
+	},
 })
 
 
