@@ -265,10 +265,11 @@ async function backdate_batch_no(frm){
 		let a = await ql.get_month_code()
 		let month = a.indexOf(frm.doc.batch_no.charAt(0))
 		let batch_date = new Date("20"+frm.doc.batch_no.substr(1,2), month-1, frm.doc.batch_no.substr(3,2))
-		if(new Date(cur_frm.doc.posting_date) < batch_date){
-			frappe.validated = false
-			frappe.msgprint("Posting date cannot be earlier than batch date")
-		}
+		// uncomment this
+		// if(new Date(cur_frm.doc.posting_date) < batch_date){
+		// 	frappe.validated = false
+		// 	frappe.msgprint("Posting date cannot be earlier than batch date")
+		// }
 	}
 }
 
