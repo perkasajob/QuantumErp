@@ -17,7 +17,9 @@
 
 frappe.ui.form.on('Purchase Receipt', {
 	onload(frm){
-
+		// Store the unchanged items qty
+		frm.originItems = {}
+		frm.doc.items.forEach(o=>frm.originItems[o.purchase_order_item]= o.qty)
 	},
 	onload_post_render(frm){
 		set_query_inspection(frm)
@@ -151,8 +153,8 @@ async function check_POqty(frm, validation){
 		    	r.message.forEach(e => {
 		    	    if(frm.doc.__islocal){
 		    	        var pri_qty = lqty[e[0].purchase_order_item] + e[0].pri_qty
-		    	    } else{
-		    	        var pri_qty = e[0].pri_qty
+		    	    } else {
+		    	        var pri_qty = lqty[e[0].purchase_order_item] - frm.originItems[e[0].purchase_order_item] + e[0].pri_qty
 		    	    }
 					str += '<tr><td>'+e[0].poi_idx  + '</td><td>'+e[0].item_name + '['+ e[0].schedule_date+']</td><td style="text-align:right">'+e[0].poi_qty +'</td><td style="text-align:right">'+ pri_qty
 					var percentage =Math.floor(pri_qty/e[0].poi_qty*100)
