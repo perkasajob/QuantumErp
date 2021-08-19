@@ -11,7 +11,7 @@ frappe.ui.form.on('Purchase Order', {
 			frm.set_value("orderer", frappe.user.full_name())
 		}
 	},
-	on_submit(frm){
+	before_submit(frm){
 		frm.set_value("submitter", frappe.user.full_name())
 	}
 })
