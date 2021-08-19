@@ -15,7 +15,7 @@ frappe.ui.form.on('Purchase Order', {
 		frm.set_value("submitter", frappe.user.full_name())
 	},
 	set_warehouse(frm){
-		frm.set_value("shipping_address", frappe.doc.set_warehouse)
+		frm.set_value("shipping_address", frm.doc.set_warehouse)
 	}
 })
 
