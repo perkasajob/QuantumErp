@@ -7,7 +7,7 @@ frappe.listview_settings['Purchase Order'].refresh = function (listview) {
 frappe.ui.form.on('Purchase Order', {
 	validate(frm){
 		check_supplier_release(frm)
-		if (frm.doc.__islocal){
+		if (frm.doc.__islocal && !frm.doc.orderer){
 			frm.set_value("orderer", frappe.user.full_name())
 		}
 	},
