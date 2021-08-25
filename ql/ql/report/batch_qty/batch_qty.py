@@ -65,8 +65,8 @@ def get_columns(filters):
 def get_conditions(filters):
 	conditions = ""
 
-	if filters.get("start_date") and filters.get("end_date"):
-		conditions += "sle.posting_date between {} and {}".format(frappe.db.escape(filters.get('start_date')), frappe.db.escape(filters.get('end_date')))
+	if filters.get("end_date"):
+		conditions += "sle.posting_date < {}".format(frappe.db.escape(filters.get('end_date')))
 
 	if filters.get("batch_no_flt"):
 		conditions += " AND sle.batch_no = {}".format(frappe.db.escape(filters.get('batch_no_flt')))

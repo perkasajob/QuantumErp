@@ -58,7 +58,7 @@ class QLMaterialRequest(BuyingController):
 	def validate(self):
 		super(QLMaterialRequest, self).validate()
 
-		self.validate_schedule_date()
+		# self.validate_schedule_date()
 		self.check_for_on_hold_or_closed_status('Sales Order', 'sales_order')
 		self.validate_uom_is_integer("uom", "qty")
 

@@ -30,11 +30,12 @@
   },
   {
    "fieldname": "address",
-   "fieldtype": "Data",
-   "label": "Address"
+   "fieldtype": "Link",
+   "label": "Address",
+   "options": "Address"
   }
  ],
- "modified": "2021-08-14 15:50:20.157280",
+ "modified": "2021-08-25 14:53:23.102441",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Distributor Warehouse",
