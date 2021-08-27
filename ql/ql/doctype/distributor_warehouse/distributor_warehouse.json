@@ -8,7 +8,10 @@
   "code",
   "customer",
   "city",
-  "address"
+  "address_and_contact_section",
+  "address_html",
+  "column_break_6",
+  "contact_html"
  ],
  "fields": [
   {
@@ -29,13 +32,26 @@
    "label": "City"
   },
   {
-   "fieldname": "address",
-   "fieldtype": "Link",
-   "label": "Address",
-   "options": "Address"
+   "fieldname": "address_html",
+   "fieldtype": "HTML",
+   "label": "Address HTML"
+  },
+  {
+   "fieldname": "address_and_contact_section",
+   "fieldtype": "Section Break",
+   "label": "Address and Contact"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_html",
+   "fieldtype": "HTML",
+   "label": "Contact HTML"
   }
  ],
- "modified": "2021-08-25 14:53:23.102441",
+ "modified": "2021-08-25 22:30:59.480763",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Distributor Warehouse",
