@@ -378,20 +378,27 @@ class QLStockEntry(StockController):
 			self.work_order = None
 
 
-	def validate_work_order_consumption(self):
+	def validate_work_order_consumption(self): #PJOB
 		if self.purpose == "Material Consumption for Manufacture" and self.work_order:
 			error_str = ""
 			for d in self.get('items'):
-				total_supplied = frappe.db.sql("""select sum(transfer_qty)
+				batch_str = ""
+				if d.batch_no:
+					batch_str = "and `tabStock Entry Detail`.batch_no = \"%s\"" % (d.batch_no)
+				queryStr = """select sum(transfer_qty)
 					from `tabStock Entry Detail`, `tabStock Entry`
-					where `tabStock Entry`.work_order = %s
+					where `tabStock Entry`.work_order = "%s"
 						and `tabStock Entry`.docstatus = 1
 						and `tabStock Entry`.purpose = "Material Transfer for Manufacture"
-						and `tabStock Entry Detail`.item_code = %s
-						and `tabStock Entry Detail`.parent = `tabStock Entry`.name""",
-							(self.work_order, d.item_code))[0][0]
+						and `tabStock Entry Detail`.item_code = "%s"
+						and `tabStock Entry Detail`.parent = `tabStock Entry`.name
+						 %s""" % (self.work_order, d.item_code, batch_str)
+
+				total_supplied = frappe.db.sql(queryStr)[0][0]
+				total_supplied = total_supplied if total_supplied else 0.0
+
 				if d.qty * d.conversion_factor > total_supplied + 0.001:
-					error_str += ("Transferred qty in row #{0} ({1}) must be {2} <= {3} Max \n").format(d.idx, d.item_code, d.qty, total_supplied)
+					error_str += ("Transferred qty in row #{0} ({1}) Qty {2} > {3} Max \n").format(d.idx, d.item_code, d.qty, total_supplied)
 
 			if error_str:
 				frappe.throw(error_str)

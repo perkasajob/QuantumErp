@@ -35,7 +35,7 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 	for d in doc.get('items'):
 		if (d.quality_inspection):
 			quality_inspection = frappe.get_doc('Quality Inspection', d.quality_inspection)
-			if (quality_inspection.sample_size > 0):
+			if quality_inspection.sample_size > 0 and quality_inspection.status != "Rejected":
 				stock_entry.append('items', {'item_code': d.item_code,'item_name': d.item_name,'s_warehouse': d.warehouse, 'qty': quality_inspection.sample_size, 'conversion_factor': d.conversion_factor, 'uom': d.stock_uom, 'remarks': doc.name, 'batch_no': d.batch_no }) #, 'parent': quality_inspection.name, 'parentfield': 'material_transfer', 'parenttype': 'Quality Inspection'
 				need_inspection = True
 		if doc.is_subcontracted and d.project:
