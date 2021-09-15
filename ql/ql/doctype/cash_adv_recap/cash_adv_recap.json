@@ -5,17 +5,28 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "purchase_date",
+  "requestee",
   "cash_adv",
+  "cb1",
+  "verifier",
+  "purchase_date",
+  "sb1",
+  "item_request",
   "items",
   "description",
   "cash_advance_request",
   "outstanding_amount",
   "total",
+  "userbank_sb",
+  "user_acc",
+  "user_acc_name",
+  "user_bank_cb",
+  "user_bank",
+  "user_bank_branch",
+  "acc_sb",
   "account",
   "bank_account",
   "cost_center",
-  "is_advance",
   "cheque_no",
   "cheque_date",
   "user_remark",
@@ -26,7 +37,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "options": "Cash Adv Item"
+   "options": "Cash Adv Recap Item"
   },
   {
    "fieldname": "description",
@@ -56,13 +67,6 @@
    "label": "Cost Center",
    "options": "Cost Center",
    "permlevel": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "is_advance",
-   "fieldtype": "Select",
-   "label": "Is Advance",
-   "options": "No\nYes"
   },
   {
    "allow_on_submit": 1,
@@ -129,10 +133,67 @@
    "fieldname": "cash_advance_request",
    "fieldtype": "Currency",
    "label": "Cash Advance Request"
+  },
+  {
+   "fieldname": "userbank_sb",
+   "fieldtype": "Section Break",
+   "label": "User Bank Account"
+  },
+  {
+   "fieldname": "user_acc",
+   "fieldtype": "Data",
+   "label": "Bank Account Nr."
+  },
+  {
+   "fieldname": "user_acc_name",
+   "fieldtype": "Data",
+   "label": "Name"
+  },
+  {
+   "fieldname": "user_bank_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user_bank",
+   "fieldtype": "Data",
+   "label": "Bank"
+  },
+  {
+   "fieldname": "user_bank_branch",
+   "fieldtype": "Data",
+   "label": "Branch"
+  },
+  {
+   "fieldname": "acc_sb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sb1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "requestee",
+   "fieldtype": "Read Only",
+   "label": "Requestee"
+  },
+  {
+   "fieldname": "verifier",
+   "fieldtype": "Read Only",
+   "label": "Verifier"
+  },
+  {
+   "fieldname": "item_request",
+   "fieldtype": "HTML",
+   "label": "Item Request",
+   "options": "<div class=\"form-grid\">\n   <div class=\"grid-heading-row\">\n      <div class=\"grid-row\">\n         <div class=\"data-row row\">\n            <div class=\"row-index sortable-handle col col-xs-1\">               \n            </div>            \n            <div class=\"col grid-static-col col-xs-5 \">               \n               <div class=\"static-area ellipsis\">Planned Item</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-1  text-right\">               \n               <div class=\"static-area ellipsis\">Qty</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-1 \">               \n               <div class=\"static-area ellipsis\">UoM</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-2  text-right\">               \n               <div class=\"static-area ellipsis\">Rate</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-2  text-right\">               \n               <div class=\"static-area ellipsis\">Note</div>\n            </div>\n         </div>\n      </div>\n   </div>\n   <div class=\"grid-body\">\n      <div class=\"rows\">\n         <div class=\"grid-row\">\n         <div class=\"data-row row\">\n         [No Data]\n         </div>\n         </div>\n      </div>      \n   </div>\n</div>"
   }
  ],
  "is_submittable": 1,
- "modified": "2021-09-07 15:40:43.739161",
+ "modified": "2021-09-11 13:07:15.578443",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Adv Recap",

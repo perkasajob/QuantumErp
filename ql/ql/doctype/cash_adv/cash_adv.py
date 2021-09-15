@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 from frappe.utils import cint, flt
+from frappe.utils.user import get_user_fullname
 
 class CashAdv(Document):
 	def __init__(self, *args, **kwargs):
@@ -13,6 +14,10 @@ class CashAdv(Document):
 
 	def validate(self):
 		self.calculate_item_values()
+
+	def on_update(self):
+		if self.workflow_state == "Draft":
+			self.db_set('requestee', get_user_fullname(frappe.session['user']))
 
 	def calculate_item_values(self):
 		total = 0

@@ -398,7 +398,7 @@ class QLStockEntry(StockController):
 				total_supplied = total_supplied if total_supplied else 0.0
 
 				if d.qty * d.conversion_factor > total_supplied + 0.001:
-					error_str += ("Transferred qty in row #{0} ({1}) Qty {2} > {3} Max \n").format(d.idx, d.item_code, d.qty, total_supplied)
+					error_str += ("Transferred qty in row #{0} ({1}) Qty {2} > {3} Max </br>").format(d.idx, d.item_code, d.qty, total_supplied)
 
 			if error_str:
 				frappe.throw(error_str)

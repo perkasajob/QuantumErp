@@ -29,6 +29,34 @@ def get_data():
 						"doctype": "Stock Ledger Entry",
 						"onboard": 1,
 						"dependencies": ["Item"],
+					},
+					{
+						"type": "report",
+						"is_query_report": True,
+						"name": "WO - Remain Qty",
+						"doctype": "Work Order",
+						"onboard": 1,
+						"dependencies": ["Stock Ledger Entry","Work Order Item"],
+					},
+					{
+						"type": "report",
+						"is_query_report": True,
+						"name": "MR-MT Fullfillment",
+						"doctype": "Material Request",
+						"onboard": 1,
+						"dependencies": ["Material Request Item"],
+					}
+				]
+			},{
+				"label": _("Purchasing"),
+				"items": [
+					{
+						"type": "doctype",
+						"name": "Cash Adv",
+					},
+					{
+						"type": "doctype",
+						"name": "Cash Adv Recap",
 					}
 				]
 			}

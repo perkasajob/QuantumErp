@@ -6,14 +6,26 @@
  "engine": "InnoDB",
  "field_order": [
   "req_date",
+  "is_fixed_amount",
+  "cb1",
+  "department",
+  "requestee",
+  "verifier",
+  "sb1_section",
   "items",
   "description",
   "requested_amount",
   "credit_in_account_currency",
+  "userbank_sb",
+  "user_acc",
+  "user_acc_name",
+  "user_bank_cb",
+  "user_bank",
+  "user_bank_branch",
+  "acc_sb",
   "account",
   "bank_account",
   "cost_center",
-  "is_advance",
   "cheque_no",
   "cheque_date",
   "user_remark",
@@ -71,13 +83,6 @@
   },
   {
    "allow_on_submit": 1,
-   "fieldname": "is_advance",
-   "fieldtype": "Select",
-   "label": "Is Advance",
-   "options": "No\nYes"
-  },
-  {
-   "allow_on_submit": 1,
    "fieldname": "cheque_no",
    "fieldtype": "Data",
    "label": "Reference Number",
@@ -107,10 +112,74 @@
    "fieldname": "requested_amount",
    "fieldtype": "Currency",
    "label": "Requested Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_fixed_amount",
+   "fieldtype": "Check",
+   "label": "Is Fixed Amount"
+  },
+  {
+   "fieldname": "userbank_sb",
+   "fieldtype": "Section Break",
+   "label": "User Bank Account"
+  },
+  {
+   "fieldname": "user_acc_name",
+   "fieldtype": "Data",
+   "label": "Name"
+  },
+  {
+   "fieldname": "user_bank_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user_bank",
+   "fieldtype": "Data",
+   "label": "Bank"
+  },
+  {
+   "fieldname": "acc_sb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "user_acc",
+   "fieldtype": "Data",
+   "label": "Bank Account Nr."
+  },
+  {
+   "fieldname": "user_bank_branch",
+   "fieldtype": "Data",
+   "label": "Branch"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department QL"
+  },
+  {
+   "fieldname": "requestee",
+   "fieldtype": "Read Only",
+   "label": "Requestee"
+  },
+  {
+   "fieldname": "sb1_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "verifier",
+   "fieldtype": "Read Only",
+   "label": "Verifier"
   }
  ],
  "is_submittable": 1,
- "modified": "2021-09-07 15:39:48.189639",
+ "modified": "2021-09-10 20:54:03.770124",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Adv",
