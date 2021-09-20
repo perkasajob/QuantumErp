@@ -7,6 +7,7 @@
  "field_order": [
   "req_date",
   "is_fixed_amount",
+  "journal_entry",
   "cb1",
   "department",
   "requestee",
@@ -176,10 +177,17 @@
    "fieldname": "verifier",
    "fieldtype": "Read Only",
    "label": "Verifier"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry",
+   "permlevel": 1
   }
  ],
  "is_submittable": 1,
- "modified": "2021-09-10 20:54:03.770124",
+ "modified": "2021-09-17 14:05:07.740132",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Adv",

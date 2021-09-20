@@ -44,25 +44,19 @@ frappe.ui.form.on('Cash Adv Recap', {
 									<span class="hidden-xs">${e.idx}</span>
 								</div>
 									<div class="col grid-static-col col-xs-5  bold">
-									<div class="static-area ellipsis">${e.item}</div>
+									${e.item}
 								</div>
 								<div class="col grid-static-col col-xs-1  text-right bold">
-									<div class="static-area ellipsis">
 									<div style="text-align: right">${e.qty}</div>
-									</div>
 								</div>
 								<div class="col grid-static-col col-xs-1 ">
-									<div class="static-area ellipsis">${e.uom??""}</div>
+									${e.uom??""}
 								</div>
 								<div class="col grid-static-col col-xs-2  text-right">
-									<div class="static-area ellipsis">
 									<div style="text-align: right">${e.rate}</div>
-									</div>
 								</div>
 								<div class="col grid-static-col col-xs-2  text-right">
-									<div class="static-area ellipsis">
 									<div style="text-align: right">${e.note??""}</div>
-									</div>
 								</div>`
 			})
 			item_request = tableTemplate.replace('[No Data]',item_request ) + '<div class="clearfix"></div>'
@@ -85,6 +79,9 @@ frappe.ui.form.on('Cash Adv Recap', {
 	before_workflow_action(frm){
 		if(frm.selected_workflow_action === "Review"){
 			frappe.db.set_value(frm.doc.doctype, frm.doc.name, 'verifier', frappe.user.full_name())
+		} else if(frm.selected_workflow_action === "Finish"){
+			if(!frm.doc.journal_entry)
+				frappe.throw(__("Please set a Journal Entry"));
 		}
 	}
 });

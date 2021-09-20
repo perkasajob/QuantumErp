@@ -67,21 +67,32 @@ frappe.ui.form.on('Cash Adv', {
 		}
 	},
 	onload(frm){
-	    if(frm.doc.department)
-	        return
-		var dept_list = []
-        frappe.db.get_single_value('QL Settings', 'dept_abbr')
-    	.then(value => {
-    		dept_list = value.split(",");
-			var dept = dept_list.find((e)=>{return frappe.user.has_role(e)})
-    		if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Cash Adv Verificator"))
-				frm.set_df_property("department", "read_only", dept ? 1 : 0);
-			frm.set_value("department", dept)
-		});
+		frm.set_query("journal_entry", function() {
+			return {
+				filters: {
+					cash_adv: frm.doc.name
+				}
+			}
+		})
+
+	    if(!frm.doc.department){
+			var dept_list = []
+			frappe.db.get_single_value('QL Settings', 'dept_abbr')
+			.then(value => {
+				dept_list = value.split(",");
+				var dept = dept_list.find((e)=>{return frappe.user.has_role(e)})
+				if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Cash Adv Verificator"))
+					frm.set_df_property("department", "read_only", dept ? 1 : 0);
+				frm.set_value("department", dept)
+			});
+		}
 	},
 	before_workflow_action(frm){
-		if(frm.selected_workflow_action=="Review"){
+		if(frm.selected_workflow_action == "Review"){
 			frappe.db.set_value(frm.doc.doctype, frm.doc.name, 'verifier', frappe.user.full_name())
+		} else if(frm.selected_workflow_action == "Book"){
+			if(!frm.doc.journal_entry)
+				frappe.throw(__("Please set a Journal Entry"));
 		}
 	}
 });

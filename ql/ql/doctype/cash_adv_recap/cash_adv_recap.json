@@ -7,6 +7,7 @@
  "field_order": [
   "requestee",
   "cash_adv",
+  "journal_entry",
   "cb1",
   "verifier",
   "purchase_date",
@@ -24,7 +25,7 @@
   "user_bank",
   "user_bank_branch",
   "acc_sb",
-  "account",
+  "accounts",
   "bank_account",
   "cost_center",
   "cheque_no",
@@ -43,14 +44,6 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "account",
-   "fieldtype": "Link",
-   "label": "Account",
-   "options": "Account",
-   "permlevel": 1
   },
   {
    "allow_on_submit": 1,
@@ -190,10 +183,25 @@
    "fieldtype": "HTML",
    "label": "Item Request",
    "options": "<div class=\"form-grid\">\n   <div class=\"grid-heading-row\">\n      <div class=\"grid-row\">\n         <div class=\"data-row row\">\n            <div class=\"row-index sortable-handle col col-xs-1\">               \n            </div>            \n            <div class=\"col grid-static-col col-xs-5 \">               \n               <div class=\"static-area ellipsis\">Planned Item</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-1  text-right\">               \n               <div class=\"static-area ellipsis\">Qty</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-1 \">               \n               <div class=\"static-area ellipsis\">UoM</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-2  text-right\">               \n               <div class=\"static-area ellipsis\">Rate</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-2  text-right\">               \n               <div class=\"static-area ellipsis\">Note</div>\n            </div>\n         </div>\n      </div>\n   </div>\n   <div class=\"grid-body\">\n      <div class=\"rows\">\n         <div class=\"grid-row\">\n         <div class=\"data-row row\">\n         [No Data]\n         </div>\n         </div>\n      </div>      \n   </div>\n</div>"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry",
+   "permlevel": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "accounts",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "Account",
+   "permlevel": 1
   }
  ],
  "is_submittable": 1,
- "modified": "2021-09-11 13:07:15.578443",
+ "modified": "2021-09-16 12:06:16.298781",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Adv Recap",

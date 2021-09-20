@@ -5,6 +5,13 @@ frappe.ui.form.on('Work Order', {
 			frm.set_value("requestee", frappe.user.full_name())
 		}
 	},
+	validate(frm){
+		if(!frm.doc.project){
+			frappe.throw("Please Set a Project")
+		} else if(!frm.doc.batch_no){
+			frappe.throw("Please Set a Batch No")
+		}
+	},
 	refresh(frm){
 		if(cur_frm.doc.status == "In Process"){
 			// WO allows to add Material Consumption after Manufacture, once Material Consumption is submitted, WO will complete
