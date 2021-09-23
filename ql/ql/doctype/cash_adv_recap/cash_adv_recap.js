@@ -37,7 +37,7 @@ frappe.ui.form.on('Cash Adv Recap', {
 			let tableTemplate = frappe.meta.get_docfield(frm.doc.doctype, 'item_request', frm.doc.name).options
 			let item_request = ""
 
-			frm.set_value('items', [])
+			// frm.set_value('items', [])
 			ca.items.forEach(e => {
 				frm.add_child("items",e);
 				item_request += `<div class="row-index sortable-handle col col-xs-1">
