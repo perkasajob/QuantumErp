@@ -59,8 +59,9 @@ frappe.ui.form.on('Cash Adv Recap', {
 									<div style="text-align: right">${e.note??""}</div>
 								</div>`
 			})
-			item_request = tableTemplate[0].replace('[No Data]',item_request ) + '<div class="clearfix"></div>'
-			frappe.meta.get_docfield(frm.doc.doctype, 'item_request', frm.doc.name).options = [item_request]
+
+			item_request = tableTemplate.replace('[No Data]',item_request ) + '<div class="clearfix"></div>'
+			frappe.meta.get_docfield(frm.doc.doctype, 'item_request', frm.doc.name).options = item_request
 			refresh_field("item_request");
 			refresh_field("items");
 
