@@ -27,6 +27,12 @@ frappe.ui.form.on('Cash Adv Recap', {
 				});
 			});
 		}
+		if(frm.doc.cash_adv){
+			frm.add_custom_button("Show CAReq", function () {
+				cash_adv_request(frm)
+			});
+		}
+
 	},
 	cash_adv: function(frm){
 		frappe.db.get_doc('Cash Adv', frm.doc.cash_adv).then(ca =>{
@@ -34,12 +40,18 @@ frappe.ui.form.on('Cash Adv Recap', {
 				frappe.msgprint("status must be either Approved or Booked")
 				return
 			}
+
+			frm.set_value('items', [])
 			let tableTemplate = frappe.meta.get_docfield(frm.doc.doctype, 'item_request', frm.doc.name).options
 			let item_request = ""
 
-			// frm.set_value('items', [])
 			ca.items.forEach(e => {
-				frm.add_child("items",e);
+				var c = frm.add_child("items");
+				c.item = e.item
+				c.qty = e.qty
+				c.uom = e.uom
+				c.rate = e.rate
+				c.amount = e.amount
 				item_request += `<div class="row-index sortable-handle col col-xs-1">
 									<span class="hidden-xs">${e.idx}</span>
 								</div>
@@ -61,14 +73,17 @@ frappe.ui.form.on('Cash Adv Recap', {
 			})
 
 			item_request = tableTemplate.replace('[No Data]',item_request ) + '<div class="clearfix"></div>'
-			frappe.meta.get_docfield(frm.doc.doctype, 'item_request', frm.doc.name).options = item_request
-			refresh_field("item_request");
+
 			refresh_field("items");
+			refresh_field("item_request");
+			frappe.meta.get_docfield(frm.doc.doctype, 'item_request', frm.doc.name).options = item_request
+			// frm.set_value('item_request_content', item_request)
 
 			frm.set_value('description', ca.description)
 			frm.set_value('cash_advance_request', ca.credit_in_account_currency)
 			frm.set_value('user_remark', ca.user_remark)
 			frm.set_value('cost_center', ca.cost_center)
+			cash_adv_request(frm)
 		})
 	},
 	purchase_date: function(frm){
@@ -87,3 +102,43 @@ frappe.ui.form.on('Cash Adv Recap', {
 	}
 });
 
+
+function cash_adv_request (frm) {
+	frappe.db.get_doc('Cash Adv', frm.doc.cash_adv).then(ca =>{
+		if(!["Approved","Booked"].includes(ca.workflow_state)){
+			frappe.msgprint("status must be either Approved or Booked")
+			return
+		}
+		let tableTemplate = frappe.meta.get_docfield(frm.doc.doctype, 'item_request', frm.doc.name).options
+		// let tableTemplate = "<table><tr><th>Planned Item|</th><th>Qty|</th><th>UoM|</th><th>Rate|</th><th>Note|</th></tr><tbody>"
+		let item_request = ""
+
+
+		ca.items.forEach(e => {
+			// item_request += `<tr><td>${e.item}</td><td>${e.qty}</td><td>${e.uom??""}</td><td>${e.rate}</td><td>${e.note??""}</td></tr>`
+			item_request += `<div class="row-index sortable-handle col col-xs-1">
+									<span class="hidden-xs">${e.idx}</span>
+								</div>
+									<div class="col grid-static-col col-xs-5  bold">
+									${e.item}
+								</div>
+								<div class="col grid-static-col col-xs-1  text-right bold">
+									<div style="text-align: right">${e.qty}</div>
+								</div>
+								<div class="col grid-static-col col-xs-1 ">
+									${e.uom??""}
+								</div>
+								<div class="col grid-static-col col-xs-2  text-right">
+									<div style="text-align: right">${e.rate}</div>
+								</div>
+								<div class="col grid-static-col col-xs-2  text-right">
+									<div style="text-align: right">${e.note??""}</div>
+								</div>`
+		})
+		item_request = tableTemplate.replace('[No Data]',item_request ) + '<div class="clearfix"></div>'
+		frappe.meta.get_docfield(frm.doc.doctype, 'item_request', frm.doc.name).options = item_request
+		refresh_field("item_request");
+		// item_request = tableTemplate + item_request + "</tbody></table>"
+		// frappe.msgprint(item_request,"Cash Adv Request")
+	})
+}

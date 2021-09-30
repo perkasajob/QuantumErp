@@ -1,0 +1,9 @@
+[data-fieldname="reference_doctype"] {
+	width :10% !important;
+	font-size : 11px;
+}
+
+[data-fieldname="reference_name"] {
+	width :23.333% !important;
+	font-size : 11px;
+}

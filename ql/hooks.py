@@ -17,6 +17,7 @@ app_logo_url = '/assets/ql/images/logo.png'
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/ql/css/ql.css"
+app_include_css = ["/assets/css/ql.css"]
 # app_include_js = "/assets/ql/js/ql.js"
 app_include_js = ["/assets/ql/js/base_control.js"]
 

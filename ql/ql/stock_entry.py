@@ -946,8 +946,7 @@ class QLStockEntry(StockController):
 
 		if self.bom_no:
 
-			if self.purpose in ["Material Issue", "Material Transfer", "Manufacture", "Repack",
-					"Send to Subcontractor", "Material Transfer for Manufacture", "Material Consumption for Manufacture"]:
+			if self.purpose in ["Material Transfer for Manufacture"]:
 
 				# if self.work_order and self.purpose == "Material Transfer for Manufacture":
 				# 	item_dict = self.get_pending_raw_materials()

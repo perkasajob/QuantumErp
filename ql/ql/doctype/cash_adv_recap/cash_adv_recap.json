@@ -179,6 +179,7 @@
    "label": "Verifier"
   },
   {
+   "depends_on": "eval:doc.cash_adv",
    "fieldname": "item_request",
    "fieldtype": "HTML",
    "label": "Item Request",
@@ -201,7 +202,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2021-09-16 12:06:16.298781",
+ "modified": "2021-09-27 16:20:06.240396",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Adv Recap",

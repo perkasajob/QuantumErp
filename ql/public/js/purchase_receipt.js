@@ -38,8 +38,8 @@ frappe.ui.form.on('Purchase Receipt', {
 			set_batch_freeitem(frm, o);
 			if(!project)project=o.project
 		}) // remove items without PO reference
-		frm.set_value('project', project)
 		check_POqty(frm, true)
+		frm.set_value('project', project)
 		check_expiry_date(cur_frm)
 		create_freeitem_stock(frm)
 	},
@@ -273,6 +273,7 @@ async function create_inspection(frm, o){
 				vat: o.vat,
 				vat_qty: o.vat_qty,
 				sample_size: 0,
+				uom: o.uom,
 				batch_no: o.batch_no,
 				naming_series : 'PR-.batch_no.-.##'
 			}))
