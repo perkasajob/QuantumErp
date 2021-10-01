@@ -78,6 +78,8 @@ def get_stock_ledger_entries(filters, items):
 	if items:
 		item_conditions_sql = 'and sle.item_code in ({})'\
 			.format(', '.join([frappe.db.escape(i) for i in items]))
+	frappe.msgprint(repr(item_conditions_sql))
+	frappe.msgprint(repr(get_sle_conditions(filters)))
 
 	return frappe.db.sql("""select concat_ws(" ", sle.posting_date, sle.posting_time) as date,
 			sle.item_code, sle.warehouse, sle.actual_qty, sle.qty_after_transaction, sle.incoming_rate, sle.valuation_rate,
@@ -147,11 +149,11 @@ def get_sle_conditions(filters):
 		if warehouse_condition:
 			conditions.append(warehouse_condition)
 	if filters.get("voucher_no"):
-		conditions.append("voucher_no=%(voucher_no)s")
+		conditions.append("sle.voucher_no=%(voucher_no)s")
 	if filters.get("batch_no"):
-		conditions.append("batch_no=%(batch_no)s")
+		conditions.append("sle.batch_no=%(batch_no)s")
 	if filters.get("project"):
-		conditions.append("project=%(project)s")
+		conditions.append("sle.project=%(project)s")
 
 	return "and {}".format(" and ".join(conditions)) if conditions else ""
 
