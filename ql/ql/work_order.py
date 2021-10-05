@@ -132,6 +132,66 @@ class QLWorkOrder(WorkOrder):
 			d.db_set('returned_qty', returned_qty)
 			d.db_set('remains_qty', remains_qty)
 
+	def get_remains_qty_for_required_items(self):
+		mstr = ""
+		result = []
+		ql_settings = frappe.get_doc('QL Settings')
+		mfg_settings = frappe.get_doc('Manufacturing Settings')
+		for d in self.required_items:
+			if d.remains_qty > 0:
+				frappe.msgprint('''
+				select r.batch_no, r.item_code, r.item_name, (t.qty-r.qty) as qty from ((select detail.item_code, detail.item_name, sum(detail.qty) as qty, detail.batch_no
+					from `tabStock Entry` entry, `tabStock Entry Detail` detail
+					where
+						entry.work_order = "{name}" and entry.purpose IN ('Material Transfer for Manufacture', 'Material Transfer')
+						and entry.docstatus = 1
+						and detail.parent = entry.name
+						and detail.t_warehouse = "{default_wip_warehouse}"
+						and (detail.item_code = "{item}" or detail.original_item = "{item}")
+					group by detail.batch_no) t
+				left join (
+				select detail.item_code, detail.item_name, sum(detail.qty) as qty, detail.batch_no
+					from `tabStock Entry` entry, `tabStock Entry Detail` detail
+					where
+						entry.work_order = "{name}" and entry.purpose IN ("Material Consumption for Manufacture", "Material Transfer")
+						and entry.docstatus < 2
+						and detail.parent = entry.name
+						and detail.s_warehouse like "Work-in-Progress%"
+					group by detail.batch_no) r
+				on t.batch_no = r.batch_no)'''.format(
+							name = self.name,
+							item = d.item_code,
+							default_wip_warehouse = mfg_settings.default_wip_warehouse
+					))
+
+
+				returned_qty = frappe.db.sql('''
+				select detail.item_code, detail.item_name, sum(detail.qty) as qty, detail.batch_no
+					from `tabStock Entry` entry, `tabStock Entry Detail` detail
+					where
+						entry.work_order = "{name}" and entry.purpose IN ('Material Transfer for Manufacture', 'Material Transfer')
+						and entry.docstatus = 1
+						and detail.parent = entry.name
+						and detail.t_warehouse = "{default_wip_warehouse}"
+						and (detail.item_code = "{item}" or detail.original_item = "{item}")
+					group by detail.batch_no'''.format(
+							name = self.name,
+							item = d.item_code,
+							default_wip_warehouse = mfg_settings.default_wip_warehouse
+					), as_dict=True)
+
+
+
+				if returned_qty:
+					[result.append(rq) for rq in returned_qty]
+
+			# remains_qty = d.transferred_qty - d.consumed_qty - returned_qty
+		frappe.msgprint(repr(result))
+
+		return result
+
+
+
 	def update_reserve_remains_qty_for_required_items(self):
 		mstr = ""
 		ql_settings = frappe.get_doc('QL Settings')
@@ -222,6 +282,43 @@ def raise_work_orders(material_request):
 		frappe.throw(_("Work Order cannot be created for following reason:") + '\n' + new_line_sep(errors))
 
 	return work_orders
+
+
+@frappe.whitelist()
+def make_return_remain(work_order_id, purpose, qty=None):
+	work_order = frappe.get_doc("Work Order", work_order_id)
+	if not frappe.db.get_value("Warehouse", work_order.wip_warehouse, "is_group") \
+			and not work_order.skip_transfer:
+		wip_warehouse = work_order.wip_warehouse
+	else:
+		wip_warehouse = None
+
+	return work_order.get_remains_qty_for_required_items()
+
+
+	stock_entry = frappe.new_doc("Stock Entry")
+	stock_entry.purpose = purpose
+	stock_entry.work_order = work_order_id
+	stock_entry.company = work_order.company
+	stock_entry.from_bom = 1
+	stock_entry.bom_no = work_order.bom_no
+	stock_entry.use_multi_level_bom = work_order.use_multi_level_bom
+	stock_entry.fg_completed_qty = qty or (flt(work_order.qty) - flt(work_order.produced_qty))
+	if work_order.bom_no:
+		stock_entry.inspection_required = frappe.db.get_value('BOM',
+			work_order.bom_no, 'inspection_required')
+
+	if purpose=="Material Transfer for Manufacture":
+		stock_entry.to_warehouse = wip_warehouse
+		stock_entry.project = work_order.project
+	else:
+		stock_entry.from_warehouse = wip_warehouse
+		stock_entry.to_warehouse = work_order.fg_warehouse
+		stock_entry.project = work_order.project
+
+	stock_entry.set_stock_entry_type()
+	stock_entry.get_items()
+	return stock_entry.as_dict()
 
 
 @frappe.whitelist()

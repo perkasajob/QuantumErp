@@ -15,15 +15,21 @@ frappe.ui.form.on('Work Order', {
 	refresh(frm){
 		if(cur_frm.doc.status == "In Process"){
 			// WO allows to add Material Consumption after Manufacture, once Material Consumption is submitted, WO will complete
-			var consumption_btn = frm.add_custom_button(__('Material Consumption'), function() {
+			var consumption_btn = frm.page.add_menu_item(__('Material Consumption'), function() {
 				const backflush_raw_materials_based_on = frm.doc.__onload.backflush_raw_materials_based_on;
 				erpnext.work_order.make_consumption_se(frm, backflush_raw_materials_based_on);
 			});
-			consumption_btn.addClass('btn-primary');
-			frm.add_custom_button(__('Create Pick List'), function() {
+			// consumption_btn.addClass('btn-primary');
+
+			frm.page.add_menu_item(__("Create Pick List"), function() {
 				create_pick_list(frm);
 			});
-			frm.add_custom_button(__('Close'), function() {
+			frm.page.add_menu_item(__("Remains Qty"), function() {
+				const backflush_raw_materials_based_on = frm.doc.__onload.backflush_raw_materials_based_on;
+				erpnext.work_order.make_return_remain_se(frm, backflush_raw_materials_based_on);
+				// frappe.msgprint("Test","Remains Qty")
+			});
+			frm.page.add_menu_item(__("Close"), function() {
 				close_work_order(frm);
 			});
 			// this.frm.add_custom_button(__('Material Request'),
@@ -209,6 +215,33 @@ erpnext.work_order.make_consumption_se = function(frm, backflush_raw_materials_b
 			r.message.batch_no = frm.doc.batch_no
 			var doclist = frappe.model.sync(r.message);
 			frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+		}
+	});
+}
+
+erpnext.work_order.make_return_remain_se = function(frm, backflush_raw_materials_based_on) {
+	if(!frm.doc.skip_transfer){
+		var max = (backflush_raw_materials_based_on === "Material Transferred for Manufacture") ?
+			flt(frm.doc.material_transferred_for_manufacturing) - flt(frm.doc.produced_qty) :
+			flt(frm.doc.qty) - flt(frm.doc.produced_qty);
+			// flt(frm.doc.qty) - flt(frm.doc.material_transferred_for_manufacturing);
+	} else {
+		var max = flt(frm.doc.qty) - flt(frm.doc.produced_qty);
+	}
+
+	frappe.call({
+		method:"ql.ql.work_order.make_return_remain",
+		args: {
+			"work_order_id": frm.doc.name,
+			"purpose": "Material Consumption for Manufacture",
+			"qty": max
+		},
+		callback: function(r) {
+			// r.message.batch_no = frm.doc.batch_no
+			console.log(r.message)
+			debugger
+			// var doclist = frappe.model.sync(r.message);
+			// frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
 		}
 	});
 }
