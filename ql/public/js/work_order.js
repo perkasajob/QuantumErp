@@ -239,7 +239,6 @@ erpnext.work_order.make_return_remain_se = function(frm, backflush_raw_materials
 		callback: function(r) {
 			// r.message.batch_no = frm.doc.batch_no
 			console.log(r.message)
-			debugger
 			// var doclist = frappe.model.sync(r.message);
 			// frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
 		}

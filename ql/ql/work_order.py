@@ -139,8 +139,9 @@ class QLWorkOrder(WorkOrder):
 		mfg_settings = frappe.get_doc('Manufacturing Settings')
 		for d in self.required_items:
 			if d.remains_qty > 0:
-				frappe.msgprint('''
-				select r.batch_no, r.item_code, r.item_name, (t.qty-r.qty) as qty from ((select detail.item_code, detail.item_name, sum(detail.qty) as qty, detail.batch_no
+
+				returned_qty = frappe.db.sql('''
+				SELECT item_code,item_name, sum(qty) as qty, batch_no from (select detail.item_code, detail.item_name, detail.qty, detail.batch_no
 					from `tabStock Entry` entry, `tabStock Entry Detail` detail
 					where
 						entry.work_order = "{name}" and entry.purpose IN ('Material Transfer for Manufacture', 'Material Transfer')
@@ -148,39 +149,20 @@ class QLWorkOrder(WorkOrder):
 						and detail.parent = entry.name
 						and detail.t_warehouse = "{default_wip_warehouse}"
 						and (detail.item_code = "{item}" or detail.original_item = "{item}")
-					group by detail.batch_no) t
-				left join (
-				select detail.item_code, detail.item_name, sum(detail.qty) as qty, detail.batch_no
+				union all
+				select detail.item_code, detail.item_name, detail.qty * -1 as qty, detail.batch_no
 					from `tabStock Entry` entry, `tabStock Entry Detail` detail
 					where
 						entry.work_order = "{name}" and entry.purpose IN ("Material Consumption for Manufacture", "Material Transfer")
 						and entry.docstatus < 2
 						and detail.parent = entry.name
-						and detail.s_warehouse like "Work-in-Progress%"
-					group by detail.batch_no) r
-				on t.batch_no = r.batch_no)'''.format(
-							name = self.name,
-							item = d.item_code,
-							default_wip_warehouse = mfg_settings.default_wip_warehouse
-					))
-
-
-				returned_qty = frappe.db.sql('''
-				select detail.item_code, detail.item_name, sum(detail.qty) as qty, detail.batch_no
-					from `tabStock Entry` entry, `tabStock Entry Detail` detail
-					where
-						entry.work_order = "{name}" and entry.purpose IN ('Material Transfer for Manufacture', 'Material Transfer')
-						and entry.docstatus = 1
-						and detail.parent = entry.name
-						and detail.t_warehouse = "{default_wip_warehouse}"
+						and detail.s_warehouse = "{default_wip_warehouse}"
 						and (detail.item_code = "{item}" or detail.original_item = "{item}")
-					group by detail.batch_no'''.format(
+				) t GROUP BY batch_no	'''.format(
 							name = self.name,
 							item = d.item_code,
 							default_wip_warehouse = mfg_settings.default_wip_warehouse
 					), as_dict=True)
-
-
 
 				if returned_qty:
 					[result.append(rq) for rq in returned_qty]
