@@ -132,43 +132,44 @@ class QLWorkOrder(WorkOrder):
 			d.db_set('returned_qty', returned_qty)
 			d.db_set('remains_qty', remains_qty)
 
-	def get_remains_qty_for_required_items(self):
+	def get_remains_qty_for_required_items(self, wip_warehouse):
 		mstr = ""
 		result = []
 		ql_settings = frappe.get_doc('QL Settings')
-		mfg_settings = frappe.get_doc('Manufacturing Settings')
+		if not wip_warehouse:
+			mfg_settings = frappe.get_doc('Manufacturing Settings')
+			wip_warehouse = mfg_settings.default_wip_warehouse
+
 		for d in self.required_items:
 			if d.remains_qty > 0:
-
-				returned_qty = frappe.db.sql('''
-				SELECT item_code,item_name, sum(qty) as qty, batch_no from (select detail.item_code, detail.item_name, detail.qty, detail.batch_no
+				items = frappe.db.sql('''
+				SELECT item_code,item_name, sum(qty) as qty, batch_no, s_warehouse from (
+				select detail.item_code, detail.item_name, detail.qty, detail.batch_no, detail.t_warehouse as s_warehouse
 					from `tabStock Entry` entry, `tabStock Entry Detail` detail
 					where
 						entry.work_order = "{name}" and entry.purpose IN ('Material Transfer for Manufacture', 'Material Transfer')
 						and entry.docstatus = 1
 						and detail.parent = entry.name
-						and detail.t_warehouse = "{default_wip_warehouse}"
+						and detail.t_warehouse IN ("{wip_reserve_warehouse}", "{wip_warehouse}")
 						and (detail.item_code = "{item}" or detail.original_item = "{item}")
 				union all
-				select detail.item_code, detail.item_name, detail.qty * -1 as qty, detail.batch_no
+				select detail.item_code, detail.item_name, detail.qty * -1 as qty, detail.batch_no, detail.s_warehouse
 					from `tabStock Entry` entry, `tabStock Entry Detail` detail
 					where
 						entry.work_order = "{name}" and entry.purpose IN ("Material Consumption for Manufacture", "Material Transfer")
 						and entry.docstatus < 2
 						and detail.parent = entry.name
-						and detail.s_warehouse = "{default_wip_warehouse}"
+						and detail.s_warehouse IN ("{wip_reserve_warehouse}", "{wip_warehouse}")
 						and (detail.item_code = "{item}" or detail.original_item = "{item}")
-				) t GROUP BY batch_no	'''.format(
+				) t GROUP BY batch_no'''.format(
 							name = self.name,
 							item = d.item_code,
-							default_wip_warehouse = mfg_settings.default_wip_warehouse
+							wip_warehouse = wip_warehouse,
+							wip_reserve_warehouse = ql_settings.wip_reserve_warehouse
 					), as_dict=True)
 
-				if returned_qty:
-					[result.append(rq) for rq in returned_qty]
-
-			# remains_qty = d.transferred_qty - d.consumed_qty - returned_qty
-		frappe.msgprint(repr(result))
+				if items:
+					[result.append(rq) for rq in items]
 
 		return result
 
@@ -269,14 +270,14 @@ def raise_work_orders(material_request):
 @frappe.whitelist()
 def make_return_remain(work_order_id, purpose, qty=None):
 	work_order = frappe.get_doc("Work Order", work_order_id)
+	stock_settings = frappe.get_doc('Stock Settings')
 	if not frappe.db.get_value("Warehouse", work_order.wip_warehouse, "is_group") \
 			and not work_order.skip_transfer:
 		wip_warehouse = work_order.wip_warehouse
 	else:
 		wip_warehouse = None
 
-	return work_order.get_remains_qty_for_required_items()
-
+	wo_items =  work_order.get_remains_qty_for_required_items(wip_warehouse)
 
 	stock_entry = frappe.new_doc("Stock Entry")
 	stock_entry.purpose = purpose
@@ -285,21 +286,18 @@ def make_return_remain(work_order_id, purpose, qty=None):
 	stock_entry.from_bom = 1
 	stock_entry.bom_no = work_order.bom_no
 	stock_entry.use_multi_level_bom = work_order.use_multi_level_bom
-	stock_entry.fg_completed_qty = qty or (flt(work_order.qty) - flt(work_order.produced_qty))
-	if work_order.bom_no:
-		stock_entry.inspection_required = frappe.db.get_value('BOM',
-			work_order.bom_no, 'inspection_required')
 
-	if purpose=="Material Transfer for Manufacture":
-		stock_entry.to_warehouse = wip_warehouse
-		stock_entry.project = work_order.project
-	else:
-		stock_entry.from_warehouse = wip_warehouse
-		stock_entry.to_warehouse = work_order.fg_warehouse
-		stock_entry.project = work_order.project
-
-	stock_entry.set_stock_entry_type()
-	stock_entry.get_items()
+	stock_entry.to_warehouse = stock_settings.default_warehouse
+	stock_entry.project = work_order.project
+	for item in wo_items:
+		stock_entry.set_stock_entry_type()
+		stock_entry.append("items", {
+						"item_code": item.get('item_code'),
+						"s_warehouse": item.get('s_warehouse'),
+						"t_warehouse": stock_settings.default_warehouse,
+						"qty": item.get('qty'),
+						'batch_no': item.get('batch_no')
+					})
 	return stock_entry.as_dict()
 
 

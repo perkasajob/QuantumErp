@@ -233,14 +233,14 @@ erpnext.work_order.make_return_remain_se = function(frm, backflush_raw_materials
 		method:"ql.ql.work_order.make_return_remain",
 		args: {
 			"work_order_id": frm.doc.name,
-			"purpose": "Material Consumption for Manufacture",
+			"purpose": "Material Transfer",
 			"qty": max
 		},
 		callback: function(r) {
-			// r.message.batch_no = frm.doc.batch_no
 			console.log(r.message)
-			// var doclist = frappe.model.sync(r.message);
-			// frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+			r.message.batch_no = frm.doc.batch_no
+			var doclist = frappe.model.sync(r.message);
+			frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
 		}
 	});
 }
