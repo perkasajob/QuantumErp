@@ -45,6 +45,14 @@ frappe.ui.form.on('Stock Entry', {
 		frappe.db.get_doc("Work Order", frm.doc.work_order).then(o =>{
 			console.log(o)
 		})
+		// if(frm.doc.work_order){
+		// 	this.frm.set_query("item_code", "items", function() {
+		// 		return{
+		// 			filters:{ 'is_sub_contracted_item': 1 }
+		// 		}
+		// 	});
+		// }
+
 	},
 	pick_list(frm){
 		frappe.db.get_doc("Pick List", frm.doc.pick_list).then(o =>{
