@@ -178,6 +178,8 @@ class QLWorkOrder(WorkOrder):
 	def update_reserve_remains_qty_for_required_items(self):
 		mstr = ""
 		ql_settings = frappe.get_doc('QL Settings')
+		mfg_settings = frappe.get_doc('Manufacturing Settings')
+		wip_warehouse = mfg_settings.default_wip_warehouse
 		for d in self.required_items:
 			transferred_qty = frappe.db.sql('''select sum(qty)
 				from `tabStock Entry` entry, `tabStock Entry Detail` detail
@@ -199,10 +201,12 @@ class QLWorkOrder(WorkOrder):
 					and entry.docstatus = 1
 					and detail.parent = entry.name
 					and detail.s_warehouse = "{wip_reserve_warehouse}"
+					and detail.t_warehouse <> "{wip_warehouse}"
 					and (detail.item_code = "{item}" or detail.original_item = "{item}")'''.format(
 						name = self.name,
 						item = d.item_code,
-						wip_reserve_warehouse = ql_settings.wip_reserve_warehouse
+						wip_reserve_warehouse = ql_settings.wip_reserve_warehouse,
+						wip_warehouse = mfg_settings.default_wip_warehouse
 				))[0][0] or 0.0
 
 			mstr += d.item_code + " : " + str(returned_qty) + " \n"

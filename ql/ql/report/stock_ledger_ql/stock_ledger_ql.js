@@ -33,7 +33,13 @@ frappe.query_reports["Stock Ledger QL"] = {
 			"options": "Warehouse",
 			"get_query": function() {
 				const company = frappe.query_report.get_filter_value('company');
-				return { 
+				const isManufacturingRole = frappe.user.has_role("Manufacturing User") || frappe.user.has_role("Manufacturing Manager")
+				if(isManufacturingRole){
+					return {
+						filters: { 'company': company, 'warehouse_type': ["in",["Production","Production Output", "Production Reserve"]]}
+					}
+				}
+				return {
 					filters: { 'company': company }
 				}
 			}
