@@ -99,12 +99,6 @@ doc_events = {
 	# "*": {
 	# 	"before_save": "ql.overrides.before_save"
 	# },
-	"Sales Invoice": {
-		"validate": "ql.ql.sales.update_discount"
-	},
-	"Sales Order": {
-		"validate": "ql.ql.sales.update_discount"
-	},
 	"Material Request": {
 		"validate": "ql.ql.buying.update_completed_with_draft_qty"
 	},
