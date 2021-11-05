@@ -17,6 +17,14 @@ def get_data():
 					{
 						"type": "report",
 						"is_query_report": True,
+						"name": "Stock Balance QL",
+						"doctype": "Stock Ledger Entry",
+						"onboard": 1,
+						"dependencies": ["Item"],
+					},
+					{
+						"type": "report",
+						"is_query_report": True,
 						"name": "Procurement Tracker QL",
 						"doctype": "Purchase Order",
 						"onboard": 1,
@@ -57,6 +65,14 @@ def get_data():
 					{
 						"type": "doctype",
 						"name": "Cash Adv Recap",
+					}
+				]
+			},{
+				"label": _("Stock"),
+				"items": [
+					{
+						"type": "doctype",
+						"name": "Sales Stock Return",
 					}
 				]
 			}

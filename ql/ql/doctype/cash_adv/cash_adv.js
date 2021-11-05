@@ -32,6 +32,7 @@ frappe.ui.form.on('Cash Adv', {
 					car.cheque_date = frm.doc.cheque_date
 					car.cash_adv = frm.doc.name
 					car.user_remark = frm.doc.user_remark
+					car.department = frm.doc.department
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
 					var car_account = frappe.model.add_child(car, 'accounts');

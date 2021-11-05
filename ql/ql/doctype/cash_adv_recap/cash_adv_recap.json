@@ -11,6 +11,7 @@
   "cb1",
   "verifier",
   "purchase_date",
+  "department",
   "sb1",
   "item_request",
   "items",
@@ -179,7 +180,6 @@
    "label": "Verifier"
   },
   {
-   "depends_on": "eval:doc.cash_adv",
    "fieldname": "item_request",
    "fieldtype": "HTML",
    "label": "Item Request",
@@ -199,10 +199,16 @@
    "label": "Account",
    "options": "Account",
    "permlevel": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department QL"
   }
  ],
  "is_submittable": 1,
- "modified": "2021-09-27 16:20:06.240396",
+ "modified": "2021-11-03 15:16:56.405055",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Adv Recap",

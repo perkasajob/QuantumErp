@@ -184,7 +184,7 @@ class QLWorkOrder(WorkOrder):
 			transferred_qty = frappe.db.sql('''select sum(qty)
 				from `tabStock Entry` entry, `tabStock Entry Detail` detail
 				where
-					entry.work_order = "{name}" and entry.purpose = "Material Transfer"
+					entry.work_order = "{name}" and entry.purpose IN ('Material Transfer for Manufacture', 'Material Transfer')
 					and entry.docstatus = 1
 					and detail.parent = entry.name
 					and detail.t_warehouse = "{wip_reserve_warehouse}"
@@ -212,7 +212,7 @@ class QLWorkOrder(WorkOrder):
 			mstr += d.item_code + " : " + str(returned_qty) + " \n"
 			reserved_qty = transferred_qty - returned_qty
 			if reserved_qty < -0.00001:
-				frappe.throw("Cannot have negative stock Item " + d.item_code + " : " + str(reserved_qty))
+				frappe.throw("Cannot have negative stock Item " + d.item_code + " : " + str(reserved_qty) + "transferred: "+ str(transferred_qty) + "return : " + str(returned_qty))
 
 			d.db_set('reserved_qty', reserved_qty)
 
@@ -287,16 +287,20 @@ def make_return_remain(work_order_id, purpose, qty=None):
 	stock_entry.purpose = purpose
 	stock_entry.work_order = work_order_id
 	stock_entry.company = work_order.company
-	stock_entry.from_bom = 1
+	stock_entry.from_bom = 0
 	stock_entry.bom_no = work_order.bom_no
 	stock_entry.use_multi_level_bom = work_order.use_multi_level_bom
 
 	stock_entry.to_warehouse = stock_settings.default_warehouse
 	stock_entry.project = work_order.project
 	for item in wo_items:
+		item_master = frappe.get_doc('Item', item.get('item_code'))
 		stock_entry.set_stock_entry_type()
 		stock_entry.append("items", {
 						"item_code": item.get('item_code'),
+						"uom": item_master.stock_uom,
+						"stock_uom": item_master.stock_uom,
+						"valuation_rate": item_master.valuation_rate,
 						"s_warehouse": item.get('s_warehouse'),
 						"t_warehouse": stock_settings.default_warehouse,
 						"qty": item.get('qty'),
