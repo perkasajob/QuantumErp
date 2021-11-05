@@ -62,10 +62,10 @@
   }
  ],
  "istable": 1,
- "modified": "2021-11-03 10:26:42.521125",
+ "modified": "2021-11-05 18:17:50.299217",
  "modified_by": "Administrator",
  "module": "QL",
- "name": "Cash Adv Recap Item",
+ "name": "Cash Expense Claim Item",
  "owner": "Administrator",
  "permissions": [],
  "quick_entry": 1,

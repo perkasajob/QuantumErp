@@ -1,22 +1,24 @@
 {
- "autoname": "format:CA-{YY}{MM}{#####}",
- "creation": "2021-08-25 17:11:15.145392",
+ "autoname": "format:CAR-{YY}{MM}{#####}",
+ "creation": "2021-08-30 13:25:10.554063",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "req_date",
-  "is_fixed_amount",
+  "requestee",
+  "cash_adv",
   "journal_entry",
   "cb1",
-  "department",
-  "requestee",
   "verifier",
-  "sb1_section",
+  "purchase_date",
+  "department",
+  "sb1",
+  "item_request",
   "items",
   "description",
-  "requested_amount",
-  "credit_in_account_currency",
+  "cash_advance_request",
+  "outstanding_amount",
+  "total",
   "userbank_sb",
   "user_acc",
   "user_acc_name",
@@ -24,7 +26,7 @@
   "user_bank",
   "user_bank_branch",
   "acc_sb",
-  "account",
+  "accounts",
   "bank_account",
   "cost_center",
   "cheque_no",
@@ -34,31 +36,15 @@
  ],
  "fields": [
   {
-   "fieldname": "req_date",
-   "fieldtype": "Date",
-   "label": "Req Date"
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Cash Expense Claim Item"
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Cash Adv",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "account",
-   "fieldtype": "Link",
-   "label": "Account",
-   "options": "Account",
-   "permlevel": 1
   },
   {
    "allow_on_submit": 1,
@@ -75,12 +61,6 @@
    "label": "Cost Center",
    "options": "Cost Center",
    "permlevel": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "credit_in_account_currency",
-   "fieldtype": "Currency",
-   "label": "Approved Amount"
   },
   {
    "allow_on_submit": 1,
@@ -104,26 +84,59 @@
    "permlevel": 1
   },
   {
-   "fieldname": "items",
-   "fieldtype": "Table",
-   "label": "Items",
-   "options": "Cash Adv Item"
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Cash Expense Claim",
+   "print_hide": 1,
+   "read_only": 1
   },
   {
-   "fieldname": "requested_amount",
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Cash Expense Claim",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "cash_adv",
+   "fieldtype": "Link",
+   "label": "Cash Adv",
+   "options": "Cash Advance Request"
+  },
+  {
+   "fieldname": "outstanding_amount",
    "fieldtype": "Currency",
-   "label": "Requested Amount"
+   "label": "Outstanding Amount"
   },
   {
-   "default": "0",
-   "fieldname": "is_fixed_amount",
-   "fieldtype": "Check",
-   "label": "Is Fixed Amount"
+   "allow_on_submit": 1,
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "label": "Total"
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Date",
+   "label": "Purchase Date"
+  },
+  {
+   "fieldname": "cash_advance_request",
+   "fieldtype": "Currency",
+   "label": "Cash Advance Request"
   },
   {
    "fieldname": "userbank_sb",
    "fieldtype": "Section Break",
    "label": "User Bank Account"
+  },
+  {
+   "fieldname": "user_acc",
+   "fieldtype": "Data",
+   "label": "Bank Account Nr."
   },
   {
    "fieldname": "user_acc_name",
@@ -140,28 +153,21 @@
    "label": "Bank"
   },
   {
-   "fieldname": "acc_sb",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "user_acc",
-   "fieldtype": "Data",
-   "label": "Bank Account Nr."
-  },
-  {
    "fieldname": "user_bank_branch",
    "fieldtype": "Data",
    "label": "Branch"
+  },
+  {
+   "fieldname": "acc_sb",
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "cb1",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "department",
-   "fieldtype": "Link",
-   "label": "Department",
-   "options": "Department QL"
+   "fieldname": "sb1",
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "requestee",
@@ -169,14 +175,15 @@
    "label": "Requestee"
   },
   {
-   "fieldname": "sb1_section",
-   "fieldtype": "Section Break"
-  },
-  {
-   "allow_on_submit": 1,
    "fieldname": "verifier",
    "fieldtype": "Read Only",
    "label": "Verifier"
+  },
+  {
+   "fieldname": "item_request",
+   "fieldtype": "HTML",
+   "label": "Item Request",
+   "options": "<div class=\"form-grid\">\n   <div class=\"grid-heading-row\">\n      <div class=\"grid-row\">\n         <div class=\"data-row row\">\n            <div class=\"row-index sortable-handle col col-xs-1\">               \n            </div>            \n            <div class=\"col grid-static-col col-xs-5 \">               \n               <div class=\"static-area ellipsis\">Planned Item</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-1  text-right\">               \n               <div class=\"static-area ellipsis\">Qty</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-1 \">               \n               <div class=\"static-area ellipsis\">UoM</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-2  text-right\">               \n               <div class=\"static-area ellipsis\">Rate</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-2  text-right\">               \n               <div class=\"static-area ellipsis\">Note</div>\n            </div>\n         </div>\n      </div>\n   </div>\n   <div class=\"grid-body\">\n      <div class=\"rows\">\n         <div class=\"grid-row\">\n         <div class=\"data-row row\">\n         [No Data]\n         </div>\n         </div>\n      </div>      \n   </div>\n</div>"
   },
   {
    "fieldname": "journal_entry",
@@ -184,13 +191,27 @@
    "label": "Journal Entry",
    "options": "Journal Entry",
    "permlevel": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "accounts",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "Account",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department QL"
   }
  ],
  "is_submittable": 1,
- "modified": "2021-09-17 14:05:07.740132",
+ "modified": "2021-11-05 18:10:53.445513",
  "modified_by": "Administrator",
  "module": "QL",
- "name": "Cash Adv",
+ "name": "Cash Expense Claim",
  "owner": "Administrator",
  "permissions": [
   {

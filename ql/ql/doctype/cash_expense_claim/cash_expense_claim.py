@@ -8,9 +8,9 @@ from frappe.model.document import Document
 from frappe.utils import cint, flt
 from frappe.utils.user import get_user_fullname
 
-class CashAdvRecap(Document):
+class CashExpenseClaim(Document):
 	def __init__(self, *args, **kwargs):
-		super(CashAdvRecap, self).__init__(*args, **kwargs)
+		super(CashExpenseClaim, self).__init__(*args, **kwargs)
 
 	def validate(self):
 		self.calculate_item_values()

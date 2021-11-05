@@ -1,7 +1,7 @@
 // Copyright (c) 2021, Perkasa JoB and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on('Cash Adv', {
+frappe.ui.form.on('Cash Advance Request', {
 	refresh: function(frm) {
 		if(frm.doc.workflow_state === "Approved"){
 			frm.add_custom_button(__('Create Journal Entry'), function() {
@@ -10,7 +10,7 @@ frappe.ui.form.on('Cash Adv', {
 					je.remark = frm.doc.description
 					je.cheque_no = frm.doc.cheque_no
 					je.cheque_date = frm.doc.cheque_date
-					je.cash_adv = frm.doc.name
+					je.cash_advance_request = frm.doc.name
 					je.user_remark = frm.doc.user_remark
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
@@ -25,12 +25,12 @@ frappe.ui.form.on('Cash Adv', {
 			});
 		} else if (frm.doc.workflow_state === "Booked") {
 			frm.add_custom_button(__('Create Recap'), function() {
-				frappe.model.with_doctype('Cash Adv Recap', function() {
-					var car = frappe.model.get_new_doc('Cash Adv Recap');
+				frappe.model.with_doctype('Cash Advance Request Recap', function() {
+					var car = frappe.model.get_new_doc('Cash Advance Request Recap');
 					car.remark = frm.doc.description
 					car.cheque_no = frm.doc.cheque_no
 					car.cheque_date = frm.doc.cheque_date
-					car.cash_adv = frm.doc.name
+					car.cash_advance_request = frm.doc.name
 					car.user_remark = frm.doc.user_remark
 					car.department = frm.doc.department
 
@@ -52,7 +52,7 @@ frappe.ui.form.on('Cash Adv', {
 					car_account.account = frm.doc.account
 					car_account.bank_account = frm.doc.bank_account
 					car_account.cost_center = frm.doc.cost_center
-					frappe.set_route('Form', 'Cash Adv Recap', car.name);
+					frappe.set_route('Form', 'Cash Advance Request Recap', car.name);
 				});
 			});
 		}
@@ -71,7 +71,7 @@ frappe.ui.form.on('Cash Adv', {
 		frm.set_query("journal_entry", function() {
 			return {
 				filters: {
-					cash_adv: frm.doc.name
+					cash_advance_request: frm.doc.name
 				}
 			}
 		})
@@ -82,7 +82,7 @@ frappe.ui.form.on('Cash Adv', {
 			.then(value => {
 				dept_list = value.split(",");
 				var dept = dept_list.find((e)=>{return frappe.user.has_role(e)})
-				if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Cash Adv Verificator"))
+				if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Cash Advance Request Verificator"))
 					frm.set_df_property("department", "read_only", dept ? 1 : 0);
 				frm.set_value("department", dept)
 			});

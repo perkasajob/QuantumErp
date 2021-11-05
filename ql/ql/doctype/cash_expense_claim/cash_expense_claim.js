@@ -1,7 +1,7 @@
 // Copyright (c) 2021, Perkasa JoB and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on('Cash Adv Recap', {
+frappe.ui.form.on('Cash Expense Claim', {
 	refresh: function(frm) {
 		if(frm.doc.workflow_state === "Approved"){
 			frm.add_custom_button(__('Create Journal Entry'), function() {
@@ -10,7 +10,7 @@ frappe.ui.form.on('Cash Adv Recap', {
 					je.remark = frm.doc.description
 					je.cheque_no = frm.doc.cheque_no
 					je.cheque_date = frm.doc.cheque_date
-					je.cash_adv_recap = frm.doc.name
+					je.cash_expense_claim = frm.doc.name
 					je.user_remark = frm.doc.user_remark
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();

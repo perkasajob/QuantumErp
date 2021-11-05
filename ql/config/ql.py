@@ -60,11 +60,11 @@ def get_data():
 				"items": [
 					{
 						"type": "doctype",
-						"name": "Cash Adv",
+						"name": "Cash Advance Request",
 					},
 					{
 						"type": "doctype",
-						"name": "Cash Adv Recap",
+						"name": "Cash Expense Claim",
 					}
 				]
 			},{
