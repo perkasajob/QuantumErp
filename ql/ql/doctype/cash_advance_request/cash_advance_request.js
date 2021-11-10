@@ -10,7 +10,8 @@ frappe.ui.form.on('Cash Advance Request', {
 					je.remark = frm.doc.description
 					je.cheque_no = frm.doc.cheque_no
 					je.cheque_date = frm.doc.cheque_date
-					je.cash_advance_request = frm.doc.name
+					je.reference_type = frm.doc.doctype
+					je.reference_name = frm.doc.name
 					je.user_remark = frm.doc.user_remark
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
@@ -25,34 +26,34 @@ frappe.ui.form.on('Cash Advance Request', {
 			});
 		} else if (frm.doc.workflow_state === "Booked") {
 			frm.add_custom_button(__('Create Recap'), function() {
-				frappe.model.with_doctype('Cash Advance Request Recap', function() {
-					var car = frappe.model.get_new_doc('Cash Advance Request Recap');
-					car.remark = frm.doc.description
-					car.cheque_no = frm.doc.cheque_no
-					car.cheque_date = frm.doc.cheque_date
-					car.cash_advance_request = frm.doc.name
-					car.user_remark = frm.doc.user_remark
-					car.department = frm.doc.department
+				frappe.model.with_doctype('Cash Expense Claim', function() {
+					var cec = frappe.model.get_new_doc('Cash Expense Claim');
+					cec.remark = frm.doc.description
+					cec.cheque_no = frm.doc.cheque_no
+					cec.cheque_date = frm.doc.cheque_date
+					cec.cash_advance_request = frm.doc.name
+					cec.user_remark = frm.doc.user_remark
+					cec.department = frm.doc.department
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
-					var car_account = frappe.model.add_child(car, 'accounts');
+					var cec_account = frappe.model.add_child(cec, 'accounts');
 					var items = frm.get_field('items').grid.get_selected_children();
 					if(!items.length) {
 						items = frm.doc.items;
 					}
 					items.forEach(function(item) {
-						var car_item = frappe.model.add_child(car, 'items');
-						car_item.item = item.item;
-						car_item.qty = item.qty;
-						car_item.uom = item.uom;
-						car_item.rate = item.rate;
-						car_item.note = item.note;
+						var cec_item = frappe.model.add_child(cec, 'items');
+						cec_item.item = item.item;
+						cec_item.qty = item.qty;
+						cec_item.uom = item.uom;
+						cec_item.rate = item.rate;
+						cec_item.note = item.note;
 					});
-					car_account.cash_advance_request = frm.doc.credit_in_account_currency
-					car_account.account = frm.doc.account
-					car_account.bank_account = frm.doc.bank_account
-					car_account.cost_center = frm.doc.cost_center
-					frappe.set_route('Form', 'Cash Advance Request Recap', car.name);
+					cec_account.cash_advance_request = frm.doc.credit_in_account_currency
+					cec_account.account = frm.doc.account
+					cec_account.bank_account = frm.doc.bank_account
+					cec_account.cost_center = frm.doc.cost_center
+					frappe.set_route('Form', 'Cash Expense Claim', cec.name);
 				});
 			});
 		}

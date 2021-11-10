@@ -77,6 +77,7 @@ class QLStockEntry(StockController):
 		self.set_job_card_data()
 		self.set_purpose_for_stock_entry()
 		self.validate_work_order_consumption()
+		# self.validate_work_order_completion() # this is neeed to be enabled to lock BPPJ material transfer to finish good, wait for WO to be completed or closed
 
 		if not self.from_bom:
 			self.fg_completed_qty = 0.0
@@ -120,7 +121,6 @@ class QLStockEntry(StockController):
 		if self.work_order and self.purpose == "Material Consumption for Manufacture":
 			self.validate_work_order_status()
 
-		self.update_work_order()
 		self.update_stock_ledger()
 		self.make_gl_entries_on_cancel()
 		self.update_cost_in_project()
@@ -128,6 +128,7 @@ class QLStockEntry(StockController):
 		self.update_quality_inspection()
 		self.delete_auto_created_batches()
 		self.delete_linked_stock_entry()
+		self.update_work_order()
 
 	def set_job_card_data(self):
 		if self.job_card and not self.work_order:
@@ -403,7 +404,16 @@ class QLStockEntry(StockController):
 			if error_str:
 				frappe.throw(error_str)
 
-
+	def validate_work_order_completion(self): #PJOB
+		# lock BPPJ material transfer to finish goods warehouse, wait for WO to be completed or closed
+		if self.purpose == "Material Transfer" and self.work_order:
+			work_order = frappe.get_doc("Work Order", self.work_order)
+			if not frappe.db.get_value("Warehouse", work_order.wip_warehouse, "is_group") \
+					and not work_order.skip_transfer and self.inspection_required:
+				wip_warehouse = work_order.wip_warehouse
+				if 	work_order.status != "Completed" or work_order.status != "Closed":
+					frappe.throw(_("Work Order {0}: Status still on {}")
+						.format(self.work_order, work_order.status))
 
 	def check_if_operations_completed(self):
 		"""Check if Time Sheets are completed against before manufacturing to capture operating costs."""
@@ -835,6 +845,7 @@ class QLStockEntry(StockController):
 				pro_doc.run_method("update_work_order_qty")
 				if self.purpose == "Manufacture":
 					pro_doc.run_method("update_planned_qty")
+			pro_doc.run_method("update_required_items") #pjob
 
 	def get_item_details(self, args=None, for_update=False):
 		item = frappe.db.sql("""select i.name, i.stock_uom, i.description, i.image, i.item_name, i.item_group,

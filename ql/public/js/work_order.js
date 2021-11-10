@@ -32,6 +32,9 @@ frappe.ui.form.on('Work Order', {
 			frm.page.add_menu_item(__("Close"), function() {
 				close_work_order(frm);
 			});
+			frm.page.add_menu_item(__("Recalculate"), function() {
+				recalculate_items(frm);
+			});
 			// this.frm.add_custom_button(__('Material Request'),
 			// 	function() {
 			// 		erpnext.utils.map_current_doc({
@@ -56,6 +59,14 @@ frappe.ui.form.on('Work Order', {
 	},
 })
 
+function recalculate_items(frm) {
+
+	frappe.xcall('ql.ql.work_order.recalculate_items', {
+		'work_order': frm.doc,
+	}).then(work_order => {
+		console.log(work_order)
+	});
+}
 
 function close_work_order(frm) {  // , purpose='Material Transfer for Manufacture'
 	let reserved_mstr = "<div>Reserved WH qty</div>"; let remains_mstr = "<div>Remains WH Qty</div>"

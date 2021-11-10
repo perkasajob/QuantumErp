@@ -1,5 +1,5 @@
 {
- "autoname": "format:CA-{YY}{MM}{#####}",
+ "autoname": "format:CAR-{YY}{MM}{#####}",
  "creation": "2021-08-25 17:11:15.145392",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -187,7 +187,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2021-11-05 16:32:30.262720",
+ "modified": "2021-11-08 11:41:12.054392",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Advance Request",

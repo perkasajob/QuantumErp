@@ -1,12 +1,12 @@
 {
- "autoname": "format:CAR-{YY}{MM}{#####}",
+ "autoname": "format:CEC-{YY}{MM}{#####}",
  "creation": "2021-08-30 13:25:10.554063",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "requestee",
-  "cash_adv",
+  "cash_advance_request",
   "journal_entry",
   "cb1",
   "verifier",
@@ -16,7 +16,7 @@
   "item_request",
   "items",
   "description",
-  "cash_advance_request",
+  "cash_advance_request_amount",
   "outstanding_amount",
   "total",
   "userbank_sb",
@@ -26,7 +26,7 @@
   "user_bank",
   "user_bank_branch",
   "acc_sb",
-  "accounts",
+  "account",
   "bank_account",
   "cost_center",
   "cheque_no",
@@ -102,12 +102,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "cash_adv",
-   "fieldtype": "Link",
-   "label": "Cash Adv",
-   "options": "Cash Advance Request"
-  },
-  {
    "fieldname": "outstanding_amount",
    "fieldtype": "Currency",
    "label": "Outstanding Amount"
@@ -125,8 +119,9 @@
   },
   {
    "fieldname": "cash_advance_request",
-   "fieldtype": "Currency",
-   "label": "Cash Advance Request"
+   "fieldtype": "Link",
+   "label": "Cash Advance Request",
+   "options": "Cash Advance Request"
   },
   {
    "fieldname": "userbank_sb",
@@ -193,22 +188,27 @@
    "permlevel": 1
   },
   {
-   "allow_on_submit": 1,
-   "fieldname": "accounts",
-   "fieldtype": "Link",
-   "label": "Account",
-   "options": "Account",
-   "permlevel": 1
-  },
-  {
    "fieldname": "department",
    "fieldtype": "Link",
    "label": "Department",
    "options": "Department QL"
+  },
+  {
+   "fieldname": "cash_advance_request_amount",
+   "fieldtype": "Currency",
+   "label": "Cash Advance Request Amount"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "Account",
+   "permlevel": 1
   }
  ],
  "is_submittable": 1,
- "modified": "2021-11-05 18:10:53.445513",
+ "modified": "2021-11-10 19:23:05.408517",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Expense Claim",

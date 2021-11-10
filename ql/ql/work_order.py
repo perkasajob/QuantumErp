@@ -201,18 +201,17 @@ class QLWorkOrder(WorkOrder):
 					and entry.docstatus = 1
 					and detail.parent = entry.name
 					and detail.s_warehouse = "{wip_reserve_warehouse}"
-					and detail.t_warehouse <> "{wip_warehouse}"
 					and (detail.item_code = "{item}" or detail.original_item = "{item}")'''.format(
 						name = self.name,
 						item = d.item_code,
-						wip_reserve_warehouse = ql_settings.wip_reserve_warehouse,
-						wip_warehouse = mfg_settings.default_wip_warehouse
+						wip_reserve_warehouse = ql_settings.wip_reserve_warehouse
 				))[0][0] or 0.0
 
 			mstr += d.item_code + " : " + str(returned_qty) + " \n"
 			reserved_qty = transferred_qty - returned_qty
+			# frappe.msgprint('{} t:{} || ret: {} || res: {}'.format(d.item_code, str(transferred_qty), str(returned_qty), str(reserved_qty)))
 			if reserved_qty < -0.00001:
-				frappe.throw("Cannot have negative stock Item " + d.item_code + " : " + str(reserved_qty) + "transferred: "+ str(transferred_qty) + "return : " + str(returned_qty))
+				frappe.throw("Cannot have negative stock Item " + d.item_code + " : " + str(reserved_qty) + " transferred: "+ str(transferred_qty) + " return : " + str(returned_qty))
 
 			d.db_set('reserved_qty', reserved_qty)
 
@@ -353,4 +352,10 @@ def close_work_order(work_order):
 		total_reserved_items += (ri.reserved_qty + ri.remains_qty )
 	if(total_reserved_items < 0.01)	:
 		work_order.db_set("status", "Completed")
+	return work_order
+
+@frappe.whitelist()
+def recalculate_items(work_order):
+	work_order = frappe.get_doc(json.loads(work_order))
+	work_order.update_required_items()
 	return work_order
