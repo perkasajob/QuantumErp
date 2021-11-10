@@ -10,7 +10,8 @@ frappe.ui.form.on('Cash Expense Claim', {
 					je.remark = frm.doc.description
 					je.cheque_no = frm.doc.cheque_no
 					je.cheque_date = frm.doc.cheque_date
-					je.cash_expense_claim = frm.doc.name
+					je.reference_type = frm.doc.doctype
+					je.reference_name = frm.doc.name
 					je.user_remark = frm.doc.user_remark
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
@@ -27,15 +28,15 @@ frappe.ui.form.on('Cash Expense Claim', {
 				});
 			});
 		}
-		if(frm.doc.cash_adv){
+		if(frm.doc.cash_advance_request){
 			frm.add_custom_button("Show CAReq", function () {
 				cash_adv_request(frm)
 			});
 		}
 
 	},
-	cash_adv: function(frm){
-		frappe.db.get_doc('Cash Adv', frm.doc.cash_adv).then(ca =>{
+	cash_advance_request: function(frm){
+		frappe.db.get_doc('Cash Adv', frm.doc.cash_advance_request).then(ca =>{
 			if(!["Approved","Booked"].includes(ca.workflow_state)){
 				frappe.msgprint("status must be either Approved or Booked")
 				return
@@ -80,7 +81,7 @@ frappe.ui.form.on('Cash Expense Claim', {
 			// frm.set_value('item_request_content', item_request)
 
 			frm.set_value('description', ca.description)
-			frm.set_value('cash_advance_request', ca.credit_in_account_currency)
+			frm.set_value('cash_advance_request_amount', ca.credit_in_account_currency)
 			frm.set_value('user_remark', ca.user_remark)
 			frm.set_value('cost_center', ca.cost_center)
 			cash_adv_request(frm)
@@ -104,7 +105,7 @@ frappe.ui.form.on('Cash Expense Claim', {
 
 
 function cash_adv_request (frm) {
-	frappe.db.get_doc('Cash Adv', frm.doc.cash_adv).then(ca =>{
+	frappe.db.get_doc('Cash Adv', frm.doc.cash_advance_request).then(ca =>{
 		if(!["Approved","Booked"].includes(ca.workflow_state)){
 			frappe.msgprint("status must be either Approved or Booked")
 			return

@@ -26,7 +26,7 @@ class CashExpenseClaim(Document):
 			item.amount = flt(item.rate * item.qty,	0)
 			self.total = self.total + item.amount
 
-		if not self.cash_advance_request:
-			self.cash_advance_request = 0.0
+		if not self.cash_advance_request_amount:
+			self.cash_advance_request_amount = 0.0
 
-		self.outstanding_amount =  self.cash_advance_request - self.total
+		self.outstanding_amount =  self.cash_advance_request_amount - self.total

@@ -65,6 +65,10 @@ def get_data():
 					{
 						"type": "doctype",
 						"name": "Cash Expense Claim",
+					},
+					{
+						"type": "doctype",
+						"name": "Petty Cash Reimbursement",
 					}
 				]
 			},{
