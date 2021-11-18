@@ -36,7 +36,7 @@ frappe.ui.form.on('Cash Expense Claim', {
 
 	},
 	cash_advance_request: function(frm){
-		frappe.db.get_doc('Cash Adv', frm.doc.cash_advance_request).then(ca =>{
+		frappe.db.get_doc('Cash Advance Request', frm.doc.cash_advance_request).then(ca =>{
 			if(!["Approved","Booked"].includes(ca.workflow_state)){
 				frappe.msgprint("status must be either Approved or Booked")
 				return
@@ -105,7 +105,7 @@ frappe.ui.form.on('Cash Expense Claim', {
 
 
 function cash_adv_request (frm) {
-	frappe.db.get_doc('Cash Adv', frm.doc.cash_advance_request).then(ca =>{
+	frappe.db.get_doc('Cash Advance Request', frm.doc.cash_advance_request).then(ca =>{
 		if(!["Approved","Booked"].includes(ca.workflow_state)){
 			frappe.msgprint("status must be either Approved or Booked")
 			return
