@@ -15,7 +15,7 @@
  "modified": "2021-11-06 11:00:02.360844",
  "modified_by": "fendy.kriswanto@gmail.com",
  "module": "QL",
- "name": "Cash Adv",
+ "name": "Cash Advance Request",
  "owner": "Administrator",
  "print_format_builder": 1,
  "print_format_type": "Jinja",

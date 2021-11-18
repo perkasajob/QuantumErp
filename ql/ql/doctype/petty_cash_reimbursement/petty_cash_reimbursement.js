@@ -4,23 +4,6 @@
 frappe.ui.form.on('Petty Cash Reimbursement', {
 	refresh: function(frm) {
 		frm.add_custom_button(__('Get CEC'), function() {
-			// frappe.db.get_list("Cash Expense Claim", {
-			// 	filters: { 'workflow_state': 'Approved'},
-			// 	fields: ['name', 'purchase_date', 'total', 'description'],
-			// 	order_by: 'purchase_date desc'
-			// }).then((r) => {
-			// 	if(r) {
-			// 		r.forEach((d) => {
-			// 			let i = frm.add_child("items");
-			// 			i.cash_expense_claim = d.name;
-			// 			i.date = d.purchase_date;
-			// 			i.amount = d.total;
-			// 			i.description = d.description;
-			// 		})
-			// 		refresh_field("items");
-			// 	}
-			// })
-
 			frappe.xcall('ql.ql.doctype.petty_cash_reimbursement.petty_cash_reimbursement.get_items')
 			.then(r => {
 				console.log(r)
