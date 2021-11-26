@@ -30,6 +30,12 @@ frappe.ui.form.on('Stock Entry', {
 	},
     validate(frm) {
 		sum_volume(frm);
+		if(frm.doc.stock_entry_type == "Material Consumption for Manufacture" )
+			frm.set_value("to_warehouse", "")
+		if(frm.doc.to_warehouse && frm.doc.to_warehouse.substr(0,16) == "Work-in-Progress"){
+			frm.set_value("stock_entry_type", "Material Transfer for Manufacture")
+			frm.set_value("purpose", "Material Transfer for Manufacture")
+		}
 
 		(async () => {
 			await backdate_batch_no(frm)
