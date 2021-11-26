@@ -20,7 +20,8 @@ class CashExpenseClaim(Document):
 			self.db_set('requestee', get_user_fullname(frappe.session['user']))
 
 	def calculate_item_values(self):
-		self.total = 0.0
+		if len(self.get("items")) > 0:
+			self.total = 0.0
 
 		for item in self.get("items"):
 			item.amount = flt(item.rate * item.qty,	0)
