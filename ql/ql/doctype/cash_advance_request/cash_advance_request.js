@@ -72,7 +72,7 @@ frappe.ui.form.on('Cash Advance Request', {
 		frm.set_query("journal_entry", function() {
 			return {
 				filters: {
-					cash_advance_request: frm.doc.name
+					reference_name: frm.doc.name
 				}
 			}
 		})

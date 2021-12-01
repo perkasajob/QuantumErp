@@ -26,9 +26,9 @@ class PettyCashReimbursement(Document):
 			self.total = self.total + item.amount
 
 @frappe.whitelist()
-def get_items():
+def get_items(petty_cash):
 	return frappe.db.sql('''select name, purchase_date, description, total
 				from `tabCash Expense Claim` cec
 				where not exists (
 					select * from `tabPetty Cash Reimbursement Item` pcri where pcri.cash_expense_claim = cec.name
-				) AND cec.docstatus = 1''', as_dict = 1)
+				) AND cec.docstatus = 1 AND cec.petty_cash = %s''',(petty_cash), as_dict = 1)

@@ -160,12 +160,14 @@
   {
    "fieldname": "department",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Department",
    "options": "Department QL"
   },
   {
    "fieldname": "requestee",
    "fieldtype": "Read Only",
+   "in_list_view": 1,
    "label": "Requestee"
   },
   {
@@ -187,7 +189,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2021-11-08 11:41:12.054392",
+ "modified": "2021-12-01 09:53:25.113259",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Advance Request",

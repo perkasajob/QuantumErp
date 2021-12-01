@@ -12,6 +12,7 @@
   "verifier",
   "purchase_date",
   "department",
+  "petty_cash",
   "sb1",
   "item_request",
   "items",
@@ -167,6 +168,7 @@
   {
    "fieldname": "requestee",
    "fieldtype": "Read Only",
+   "in_list_view": 1,
    "label": "Requestee"
   },
   {
@@ -184,12 +186,12 @@
    "fieldname": "journal_entry",
    "fieldtype": "Link",
    "label": "Journal Entry",
-   "options": "Journal Entry",
-   "permlevel": 1
+   "options": "Journal Entry"
   },
   {
    "fieldname": "department",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Department",
    "options": "Department QL"
   },
@@ -205,27 +207,21 @@
    "label": "Account",
    "options": "Account",
    "permlevel": 1
+  },
+  {
+   "fieldname": "petty_cash",
+   "fieldtype": "Select",
+   "label": "Petty Cash",
+   "options": "\nJakarta\nPandaan"
   }
  ],
  "is_submittable": 1,
- "modified": "2021-11-10 19:23:05.408517",
+ "modified": "2021-12-01 09:47:54.275574",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Expense Claim",
  "owner": "Administrator",
  "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  },
   {
    "create": 1,
    "delete": 1,
@@ -247,9 +243,45 @@
    "print": 1,
    "read": 1,
    "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
    "role": "Accounts Manager",
    "share": 1,
    "submit": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
    "write": 1
   },
   {
@@ -341,6 +373,18 @@
    "role": "Finance Manager",
    "share": 1,
    "submit": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance Manager",
+   "share": 1,
    "write": 1
   }
  ],

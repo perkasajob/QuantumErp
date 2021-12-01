@@ -2,9 +2,18 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Petty Cash Reimbursement', {
+	onload(frm){
+		frm.set_query("journal_entry", function() {
+			return {
+				filters: {
+					reference_name: frm.doc.name
+				}
+			}
+		})
+	},
 	refresh: function(frm) {
 		frm.add_custom_button(__('Get CEC'), function() {
-			frappe.xcall('ql.ql.doctype.petty_cash_reimbursement.petty_cash_reimbursement.get_items')
+			frappe.xcall('ql.ql.doctype.petty_cash_reimbursement.petty_cash_reimbursement.get_items', {petty_cash: frm.doc.petty_cash})
 			.then(r => {
 				console.log(r)
 				if(r) {

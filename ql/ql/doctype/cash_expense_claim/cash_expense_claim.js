@@ -2,6 +2,27 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Cash Expense Claim', {
+	onload(frm){
+		frm.set_query("journal_entry", function() {
+			return {
+				filters: {
+					reference_name: frm.doc.name
+				}
+			}
+		})
+
+		if(!frm.doc.department){
+			var dept_list = []
+			frappe.db.get_single_value('QL Settings', 'dept_abbr')
+			.then(value => {
+				dept_list = value.split(",");
+				var dept = dept_list.find((e)=>{return frappe.user.has_role(e)})
+				if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Cash Advance Request Verificator"))
+					frm.set_df_property("department", "read_only", dept ? 1 : 0);
+				frm.set_value("department", dept)
+			});
+		}
+	},
 	refresh: function(frm) {
 		if(frm.doc.workflow_state === "Approved"){
 			frm.add_custom_button(__('Create Journal Entry'), function() {
