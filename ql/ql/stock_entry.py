@@ -77,7 +77,7 @@ class QLStockEntry(StockController):
 		self.set_job_card_data()
 		self.set_purpose_for_stock_entry()
 		self.validate_work_order_consumption()
-		# self.validate_work_order_completion() # this is neeed to be enabled to lock BPPJ material transfer to finish good, wait for WO to be completed or closed
+		self.validate_work_order_completion() # this is neeed to be enabled to lock BPPJ material transfer to finish good, wait for WO to be completed or closed
 
 		if not self.from_bom:
 			self.fg_completed_qty = 0.0

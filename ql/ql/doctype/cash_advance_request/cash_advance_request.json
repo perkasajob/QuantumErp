@@ -8,10 +8,12 @@
   "req_date",
   "is_fixed_amount",
   "journal_entry",
-  "cb1",
-  "department",
   "requestee",
   "verifier",
+  "cb1",
+  "department",
+  "acceptor1",
+  "acceptor2",
   "sb1_section",
   "items",
   "description",
@@ -184,10 +186,22 @@
    "label": "Journal Entry",
    "options": "Journal Entry",
    "permlevel": 1
+  },
+  {
+   "fieldname": "acceptor1",
+   "fieldtype": "Link",
+   "label": "Acceptor 1",
+   "options": "User"
+  },
+  {
+   "fieldname": "acceptor2",
+   "fieldtype": "Link",
+   "label": "Acceptor 2",
+   "options": "User"
   }
  ],
  "is_submittable": 1,
- "modified": "2021-11-08 11:41:12.054392",
+ "modified": "2021-11-17 14:10:03.572297",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Advance Request",
