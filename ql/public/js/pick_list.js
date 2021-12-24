@@ -12,6 +12,14 @@ frappe.ui.form.on('Pick List', {
 	refresh(frm) {
 		if(frm.doc.docstatus == 1)
 			frm.add_custom_button(__('Stock Entry'), () => frm.trigger('create_stock_entry'), __('Create'));
+		else
+			frm.add_custom_button(__('clean batch'), ()=>{
+				frm.doc.locations.forEach(d => {
+					d.batch_no = ""
+				});
+				frm.refresh_fields("locations");
+			});
+
 		if(!frm.doc.requestee){
 			frm.set_value("requestee", frappe.user.full_name())
 		}

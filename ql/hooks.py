@@ -34,7 +34,7 @@ doctype_js = {"Sales Order" : "public/js/sales_order.js","Sales Invoice" : "publ
 
 # doctype_js = {"Kanban Board" : "public/js/kanban_board.js"}
 doctype_tree_js = {"Warehouse" : "public/js/warehouse_list.js"}
-doctype_list_js = {"Material Request" : "public/js/material_request_list.js","Purchase Order" : "public/js/purchase_order.js", "Purchase Receipt" : "public/js/purchase_receipt_list.js", "Project" : "public/js/kanban_list.js"}
+doctype_list_js = {"Material Request" : "public/js/material_request_list.js","Purchase Order" : "public/js/purchase_order_list.js", "Purchase Receipt" : "public/js/purchase_receipt_list.js", "Project" : "public/js/kanban_list.js"}
 # Home Pages
 # ----------
 
