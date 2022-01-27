@@ -10,8 +10,6 @@ frappe.ui.form.on('Cash Advance Request', {
 					je.remark = frm.doc.description
 					je.cheque_no = frm.doc.cheque_no
 					je.cheque_date = frm.doc.cheque_date
-					je.reference_type = frm.doc.doctype
-					je.reference_name = frm.doc.name
 					je.user_remark = frm.doc.user_remark
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
@@ -21,6 +19,9 @@ frappe.ui.form.on('Cash Advance Request', {
 					je_account.bank_account = frm.doc.bank_account
 					je_account.cost_center = frm.doc.cost_center
 					je_account.reference_due_date = frm.doc.req_date
+					je_account.reference_type = frm.doc.doctype
+					je_account.reference_name = frm.doc.name
+					je_account.is_advance = 'Yes'
 					frappe.set_route('Form', 'Journal Entry', je.name);
 				});
 			});

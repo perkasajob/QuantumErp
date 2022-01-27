@@ -36,8 +36,6 @@ frappe.ui.form.on('Petty Cash Reimbursement', {
 					je.cheque_no = frm.doc.cheque_no
 					je.cheque_date = frm.doc.cheque_date
 					je.user_remark = frm.doc.user_remark
-					je.reference_type = frm.doc.doctype
-					je.reference_name = frm.doc.name
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
 					var je_account = frappe.model.add_child(je, 'accounts');
@@ -49,6 +47,8 @@ frappe.ui.form.on('Petty Cash Reimbursement', {
 					je_account.account = frm.doc.account
 					je_account.bank_account = frm.doc.bank_account
 					je_account.cost_center = frm.doc.cost_center
+					je_account.reference_type = frm.doc.doctype
+					je_account.reference_name = frm.doc.name
 					frappe.set_route('Form', 'Journal Entry', je.name);
 				});
 			});

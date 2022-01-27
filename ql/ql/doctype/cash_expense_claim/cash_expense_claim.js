@@ -45,6 +45,8 @@ frappe.ui.form.on('Cash Expense Claim', {
 					je_account.account = frm.doc.account
 					je_account.bank_account = frm.doc.bank_account
 					je_account.cost_center = frm.doc.cost_center
+					je_account.reference_type = frm.doc.doctype
+					je_account.reference_name = frm.doc.name
 					frappe.set_route('Form', 'Journal Entry', je.name);
 				});
 			});

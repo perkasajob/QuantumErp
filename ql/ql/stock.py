@@ -59,6 +59,9 @@ def purchase_receipt_on_submit(doc, method): #pr, doc, method
 	stock_entry_fi.purpose = "Material Receipt"
 	stock_entry_fi.stock_entry_type = "Material Receipt"
 	stock_entry_fi.to_warehouse = doc.set_warehouse
+	stock_entry_fi.set_posting_time = doc.set_posting_time
+	stock_entry_fi.posting_date = doc.posting_date
+	stock_entry_fi.posting_time = doc.posting_time
 
 	for d in doc.get('free_items'):
 		if not stock_entry_fi.to_warehouse:

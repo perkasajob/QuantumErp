@@ -8,13 +8,11 @@ frappe.ui.form.on('Sales Invoice', {
 			const default_company = frappe.defaults.get_default('company');
 			frappe.db.get_value('Company', default_company, 'abbr').then(r=>{
 				const abbr = r.message.abbr
-				debugger
 				frm.set_value('taxes_and_charges', `PPN - ${abbr}`)
 			})
 
-		} else {
-			frm.set_value('discount_amount', frm.doc.mdp_discount_amount + Math.ceil(frm.doc.mdp_discount_margin/100 * (frm.doc.total - frm.doc.mdp_discount_amount)))
 		}
+		// frm.set_value('discount_amount', frm.doc.mdp_discount_amount + Math.ceil(frm.doc.mdp_discount_margin/100 * (frm.doc.total - frm.doc.mdp_discount_amount)))
 
 		if(frm.doc.warehouse){
 			frm.doc.items.forEach(e => {
@@ -23,5 +21,21 @@ frappe.ui.form.on('Sales Invoice', {
 				}
 			});
 		}
+	},
+	mdp_discount_amount(frm){
+		set_discount_amount(frm)
+	},
+	mdp_discount_margin(frm){
+		set_discount_amount(frm)
+	},
+	warehouse(frm){
+		frm.doc.items.forEach(row =>{
+			frappe.model.set_value(row.doctype, row.name, 'warehouse', frm.doc.warehouse);
+		})
+
 	}
 })
+
+function set_discount_amount(frm){
+	frm.set_value('discount_amount', frm.doc.mdp_discount_amount + Math.ceil(frm.doc.mdp_discount_margin/100 * (frm.doc.total - frm.doc.mdp_discount_amount)))
+}

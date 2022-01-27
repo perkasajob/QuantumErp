@@ -108,7 +108,7 @@ doc_events = {
 	},
 	"Work Order": {
 		"validate":"ql.ql.work_order.work_order_validate",
-	},
+	}
 }
 
 

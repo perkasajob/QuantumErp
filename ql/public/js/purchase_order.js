@@ -22,7 +22,6 @@ frappe.ui.form.on('Purchase Order', {
             throw msg;
 	    }
 		check_supplier_release(frm)
-		debugger
 		if (frm.doc.__islocal && !frm.doc.orderer){
 			frm.set_value("orderer", frappe.user.full_name())
 		}

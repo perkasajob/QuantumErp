@@ -58,6 +58,12 @@ def get_columns(filters):
 			"fieldname": "uom",
 			"fieldtype": "Data",
 			"width": 80
+		},
+		{
+			"label": "Exp Date",
+			"fieldname": "expiry_date",
+			"fieldtype": "Data",
+			"width": 80
 		}
 	]
 	return columns
@@ -88,11 +94,14 @@ def get_mapped_batches_details(conditions):
 			i.item_name,
 			sle.warehouse,
 			SUM(sle.actual_qty) as qty,
-			sle.stock_uom as uom
+			sle.stock_uom as uom,
+			b.expiry_date
 		FROM
 			`tabStock Ledger Entry` sle
 		INNER JOIN
 			`tabItem` i ON sle.item_code = i.item_code
+		INNER JOIN
+			`tabBatch` b ON sle.batch_no = b.name
 		WHERE {conditions}
 		GROUP BY sle.warehouse, sle.batch_no
 		ORDER BY sle.posting_date ASC
