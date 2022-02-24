@@ -34,7 +34,7 @@ doctype_js = {"Sales Order" : "public/js/sales_order.js","Sales Invoice" : "publ
 
 # doctype_js = {"Kanban Board" : "public/js/kanban_board.js"}
 doctype_tree_js = {"Warehouse" : "public/js/warehouse_list.js"}
-doctype_list_js = {"Material Request" : "public/js/material_request_list.js","Purchase Order" : "public/js/purchase_order.js", "Purchase Receipt" : "public/js/purchase_receipt_list.js", "Project" : "public/js/kanban_list.js"}
+doctype_list_js = {"Material Request" : "public/js/material_request_list.js","Purchase Order" : "public/js/purchase_order_list.js", "Purchase Receipt" : "public/js/purchase_receipt_list.js", "Project" : "public/js/kanban_list.js"}
 # Home Pages
 # ----------
 
@@ -76,9 +76,13 @@ website_context = {
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
+permission_query_conditions = {
+	"Employee Advance": "ql.ql.permissions.ea_query_perm",
+	"Expense Claim": "ql.ql.permissions.ec_query_perm"
+}
+	# "Cash Expense Claim": "ql.ql.permissions.cec_query_perm",
+	# "Cash Advance Request": "ql.ql.permissions.car_query_perm",
+
 #
 # has_permission = {
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
@@ -108,7 +112,7 @@ doc_events = {
 	},
 	"Work Order": {
 		"validate":"ql.ql.work_order.work_order_validate",
-	},
+	}
 }
 
 

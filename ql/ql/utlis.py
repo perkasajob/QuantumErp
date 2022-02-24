@@ -32,3 +32,28 @@ def get_latest_stock_qty(item_code, warehouse=None, project="", work_order=""):
 		where item_code=%s {0}""".format(condition), values)[0][0]
 
 	return actual_qty
+
+
+@frappe.whitelist()
+def get_unique_item_code(prefix=""):
+	interval = 10
+	maxnr = 10000
+	for i in range(interval,maxnr,interval):
+		print("{}, {}".format(i+1-interval, i))
+		res = frappe.db.sql('''SELECT * FROM (SELECT LPAD(seq, 4, "0") AS seq FROM seq_{}_to_{}) s WHERE s.seq NOT IN (select DISTINCT REGEXP_SUBSTR(name,"[0-9]+") as item_code_nr from `tabItem` WHERE item_code LIKE "{}%") LIMIT 1'''.format(i+1-interval, i, prefix))
+		if res:
+			return prefix + str(res[0][0])
+	return []
+
+def query_permission(doc):
+	user = frappe.session.user
+	if user == "Administrator":
+		return True
+	match_role = list(set(['FIN','Finance Manager', 'CSD', 'Accounts Manager']) & frappe.get_roles(user))
+	if match_role:
+		return True
+	for approver in ['verifier', 'approver_1', 'approver_2', 'approver_3' ]:
+		if getattr(doc, approver, None) == user:
+			return True
+
+	return False

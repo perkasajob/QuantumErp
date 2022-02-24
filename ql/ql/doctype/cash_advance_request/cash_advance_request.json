@@ -9,16 +9,16 @@
   "is_fixed_amount",
   "journal_entry",
   "requestee",
+  "employee",
   "verifier",
   "cb1",
   "department",
-  "acceptor1",
-  "acceptor2",
   "sb1_section",
   "items",
   "description",
   "requested_amount",
   "credit_in_account_currency",
+  "is_cash_received",
   "userbank_sb",
   "user_acc",
   "user_acc_name",
@@ -32,6 +32,10 @@
   "cheque_no",
   "cheque_date",
   "user_remark",
+  "c_sb",
+  "company",
+  "c_cb",
+  "advance_account",
   "amended_from"
  ],
  "fields": [
@@ -162,12 +166,14 @@
   {
    "fieldname": "department",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Department",
    "options": "Department QL"
   },
   {
    "fieldname": "requestee",
    "fieldtype": "Read Only",
+   "in_list_view": 1,
    "label": "Requestee"
   },
   {
@@ -188,20 +194,42 @@
    "permlevel": 1
   },
   {
-   "fieldname": "acceptor1",
-   "fieldtype": "Link",
-   "label": "Acceptor 1",
-   "options": "User"
+   "allow_on_submit": 1,
+   "default": "0",
+   "depends_on": "eval: doc.workflow_state == \"Rejected\" || doc.workflow_state == \"Cancelled\" || doc.workflow_state == \"Approved\" || doc.workflow_state == \"Booked\"",
+   "fieldname": "is_cash_received",
+   "fieldtype": "Check",
+   "label": "Is Cash Received by User"
   },
   {
-   "fieldname": "acceptor2",
+   "fieldname": "employee",
    "fieldtype": "Link",
-   "label": "Acceptor 2",
-   "options": "User"
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "c_sb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "c_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "advance_account",
+   "fieldtype": "Link",
+   "label": "Advance Account",
+   "options": "Account"
   }
  ],
  "is_submittable": 1,
- "modified": "2021-11-17 14:10:03.572297",
+ "modified": "2022-01-03 17:44:13.485667",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Advance Request",

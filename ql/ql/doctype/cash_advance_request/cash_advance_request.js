@@ -2,16 +2,30 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Cash Advance Request', {
+	setup: function(frm) {
+		frappe.db.get_single_value('Global Defaults', 'default_company')
+			.then(default_company => {
+				frm.set_value("company", default_company)
+			})
+
+		frm.set_query("advance_account", function() {
+			return {
+				filters: {
+					"root_type": "Asset",
+					"is_group": 0,
+					"company": frm.doc.company
+				}
+			};
+		});
+	},
 	refresh: function(frm) {
 		if(frm.doc.workflow_state === "Approved"){
-			frm.add_custom_button(__('Create Journal Entry'), function() {
+			frm.add_custom_button(__('Journal Entry'), function() {
 				frappe.model.with_doctype('Journal Entry', function() {
 					var je = frappe.model.get_new_doc('Journal Entry');
 					je.remark = frm.doc.description
 					je.cheque_no = frm.doc.cheque_no
 					je.cheque_date = frm.doc.cheque_date
-					je.reference_type = frm.doc.doctype
-					je.reference_name = frm.doc.name
 					je.user_remark = frm.doc.user_remark
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
@@ -21,9 +35,17 @@ frappe.ui.form.on('Cash Advance Request', {
 					je_account.bank_account = frm.doc.bank_account
 					je_account.cost_center = frm.doc.cost_center
 					je_account.reference_due_date = frm.doc.req_date
+					je_account.reference_type = frm.doc.doctype
+					je_account.reference_name = frm.doc.name
+					je_account.is_advance = 'Yes'
 					frappe.set_route('Form', 'Journal Entry', je.name);
 				});
-			});
+			}, __('Create'));
+			// if ((flt(frm.doc.credit_in_account_currency) <= flt(frm.doc.requested_amount))
+			// 	&& frappe.model.can_create("Payment Entry")) {
+			// 	frm.add_custom_button(__('Payment'),
+			// 		function() { frm.events.make_payment_entry(frm); }, __('Create'));
+			// }
 		} else if (frm.doc.workflow_state === "Booked") {
 			frm.add_custom_button(__('Create Recap'), function() {
 				frappe.model.with_doctype('Cash Expense Claim', function() {
@@ -72,7 +94,7 @@ frappe.ui.form.on('Cash Advance Request', {
 		frm.set_query("journal_entry", function() {
 			return {
 				filters: {
-					cash_advance_request: frm.doc.name
+					reference_name: frm.doc.name
 				}
 			}
 		})
@@ -89,12 +111,32 @@ frappe.ui.form.on('Cash Advance Request', {
 			});
 		}
 	},
+	make_payment_entry: function(frm) {
+
+		if (!frm.doc.advance_account || !frm.doc.employee){
+			frappe.throw("Advance Account & Employee field cannot be empty")
+			return
+		}
+		var method = "erpnext.accounts.doctype.payment_entry.payment_entry.get_payment_entry";
+		if(frm.doc.__onload && frm.doc.__onload.make_payment_via_journal_entry) {
+			method = "ql.ql.doctype.cash_advance_request.cash_advance_request.make_bank_entry"
+		}
+
+		return frappe.call({
+			method: method,
+			args: {
+				"dt": frm.doc.doctype,
+				"dn": frm.doc.name
+			},
+			callback: function(r) {
+				var doclist = frappe.model.sync(r.message);
+				frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+			}
+		});
+	},
 	before_workflow_action(frm){
 		if(frm.selected_workflow_action == "Review"){
 			frappe.db.set_value(frm.doc.doctype, frm.doc.name, 'verifier', frappe.user.full_name())
-		} else if(frm.selected_workflow_action == "Book"){
-			if(!frm.doc.journal_entry)
-				frappe.throw(__("Please set a Journal Entry"));
 		}
 	}
 });

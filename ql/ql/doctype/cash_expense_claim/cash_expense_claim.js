@@ -2,16 +2,51 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Cash Expense Claim', {
+	setup: function(frm) {
+		frm.trigger("set_query_for_payable_account");
+		frappe.db.get_single_value('Global Defaults', 'default_company')
+			.then(default_company => {
+				frm.set_value("company", default_company)
+				frm.set_query("account", function() {
+					return {
+						filters: {
+							company: default_company,
+							account_type: 'Cash',
+							is_group: 0
+						}
+					}
+				})
+			})
+	},
+	onload(frm){
+		frm.set_query("journal_entry", function() {
+			return {
+				filters: {
+					reference_name: frm.doc.name
+				}
+			}
+		})
+
+		if(!frm.doc.department){
+			var dept_list = []
+			frappe.db.get_single_value('QL Settings', 'dept_abbr')
+			.then(value => {
+				dept_list = value.split(",");
+				var dept = dept_list.find((e)=>{return frappe.user.has_role(e)})
+				if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Cash Advance Request Verificator"))
+					frm.set_df_property("department", "read_only", dept ? 1 : 0);
+				frm.set_value("department", dept)
+			});
+		}
+	},
 	refresh: function(frm) {
 		if(frm.doc.workflow_state === "Approved"){
-			frm.add_custom_button(__('Create Journal Entry'), function() {
+			frm.add_custom_button(__('Journal Entry'), function() {
 				frappe.model.with_doctype('Journal Entry', function() {
 					var je = frappe.model.get_new_doc('Journal Entry');
 					je.remark = frm.doc.description
 					je.cheque_no = frm.doc.cheque_no
 					je.cheque_date = frm.doc.cheque_date
-					je.reference_type = frm.doc.doctype
-					je.reference_name = frm.doc.name
 					je.user_remark = frm.doc.user_remark
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
@@ -24,9 +59,16 @@ frappe.ui.form.on('Cash Expense Claim', {
 					je_account.account = frm.doc.account
 					je_account.bank_account = frm.doc.bank_account
 					je_account.cost_center = frm.doc.cost_center
+					je_account.reference_type = frm.doc.doctype
+					je_account.reference_name = frm.doc.name
 					frappe.set_route('Form', 'Journal Entry', je.name);
 				});
-			});
+			}, __('Create'));
+			if ((flt(frm.doc.cash_advance_request_amount) <= flt(frm.doc.total))
+				&& frappe.model.can_create("Payment Entry")) {
+				frm.add_custom_button(__('Payment'),
+					function() { frm.events.make_payment_entry(frm); }, __('Create'));
+			}
 		}
 		if(frm.doc.cash_advance_request){
 			frm.add_custom_button("Show CAReq", function () {
@@ -35,8 +77,19 @@ frappe.ui.form.on('Cash Expense Claim', {
 		}
 
 	},
+	set_query_for_payable_account: function(frm) {
+		frm.fields_dict["account"].get_query = function() {
+			return {
+				filters: {
+					"report_type": "Balance Sheet",
+					"account_type": "Payable",
+					"is_group": 0
+				}
+			};
+		};
+	},
 	cash_advance_request: function(frm){
-		frappe.db.get_doc('Cash Adv', frm.doc.cash_advance_request).then(ca =>{
+		frappe.db.get_doc('Cash Advance Request', frm.doc.cash_advance_request).then(ca =>{
 			if(!["Approved","Booked"].includes(ca.workflow_state)){
 				frappe.msgprint("status must be either Approved or Booked")
 				return
@@ -93,19 +146,39 @@ frappe.ui.form.on('Cash Expense Claim', {
 		})
 		refresh_field("items")
 	},
+	make_payment_entry: function(frm) {
+
+		if (!frm.doc.account || !frm.doc.employee){
+			frappe.throw("Account & Employee field cannot be empty")
+			return
+		}
+		var method = "erpnext.accounts.doctype.payment_entry.payment_entry.get_payment_entry";
+		if(frm.doc.__onload && frm.doc.__onload.make_payment_via_journal_entry) {
+			method = "ql.ql.doctype.cash_expense_claim.cash_expense_claim.make_bank_entry"
+		}
+
+		return frappe.call({
+			method: method,
+			args: {
+				"dt": frm.doc.doctype,
+				"dn": frm.doc.name
+			},
+			callback: function(r) {
+				var doclist = frappe.model.sync(r.message);
+				frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+			}
+		});
+	},
 	before_workflow_action(frm){
 		if(frm.selected_workflow_action === "Review"){
 			frappe.db.set_value(frm.doc.doctype, frm.doc.name, 'verifier', frappe.user.full_name())
-		} else if(frm.selected_workflow_action === "Finish"){
-			if(!frm.doc.journal_entry)
-				frappe.throw(__("Please set a Journal Entry"));
 		}
 	}
 });
 
 
 function cash_adv_request (frm) {
-	frappe.db.get_doc('Cash Adv', frm.doc.cash_advance_request).then(ca =>{
+	frappe.db.get_doc('Cash Advance Request', frm.doc.cash_advance_request).then(ca =>{
 		if(!["Approved","Booked"].includes(ca.workflow_state)){
 			frappe.msgprint("status must be either Approved or Booked")
 			return

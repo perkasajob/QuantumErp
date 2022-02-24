@@ -6,12 +6,15 @@
  "engine": "InnoDB",
  "field_order": [
   "requestee",
-  "date",
+  "from_date",
+  "cash_account",
   "cb1",
   "verifier",
   "journal_entry",
+  "to_date",
   "sb1",
   "items",
+  "purchase_inv_payments",
   "total",
   "userbank_sb",
   "user_acc",
@@ -163,13 +166,30 @@
    "read_only": 1
   },
   {
-   "fieldname": "date",
+   "fieldname": "cash_account",
+   "fieldtype": "Link",
+   "label": "Cash Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "purchase_inv_payments",
+   "fieldtype": "Table",
+   "label": "Purchase Inv Payments",
+   "options": "Petty Cash Payment Reimbursement Item"
+  },
+  {
+   "fieldname": "from_date",
    "fieldtype": "Date",
-   "label": "Date"
+   "label": "From Date"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
   }
  ],
  "is_submittable": 1,
- "modified": "2021-11-10 17:07:09.676620",
+ "modified": "2022-02-05 11:22:20.270219",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Petty Cash Reimbursement",

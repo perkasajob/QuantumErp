@@ -20,6 +20,9 @@ class CashAdvanceRequest(Document):
 	def on_update(self):
 		if self.workflow_state == "Draft":
 			self.db_set('requestee', get_user_fullname(frappe.session['user']))
+			employee = frappe.db.get_list("Employee", filters={"user_id": frappe.session['user']})
+			if employee:
+				self.db_set('employee', employee[0].name)
 
 	def calculate_item_values(self):
 		total = 0
@@ -36,23 +39,25 @@ class CashAdvanceRequest(Document):
 		if not self.credit_in_account_currency:
 			self.credit_in_account_currency = self.requested_amount if self.is_fixed_amount else total
 
+
 @frappe.whitelist()
 def make_bank_entry(dt, dn):
 	doc = frappe.get_doc(dt, dn)
-	payment_account = get_default_bank_cash_account(doc.company, account_type="Cash",
+	company  = erpnext.get_default_company()
+	payment_account = get_default_bank_cash_account(company, account_type="Cash",
 		mode_of_payment=doc.mode_of_payment)
 
 	je = frappe.new_doc("Journal Entry")
 	je.posting_date = nowdate()
 	je.voucher_type = 'Bank Entry'
-	je.company = doc.company
-	je.remark = 'Payment against Employee Advance: ' + dn + '\n' + doc.purpose
+	je.company = company
+	je.remark = 'Payment against Cash Advance Request: ' + dn + '\n' + doc.purpose
 	cost_center = doc.cost_center if doc.cost_center else erpnext.get_default_cost_center(doc.company)
 
 	je.append("accounts", {
 		"account": doc.advance_account,
-		"debit_in_account_currency": flt(doc.advance_amount),
-		"reference_type": "Employee Advance",
+		"debit_in_account_currency": flt(doc.credit_in_account_currency),
+		"reference_type": "Cash Advance Request",
 		"reference_name": doc.name,
 		"party_type": "Employee",
 		"cost_center": cost_center,
@@ -63,7 +68,7 @@ def make_bank_entry(dt, dn):
 	je.append("accounts", {
 		"account": payment_account.account,
 		"cost_center": cost_center,
-		"credit_in_account_currency": flt(doc.advance_amount),
+		"credit_in_account_currency": flt(doc.credit_in_account_currency),
 		"account_currency": payment_account.account_currency,
 		"account_type": payment_account.account_type
 	})

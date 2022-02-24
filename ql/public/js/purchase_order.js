@@ -1,10 +1,3 @@
-frappe.listview_settings['Purchase Order'].refresh = function (listview) {
-	if(frappe.user.has_role(["WH","Stock User"])){
-		$( "span[title*='Grand Total:']").remove()
-	}
-}
-
-
 frappe.ui.form.on('Purchase Order', {
 	onload(frm){
 	    if(frm.doc.department){
@@ -29,7 +22,6 @@ frappe.ui.form.on('Purchase Order', {
             throw msg;
 	    }
 		check_supplier_release(frm)
-		debugger
 		if (frm.doc.__islocal && !frm.doc.orderer){
 			frm.set_value("orderer", frappe.user.full_name())
 		}

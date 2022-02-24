@@ -12,8 +12,9 @@ from frappe.utils import formatdate, get_number_format_info
 from six import iteritems
 
 
+def sales_invoice_validate(doc, method):
+	if not doc.is_return:
+		update_discount(doc)
 
-def update_discount(doc, method):
-	# doc.db_set('discount_amount', math.ceil(float(doc.mdp_discount_amount or 0.0) + float(doc.mdp_discount_margin or 0.0)/100 * (doc.total-float(doc.mdp_discount_amount or 0.0))))
-	doc.discount_amount = math.ceil(float(doc.mdp_discount_amount or 0.0) + float(doc.mdp_discount_margin or 0.0)/100 * (doc.total-float(doc.mdp_discount_amount or 0.0)))
-	doc.net_total = doc.total - doc.discount_amount
+def update_discount(doc):
+	doc.discount_amount =  math.ceil(float(doc.mdp_discount_amount or 0.0) + float(doc.mdp_discount_margin or 0.0)/100 * (doc.total-float(doc.mdp_discount_amount or 0.0)))
