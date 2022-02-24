@@ -276,8 +276,7 @@ async function create_inspection(frm, o){
 				vat_qty: o.vat_qty,
 				sample_size: 0,
 				uom: o.uom,
-				batch_no: o.batch_no,
-				naming_series : 'PR-.batch_no.-.##'
+				batch_no: o.batch_no
 			}))
 			o.quality_inspection = doc.name
 			frappe.model.set_value(o.doctype, o.name, 'quality_inspection', doc.name)

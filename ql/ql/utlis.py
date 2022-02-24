@@ -37,9 +37,10 @@ def get_latest_stock_qty(item_code, warehouse=None, project="", work_order=""):
 @frappe.whitelist()
 def get_unique_item_code(prefix=""):
 	interval = 10
-	for i in range(interval,4000,100):
-		print("{}, {}".format(i-interval, i))
-		res = frappe.db.sql('''SELECT * FROM (SELECT LPAD(seq, 4, "0") AS seq FROM seq_{}_to_{}) s WHERE s.seq NOT IN (select DISTINCT REGEXP_SUBSTR(name,"[0-9]+") as item_code_nr from `tabItem` WHERE item_code LIKE "{}%") LIMIT 1'''.format(i-interval, i-1, prefix))
+	maxnr = 10000
+	for i in range(interval,maxnr,interval):
+		print("{}, {}".format(i+1-interval, i))
+		res = frappe.db.sql('''SELECT * FROM (SELECT LPAD(seq, 4, "0") AS seq FROM seq_{}_to_{}) s WHERE s.seq NOT IN (select DISTINCT REGEXP_SUBSTR(name,"[0-9]+") as item_code_nr from `tabItem` WHERE item_code LIKE "{}%") LIMIT 1'''.format(i+1-interval, i, prefix))
 		if res:
 			return prefix + str(res[0][0])
 	return []
