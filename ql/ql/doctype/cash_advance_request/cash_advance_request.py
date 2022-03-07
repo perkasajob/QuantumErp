@@ -74,4 +74,3 @@ def make_bank_entry(dt, dn):
 	})
 
 	return je.as_dict()
-
