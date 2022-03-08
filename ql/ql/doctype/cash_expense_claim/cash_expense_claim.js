@@ -3,19 +3,9 @@
 
 frappe.ui.form.on('Cash Expense Claim', {
 	setup: function(frm) {
-		frm.trigger("set_query_for_payable_account");
 		frappe.db.get_single_value('Global Defaults', 'default_company')
 			.then(default_company => {
 				frm.set_value("company", default_company)
-				frm.set_query("account", function() {
-					return {
-						filters: {
-							company: default_company,
-							account_type: 'Cash',
-							is_group: 0
-						}
-					}
-				})
 			})
 	},
 	onload(frm){
@@ -77,17 +67,17 @@ frappe.ui.form.on('Cash Expense Claim', {
 		}
 
 	},
-	set_query_for_payable_account: function(frm) {
-		frm.fields_dict["account"].get_query = function() {
-			return {
-				filters: {
-					"report_type": "Balance Sheet",
-					"account_type": "Payable",
-					"is_group": 0
-				}
-			};
-		};
-	},
+	// set_query_for_payable_account: function(frm) {
+	// 	frm.fields_dict["account"].get_query = function() {
+	// 		return {
+	// 			filters: {
+	// 				"report_type": "Balance Sheet",
+	// 				"account_type": "Payable",
+	// 				"is_group": 0
+	// 			}
+	// 		};
+	// 	};
+	// },
 	cash_advance_request: function(frm){
 		frappe.db.get_doc('Cash Advance Request', frm.doc.cash_advance_request).then(ca =>{
 			if(!["Approved","Booked"].includes(ca.workflow_state)){
