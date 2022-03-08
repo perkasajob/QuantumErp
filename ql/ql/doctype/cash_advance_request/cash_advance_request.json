@@ -1,372 +1,372 @@
 {
- "autoname": "format:CAR-{YY}{MM}{#####}",
- "creation": "2021-08-25 17:11:15.145392",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "req_date",
-  "is_fixed_amount",
-  "journal_entry",
-  "requestee",
-  "employee",
-  "verifier",
-  "cb1",
-  "department",
-  "sb1_section",
-  "items",
-  "description",
-  "requested_amount",
-  "credit_in_account_currency",
-  "is_cash_received",
-  "userbank_sb",
-  "user_acc",
-  "user_acc_name",
-  "user_bank_cb",
-  "user_bank",
-  "user_bank_branch",
-  "acc_sb",
-  "account",
-  "bank_account",
-  "cost_center",
-  "cheque_no",
-  "cheque_date",
-  "user_remark",
-  "c_sb",
-  "company",
-  "c_cb",
-  "advance_account",
-  "amended_from"
- ],
- "fields": [
-  {
-   "fieldname": "req_date",
-   "fieldtype": "Date",
-   "label": "Req Date"
-  },
-  {
-   "fieldname": "description",
-   "fieldtype": "Small Text",
-   "label": "Description"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Cash Advance Request",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "account",
-   "fieldtype": "Link",
-   "label": "Account",
-   "options": "Account",
-   "permlevel": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "bank_account",
-   "fieldtype": "Link",
-   "label": "Bank Account",
-   "options": "Bank Account",
-   "permlevel": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "cost_center",
-   "fieldtype": "Link",
-   "label": "Cost Center",
-   "options": "Cost Center",
-   "permlevel": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "credit_in_account_currency",
-   "fieldtype": "Currency",
-   "label": "Approved Amount"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "cheque_no",
-   "fieldtype": "Data",
-   "label": "Reference Number",
-   "permlevel": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "cheque_date",
-   "fieldtype": "Date",
-   "label": "Reference Date",
-   "permlevel": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "user_remark",
-   "fieldtype": "Small Text",
-   "label": "User Remark",
-   "permlevel": 1
-  },
-  {
-   "fieldname": "items",
-   "fieldtype": "Table",
-   "label": "Items",
-   "options": "Cash Advance Request Item"
-  },
-  {
-   "fieldname": "requested_amount",
-   "fieldtype": "Currency",
-   "label": "Requested Amount"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_fixed_amount",
-   "fieldtype": "Check",
-   "label": "Is Fixed Amount"
-  },
-  {
-   "fieldname": "userbank_sb",
-   "fieldtype": "Section Break",
-   "label": "User Bank Account"
-  },
-  {
-   "fieldname": "user_acc_name",
-   "fieldtype": "Data",
-   "label": "Name"
-  },
-  {
-   "fieldname": "user_bank_cb",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "user_bank",
-   "fieldtype": "Data",
-   "label": "Bank"
-  },
-  {
-   "fieldname": "acc_sb",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "user_acc",
-   "fieldtype": "Data",
-   "label": "Bank Account Nr."
-  },
-  {
-   "fieldname": "user_bank_branch",
-   "fieldtype": "Data",
-   "label": "Branch"
-  },
-  {
-   "fieldname": "cb1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "department",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Department",
-   "options": "Department QL"
-  },
-  {
-   "fieldname": "requestee",
-   "fieldtype": "Read Only",
-   "in_list_view": 1,
-   "label": "Requestee"
-  },
-  {
-   "fieldname": "sb1_section",
-   "fieldtype": "Section Break"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "verifier",
-   "fieldtype": "Read Only",
-   "label": "Verifier"
-  },
-  {
-   "fieldname": "journal_entry",
-   "fieldtype": "Link",
-   "label": "Journal Entry",
-   "options": "Journal Entry",
-   "permlevel": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "default": "0",
-   "depends_on": "eval: doc.workflow_state == \"Rejected\" || doc.workflow_state == \"Cancelled\" || doc.workflow_state == \"Approved\" || doc.workflow_state == \"Booked\"",
-   "fieldname": "is_cash_received",
-   "fieldtype": "Check",
-   "label": "Is Cash Received by User"
-  },
-  {
-   "fieldname": "employee",
-   "fieldtype": "Link",
-   "label": "Employee",
-   "options": "Employee"
-  },
-  {
-   "fieldname": "c_sb",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "label": "Company",
-   "options": "Company"
-  },
-  {
-   "fieldname": "c_cb",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "advance_account",
-   "fieldtype": "Link",
-   "label": "Advance Account",
-   "options": "Account"
-  }
- ],
- "is_submittable": 1,
- "modified": "2022-01-03 17:44:13.485667",
- "modified_by": "Administrator",
- "module": "QL",
- "name": "Cash Advance Request",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Accounts User",
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Accounts Manager",
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "FIN",
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Purchase User",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Purchase Manager",
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Cash Adv User",
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "cancel": 1,
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Cash Adv Verificator",
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Finance User",
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "cancel": 1,
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Finance Manager",
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  }
- ],
- "quick_entry": 1,
- "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
-}
+	"autoname": "format:CAR-{YY}{MM}{#####}",
+	"creation": "2021-08-25 17:11:15.145392",
+	"doctype": "DocType",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+	 "req_date",
+	 "is_fixed_amount",
+	 "journal_entry",
+	 "requestee",
+	 "employee",
+	 "verifier",
+	 "cb1",
+	 "department",
+	 "sb1_section",
+	 "items",
+	 "description",
+	 "requested_amount",
+	 "credit_in_account_currency",
+	 "is_cash_received",
+	 "userbank_sb",
+	 "user_acc",
+	 "user_acc_name",
+	 "user_bank_cb",
+	 "user_bank",
+	 "user_bank_branch",
+	 "acc_sb",
+	 "account",
+	 "bank_account",
+	 "cost_center",
+	 "cheque_no",
+	 "cheque_date",
+	 "user_remark",
+	 "c_sb",
+	 "company",
+	 "c_cb",
+	 "advance_account",
+	 "amended_from"
+	],
+	"fields": [
+	 {
+	  "fieldname": "req_date",
+	  "fieldtype": "Date",
+	  "label": "Req Date"
+	 },
+	 {
+	  "fieldname": "description",
+	  "fieldtype": "Small Text",
+	  "label": "Description"
+	 },
+	 {
+	  "fieldname": "amended_from",
+	  "fieldtype": "Link",
+	  "label": "Amended From",
+	  "no_copy": 1,
+	  "options": "Cash Advance Request",
+	  "print_hide": 1,
+	  "read_only": 1
+	 },
+	 {
+	  "allow_on_submit": 1,
+	  "fieldname": "account",
+	  "fieldtype": "Link",
+	  "label": "Account",
+	  "options": "Account",
+	  "permlevel": 1
+	 },
+	 {
+	  "allow_on_submit": 1,
+	  "fieldname": "bank_account",
+	  "fieldtype": "Link",
+	  "label": "Bank Account",
+	  "options": "Bank Account",
+	  "permlevel": 1
+	 },
+	 {
+	  "allow_on_submit": 1,
+	  "fieldname": "cost_center",
+	  "fieldtype": "Link",
+	  "label": "Cost Center",
+	  "options": "Cost Center",
+	  "permlevel": 1
+	 },
+	 {
+	  "allow_on_submit": 1,
+	  "fieldname": "credit_in_account_currency",
+	  "fieldtype": "Currency",
+	  "label": "Approved Amount"
+	 },
+	 {
+	  "allow_on_submit": 1,
+	  "fieldname": "cheque_no",
+	  "fieldtype": "Data",
+	  "label": "Reference Number",
+	  "permlevel": 1
+	 },
+	 {
+	  "allow_on_submit": 1,
+	  "fieldname": "cheque_date",
+	  "fieldtype": "Date",
+	  "label": "Reference Date",
+	  "permlevel": 1
+	 },
+	 {
+	  "allow_on_submit": 1,
+	  "fieldname": "user_remark",
+	  "fieldtype": "Small Text",
+	  "label": "User Remark",
+	  "permlevel": 1
+	 },
+	 {
+	  "fieldname": "items",
+	  "fieldtype": "Table",
+	  "label": "Items",
+	  "options": "Cash Advance Request Item"
+	 },
+	 {
+	  "fieldname": "requested_amount",
+	  "fieldtype": "Currency",
+	  "label": "Requested Amount"
+	 },
+	 {
+	  "default": "0",
+	  "fieldname": "is_fixed_amount",
+	  "fieldtype": "Check",
+	  "label": "Is Fixed Amount"
+	 },
+	 {
+	  "fieldname": "userbank_sb",
+	  "fieldtype": "Section Break",
+	  "label": "User Bank Account"
+	 },
+	 {
+	  "fieldname": "user_acc_name",
+	  "fieldtype": "Data",
+	  "label": "Name"
+	 },
+	 {
+	  "fieldname": "user_bank_cb",
+	  "fieldtype": "Column Break"
+	 },
+	 {
+	  "fieldname": "user_bank",
+	  "fieldtype": "Data",
+	  "label": "Bank"
+	 },
+	 {
+	  "fieldname": "acc_sb",
+	  "fieldtype": "Section Break"
+	 },
+	 {
+	  "fieldname": "user_acc",
+	  "fieldtype": "Data",
+	  "label": "Bank Account Nr."
+	 },
+	 {
+	  "fieldname": "user_bank_branch",
+	  "fieldtype": "Data",
+	  "label": "Branch"
+	 },
+	 {
+	  "fieldname": "cb1",
+	  "fieldtype": "Column Break"
+	 },
+	 {
+	  "fieldname": "department",
+	  "fieldtype": "Link",
+	  "in_list_view": 1,
+	  "label": "Department",
+	  "options": "Department QL"
+	 },
+	 {
+	  "fieldname": "requestee",
+	  "fieldtype": "Read Only",
+	  "in_list_view": 1,
+	  "label": "Requestee"
+	 },
+	 {
+	  "fieldname": "sb1_section",
+	  "fieldtype": "Section Break"
+	 },
+	 {
+	  "allow_on_submit": 1,
+	  "fieldname": "verifier",
+	  "fieldtype": "Read Only",
+	  "label": "Verifier"
+	 },
+	 {
+	  "fieldname": "journal_entry",
+	  "fieldtype": "Link",
+	  "label": "Journal Entry",
+	  "options": "Journal Entry",
+	  "permlevel": 1
+	 },
+	 {
+	  "allow_on_submit": 1,
+	  "default": "0",
+	  "depends_on": "eval: doc.workflow_state == \"Rejected\" || doc.workflow_state == \"Cancelled\" || doc.workflow_state == \"Approved\" || doc.workflow_state == \"Booked\"",
+	  "fieldname": "is_cash_received",
+	  "fieldtype": "Check",
+	  "label": "Is Cash Received by User"
+	 },
+	 {
+	  "fieldname": "employee",
+	  "fieldtype": "Link",
+	  "label": "Employee",
+	  "options": "Employee"
+	 },
+	 {
+	  "fieldname": "c_sb",
+	  "fieldtype": "Section Break"
+	 },
+	 {
+	  "fieldname": "company",
+	  "fieldtype": "Link",
+	  "label": "Company",
+	  "options": "Company"
+	 },
+	 {
+	  "fieldname": "c_cb",
+	  "fieldtype": "Column Break"
+	 },
+	 {
+	  "fieldname": "advance_account",
+	  "fieldtype": "Link",
+	  "label": "Advance Account",
+	  "options": "Account"
+	 }
+	],
+	"is_submittable": 1,
+	"modified": "2022-01-03 17:44:13.485667",
+	"modified_by": "Administrator",
+	"module": "QL",
+	"name": "Cash Advance Request",
+	"owner": "Administrator",
+	"permissions": [
+	 {
+	  "create": 1,
+	  "delete": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "System Manager",
+	  "share": 1,
+	  "write": 1
+	 },
+	 {
+	  "create": 1,
+	  "delete": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "Accounts User",
+	  "share": 1,
+	  "submit": 1,
+	  "write": 1
+	 },
+	 {
+	  "create": 1,
+	  "delete": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "Accounts Manager",
+	  "share": 1,
+	  "submit": 1,
+	  "write": 1
+	 },
+	 {
+	  "create": 1,
+	  "delete": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "FIN",
+	  "share": 1,
+	  "submit": 1,
+	  "write": 1
+	 },
+	 {
+	  "create": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "Purchase User",
+	  "share": 1,
+	  "write": 1
+	 },
+	 {
+	  "create": 1,
+	  "delete": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "Purchase Manager",
+	  "share": 1,
+	  "submit": 1,
+	  "write": 1
+	 },
+	 {
+	  "create": 1,
+	  "delete": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "Cash Adv User",
+	  "share": 1,
+	  "submit": 1,
+	  "write": 1
+	 },
+	 {
+	  "cancel": 1,
+	  "create": 1,
+	  "delete": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "Cash Adv Verificator",
+	  "share": 1,
+	  "submit": 1,
+	  "write": 1
+	 },
+	 {
+	  "create": 1,
+	  "delete": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "Finance User",
+	  "share": 1,
+	  "submit": 1,
+	  "write": 1
+	 },
+	 {
+	  "cancel": 1,
+	  "create": 1,
+	  "delete": 1,
+	  "email": 1,
+	  "export": 1,
+	  "print": 1,
+	  "read": 1,
+	  "report": 1,
+	  "role": "Finance Manager",
+	  "share": 1,
+	  "submit": 1,
+	  "write": 1
+	 }
+	],
+	"quick_entry": 1,
+	"sort_field": "modified",
+	"sort_order": "DESC",
+	"track_changes": 1
+   }
