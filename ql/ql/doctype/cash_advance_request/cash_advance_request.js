@@ -3,10 +3,12 @@
 
 frappe.ui.form.on('Cash Advance Request', {
 	setup: function(frm) {
-		frappe.db.get_single_value('Global Defaults', 'default_company')
-			.then(default_company => {
-				frm.set_value("company", default_company)
-			})
+		if(!frm.doc.company){
+			frappe.db.get_single_value('Global Defaults', 'default_company')
+				.then(default_company => {
+					frm.set_value("company", default_company)
+				})
+		}
 
 		frm.set_query("advance_account", function() {
 			return {

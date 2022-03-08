@@ -3,10 +3,12 @@
 
 frappe.ui.form.on('Cash Expense Claim', {
 	setup: function(frm) {
-		frappe.db.get_single_value('Global Defaults', 'default_company')
-			.then(default_company => {
-				frm.set_value("company", default_company)
-			})
+		if(!frm.doc.company){
+			frappe.db.get_single_value('Global Defaults', 'default_company')
+				.then(default_company => {
+					frm.set_value("company", default_company)
+				})
+		}
 	},
 	onload(frm){
 		frm.set_query("journal_entry", function() {
