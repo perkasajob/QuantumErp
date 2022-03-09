@@ -29,18 +29,19 @@ class PettyCashReimbursement(Document):
 
 @frappe.whitelist()
 def get_items(account, from_date, to_date):
-	# cec = frappe.db.sql('''select name, purchase_date, description, total
-	# 			from `tabCash Expense Claim` cec
-	# 			left join (`tabJournal Entry` je) on (je.name = cec.journal_entry)
+
+	cec = frappe.db.sql('''select cec.name, ge.posting_date, cec.description, cec.total, ge.name, jea.name
+				from `tabGL Entry` ge
+				left join (`tabJournal Entry Account` jea) on (ge.voucher_no = jea.parent)
+				left join (`tabCash Expense Claim` cec) on (jea.reference_name = cec.name)
+				where ge.voucher_type = "Journal Entry" AND ge.account = %s AND ge.posting_date BETWEEN %s AND %s''',(account, from_date, to_date), as_dict = 1)
+
+	# ec = frappe.db.sql('''select ec.name, ec.posting_date, ec.remark, ec.total_sanctioned_amount
+	# 			from `tabJournal Entry` je
+	# 			left join (`tabExpense Claim` ec) on (je.reference_name = ec.journal_entry)
 	# 			where not exists (
-	# 				select * from `tabPetty Cash Reimbursement Item` pcri where pcri.cash_expense_claim = cec.name
-	# 			) AND cec.docstatus = 1 AND je.docstatus = 1 AND cec.account = %s''',(account), as_dict = 1)
-	cec = frappe.db.sql('''select cec.name, cec.purchase_date, cec.description, cec.total
-				from `tabJournal Entry` je
-				left join (`tabCash Expense Claim` cec) on (je.name = cec.journal_entry)
-				where not exists (
-					select * from `tabPetty Cash Reimbursement Item` pcri where pcri.cash_expense_claim = cec.name
-				) AND cec.docstatus = 1 AND je.docstatus = 1 AND cec.account = %s AND cec.purchase_date BETWEEN %s AND %s''',(account, from_date, to_date), as_dict = 1)
+	# 				select * from `tabPetty Reimbursement Item` pcri where pcri.expense_claim = ec.name
+	# 			) AND ec.docstatus = 1 AND je.docstatus = 1 AND ec.cash_account = %s AND ec.posting_date BETWEEN %s AND %s''',(account, from_date, to_date), as_dict = 1)
 
 	pe = frappe.db.sql('''select pe.name, pe.posting_date, pe.paid_amount, GROUP_CONCAT(pii.item_name ORDER BY pii.item_name SEPARATOR ', ') as description
 				from `tabPayment Entry` pe
