@@ -13,7 +13,8 @@
   "journal_entry",
   "to_date",
   "sb1",
-  "items",
+  "cash_expense_claims",
+  "expense_claims",
   "purchase_inv_payments",
   "total",
   "userbank_sb",
@@ -56,12 +57,6 @@
   {
    "fieldname": "sb1",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "items",
-   "fieldtype": "Table",
-   "label": "Items",
-   "options": "Petty Cash Reimbursement Item"
   },
   {
    "allow_on_submit": 1,
@@ -186,10 +181,22 @@
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date"
+  },
+  {
+   "fieldname": "expense_claims",
+   "fieldtype": "Table",
+   "label": "Expense Claims",
+   "options": "Petty Reimbursement EC Item"
+  },
+  {
+   "fieldname": "cash_expense_claims",
+   "fieldtype": "Table",
+   "label": "Cash Expense Claims",
+   "options": "Petty Reimbursement CEC Item"
   }
  ],
  "is_submittable": 1,
- "modified": "2022-02-05 11:22:20.270219",
+ "modified": "2022-03-09 16:02:21.723803",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Petty Cash Reimbursement",

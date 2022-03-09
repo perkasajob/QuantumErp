@@ -103,17 +103,32 @@ function get_items(frm){
 		{account: frm.doc.cash_account,
 		from_date: frm.doc.from_date, to_date: frm.doc.to_date })
 			.then(r => {
-				frm.doc.items = []
+				frm.doc.cash_expense_claims = []
+				frm.doc.expense_claims = []
 				frm.doc.purchase_inv_payments = []
+				let total = 0
 				if(r) {
 					r.cec.forEach((d) => {
-						let i = frm.add_child("items");
+						let i = frm.add_child("cash_expense_claims");
 						i.cash_expense_claim = d.name;
-						i.date = d.purchase_date;
+						i.date = d.date;
 						i.amount = d.total;
 						i.description = d.description;
+						i.gle = d.gle;
+						total += d.total;
 					})
-					refresh_field("items");
+					refresh_field("cash_expense_claims");
+
+					r.ec.forEach((d) => {
+						let i = frm.add_child("expense_claims");
+						i.expense_claim = d.name;
+						i.posting_date = d.date;
+						i.total_sanctioned_amount = d.total_sanctioned_amount;
+						i.remark = d.remark;
+						i.gle = d.gle;
+						total += d.total_sanctioned_amount;
+					})
+					refresh_field("expense_claims");
 
 					r.pe.forEach((d) => {
 						let p = frm.add_child("purchase_inv_payments");
@@ -121,8 +136,10 @@ function get_items(frm){
 						p.date = d.posting_date;
 						p.amount = d.paid_amount;
 						p.description = d.description;
+						total += d.paid_amount
 					})
 					refresh_field("purchase_inv_payments");
+					frm.set_value('total', total)
 				}
 			});
 	}

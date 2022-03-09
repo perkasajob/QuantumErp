@@ -22,26 +22,32 @@ class PettyCashReimbursement(Document):
 	def calculate_item_values(self):
 		self.total = 0.0
 
-		for item in self.get("items"):
+		for item in self.get("cash_expense_claims"):
 			self.total = self.total + item.amount
+		for item in self.get("expense_claims"):
+			self.total = self.total + item.total_sanctioned_amount
 		for item in self.get("purchase_inv_payments"):
 			self.total = self.total + item.amount
 
 @frappe.whitelist()
 def get_items(account, from_date, to_date):
 
-	cec = frappe.db.sql('''select cec.name, ge.posting_date, cec.description, cec.total, ge.name, jea.name
-				from `tabGL Entry` ge
-				left join (`tabJournal Entry Account` jea) on (ge.voucher_no = jea.parent)
+	cec = frappe.db.sql('''select cec.name, gle.posting_date as date, cec.description, cec.total, gle.name as gle, jea.name as jea
+				from `tabGL Entry` gle
+				left join (`tabJournal Entry Account` jea) on (gle.voucher_no = jea.parent)
 				left join (`tabCash Expense Claim` cec) on (jea.reference_name = cec.name)
-				where ge.voucher_type = "Journal Entry" AND ge.account = %s AND ge.posting_date BETWEEN %s AND %s''',(account, from_date, to_date), as_dict = 1)
+				where  not exists (
+	 				select * from `tabPetty Reimbursement CEC Item` pri where pri.cash_expense_claim = cec.name
+	 			) and cec.name != '' and gle.voucher_type = "Journal Entry" AND gle.account = %s AND gle.posting_date BETWEEN %s AND %s
+				group by gle.name''',(account, from_date, to_date), as_dict = 1)
 
-	# ec = frappe.db.sql('''select ec.name, ec.posting_date, ec.remark, ec.total_sanctioned_amount
-	# 			from `tabJournal Entry` je
-	# 			left join (`tabExpense Claim` ec) on (je.reference_name = ec.journal_entry)
-	# 			where not exists (
-	# 				select * from `tabPetty Reimbursement Item` pcri where pcri.expense_claim = ec.name
-	# 			) AND ec.docstatus = 1 AND je.docstatus = 1 AND ec.cash_account = %s AND ec.posting_date BETWEEN %s AND %s''',(account, from_date, to_date), as_dict = 1)
+	ec = frappe.db.sql('''select ec.name, gle.posting_date as date, ec.remark, ec.total_sanctioned_amount, gle.name as gle
+				from `tabGL Entry` gle
+				left join (`tabExpense Claim` ec) on (gle.voucher_no = ec.name)
+				where  not exists (
+	 				select * from `tabPetty Reimbursement EC Item` pri where pri.expense_claim = ec.name
+	 			) AND gle.voucher_type = "Expense Claim" AND gle.account = %s AND gle.posting_date BETWEEN %s AND %s
+				group by gle.name''',(account, from_date, to_date), as_dict = 1)
 
 	pe = frappe.db.sql('''select pe.name, pe.posting_date, pe.paid_amount, GROUP_CONCAT(pii.item_name ORDER BY pii.item_name SEPARATOR ', ') as description
 				from `tabPayment Entry` pe
@@ -49,6 +55,6 @@ def get_items(account, from_date, to_date):
 				where not exists (
 					select * from `tabPetty Cash Payment Reimbursement Item` pcpri where pcpri.payment_entry = pe.name
 				) AND pe.docstatus = 1 AND pe.paid_from = %s AND pe.posting_date BETWEEN %s AND %s
-				group by pe.name LIMIT 10''',(account, from_date, to_date), as_dict = 1)
+				group by pe.name''',(account, from_date, to_date), as_dict = 1)
 
-	return {'cec': cec, 'pe': pe}
+	return {'cec': cec, 'ec': ec, 'pe': pe}
