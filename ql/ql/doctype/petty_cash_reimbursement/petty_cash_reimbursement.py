@@ -31,6 +31,7 @@ class PettyCashReimbursement(Document):
 
 @frappe.whitelist()
 def get_items(account, from_date, to_date):
+	cec = ec = pe = []
 
 	cec = frappe.db.sql('''select cec.name, gle.posting_date as date, cec.description, cec.total, gle.name as gle, jea.name as jea
 				from `tabGL Entry` gle
