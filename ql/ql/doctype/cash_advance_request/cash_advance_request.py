@@ -51,7 +51,8 @@ def make_bank_entry(dt, dn):
 	je.posting_date = nowdate()
 	je.voucher_type = 'Bank Entry'
 	je.company = company
-	je.remark = 'Payment against Cash Advance Request: ' + dn + '\n' + doc.purpose
+	je.remark = 'Payment against Cash Advance Request: ' + dn + '\n' + doc.description
+	je.mode_of_payment = doc.mode_of_payment
 	cost_center = doc.cost_center if doc.cost_center else erpnext.get_default_cost_center(doc.company)
 
 	je.append("accounts", {

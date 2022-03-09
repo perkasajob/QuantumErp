@@ -1,21 +1,22 @@
 {
- "creation": "2022-01-12 12:19:49.572160",
+ "creation": "2022-03-09 15:14:54.794724",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "payment_entry",
+  "cash_expense_claim",
   "date",
   "amount",
-  "description"
+  "description",
+  "gle"
  ],
  "fields": [
   {
-   "fieldname": "payment_entry",
+   "fieldname": "cash_expense_claim",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Payment Entry",
-   "options": "Payment Entry",
+   "label": "Cash Expense Claim",
+   "options": "Cash Expense Claim",
    "reqd": 1
   },
   {
@@ -38,13 +39,20 @@
    "fieldtype": "Text",
    "in_list_view": 1,
    "label": "Description"
+  },
+  {
+   "fieldname": "gle",
+   "fieldtype": "Link",
+   "label": "GLE",
+   "options": "GL Entry",
+   "read_only": 1
   }
  ],
  "istable": 1,
- "modified": "2022-01-12 12:19:54.504954",
+ "modified": "2022-03-09 15:14:54.794724",
  "modified_by": "Administrator",
  "module": "QL",
- "name": "Petty Cash Payment Reimbursement Item",
+ "name": "Petty Reimbursement CEC Item",
  "owner": "Administrator",
  "permissions": [],
  "quick_entry": 1,

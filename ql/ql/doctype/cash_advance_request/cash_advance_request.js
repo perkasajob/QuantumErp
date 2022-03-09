@@ -22,27 +22,40 @@ frappe.ui.form.on('Cash Advance Request', {
 	},
 	refresh: function(frm) {
 		if(frm.doc.workflow_state === "Approved"){
-			frm.add_custom_button(__('Journal Entry'), function() {
-				frappe.model.with_doctype('Journal Entry', function() {
-					var je = frappe.model.get_new_doc('Journal Entry');
-					je.remark = frm.doc.description
-					je.cheque_no = frm.doc.cheque_no
-					je.cheque_date = frm.doc.cheque_date
-					je.user_remark = frm.doc.user_remark
+			frm.add_custom_button(__('Journal Entry'),
+				function() { frm.events.make_journal_entry(frm); }, __('Create'));
+			// 	frappe.model.with_doctype('Journal Entry', function() {
+			// 		var je = frappe.model.get_new_doc('Journal Entry');
+			// 		je.remark = frm.doc.description
+			// 		je.cheque_no = frm.doc.cheque_no
+			// 		je.cheque_date = frm.doc.cheque_date
+			// 		je.user_remark = frm.doc.user_remark
 
-					// var accounts = frm.get_field('accounts').grid.get_selected_children();
-					var je_account = frappe.model.add_child(je, 'accounts');
-					je_account.credit_in_account_currency = Math.abs(frm.doc.credit_in_account_currency)
-					je_account.account = frm.doc.account
-					je_account.bank_account = frm.doc.bank_account
-					je_account.cost_center = frm.doc.cost_center
-					je_account.reference_due_date = frm.doc.req_date
-					je_account.reference_type = frm.doc.doctype
-					je_account.reference_name = frm.doc.name
-					je_account.is_advance = 'Yes'
-					frappe.set_route('Form', 'Journal Entry', je.name);
-				});
-			}, __('Create'));
+			// 		var je_account = frappe.model.add_child(je, 'accounts');
+			// 		je_account.credit_in_account_currency = Math.abs(frm.doc.credit_in_account_currency)
+			// 		je_account.account = frm.doc.account
+			// 		je_account.cost_center = frm.doc.cost_center
+			// 		je_account.bank_account = frm.doc.bank_account
+			// 		je_account.reference_due_date = frm.doc.req_date
+
+			// 		var je_account_debit = frappe.model.add_child(je, 'accounts');
+			// 		je_account_debit.account = frm.doc.advance_account
+			// 		je_account_debit. debit_in_account_currency = Math.abs(frm.doc.credit_in_account_currency)
+			// 		je_account_debit.party_type = "Employee"
+			// 		je_account_debit.party = frm.doc.employee
+			// 		je_account_debit.cost_center = frm.doc.cost_center
+			// 		je_account_debit.is_advance = 'Yes'
+			// 		je_account_debit.reference_type = frm.doc.doctype
+			// 		je_account_debit.reference_name = frm.doc.name
+
+			// 		// var accounts = frm.get_field('accounts').grid.get_selected_children();
+
+
+
+			// 		frappe.set_route('Form', 'Journal Entry', je.name);
+			// 	});
+			// }, __('Create'));
+
 			// if ((flt(frm.doc.credit_in_account_currency) <= flt(frm.doc.requested_amount))
 			// 	&& frappe.model.can_create("Payment Entry")) {
 			// 	frm.add_custom_button(__('Payment'),
@@ -124,6 +137,20 @@ frappe.ui.form.on('Cash Advance Request', {
 			method = "ql.ql.doctype.cash_advance_request.cash_advance_request.make_bank_entry"
 		}
 
+		return frappe.call({
+			method: method,
+			args: {
+				"dt": frm.doc.doctype,
+				"dn": frm.doc.name
+			},
+			callback: function(r) {
+				var doclist = frappe.model.sync(r.message);
+				frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+			}
+		});
+	},
+	make_journal_entry: function(frm) {
+		var	method = "ql.ql.doctype.cash_advance_request.cash_advance_request.make_bank_entry"
 		return frappe.call({
 			method: method,
 			args: {

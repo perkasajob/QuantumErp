@@ -9,6 +9,16 @@ frappe.ui.form.on('Cash Expense Claim', {
 					frm.set_value("company", default_company)
 				})
 		}
+
+		frm.set_query("cash_advance_request", function(doc) {
+			return {
+				filters: {
+					"employee": doc.employee,
+					"workflow_state": ['in', ["Approved","Booked"]]
+				}
+			};
+		});
+
 	},
 	onload(frm){
 		frm.set_query("journal_entry", function() {
@@ -81,6 +91,8 @@ frappe.ui.form.on('Cash Expense Claim', {
 	// 	};
 	// },
 	cash_advance_request: function(frm){
+		if(!frm.doc.cash_advance_request)
+			return;
 		frappe.db.get_doc('Cash Advance Request', frm.doc.cash_advance_request).then(ca =>{
 			if(!["Approved","Booked"].includes(ca.workflow_state)){
 				frappe.msgprint("status must be either Approved or Booked")
