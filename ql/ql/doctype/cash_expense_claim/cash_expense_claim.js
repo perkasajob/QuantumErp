@@ -10,14 +10,14 @@ frappe.ui.form.on('Cash Expense Claim', {
 				})
 		}
 
-		frm.set_query("cash_advance_request", function(doc) {
-			return {
-				filters: {
-					"employee": doc.employee,
-					"workflow_state": ['in', ["Approved","Booked"]]
-				}
-			};
-		});
+		// frm.set_query("cash_advance_request", function(doc) {
+		// 	return {
+		// 		filters: {
+		// 			"employee": doc.employee,
+		// 			"workflow_state": ['in', ["Approved","Booked"]]
+		// 		}
+		// 	};
+		// });
 
 	},
 	onload(frm){
