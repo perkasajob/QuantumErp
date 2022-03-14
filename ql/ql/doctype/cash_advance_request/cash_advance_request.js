@@ -104,6 +104,9 @@ frappe.ui.form.on('Cash Advance Request', {
 			frappe.msgprint(msg);
             throw msg;
 		}
+		if(frm.doc.user_acc){
+			frm.set_value("mode_of_payment","Wire Transfer")
+		}
 	},
 	onload(frm){
 		frm.set_query("journal_entry", function() {
