@@ -15,7 +15,7 @@ class CashAdvanceRequest(Document):
 		super(CashAdvanceRequest, self).__init__(*args, **kwargs)
 
 	def onload(self):
-		if not self.employee :
+		if not self.employee:
 			employee = frappe.db.get_all('Employee', filters={'user_id': frappe.session['user']}, fields=['name', 'employee_number'])
 			if employee:
 				self.employee = employee[0].name
