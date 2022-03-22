@@ -7,13 +7,13 @@
  "field_order": [
   "requestee",
   "employee",
+  "employee_number",
   "cash_advance_request",
   "journal_entry",
   "cb1",
   "verifier",
   "purchase_date",
   "department",
-  "petty_cash",
   "sb1",
   "item_request",
   "items",
@@ -221,10 +221,16 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company"
+  },
+  {
+   "fetch_from": "employee.employee_number",
+   "fieldname": "employee_number",
+   "fieldtype": "Read Only",
+   "label": "Employee Number"
   }
  ],
  "is_submittable": 1,
- "modified": "2022-01-14 10:00:41.504768",
+ "modified": "2022-03-17 15:46:56.710096",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Expense Claim",
