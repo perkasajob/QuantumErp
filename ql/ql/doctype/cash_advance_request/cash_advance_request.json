@@ -244,7 +244,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2022-03-17 15:21:10.752359",
+ "modified": "2022-03-22 14:17:45.388754",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Advance Request",
@@ -286,6 +286,18 @@
    "role": "Accounts Manager",
    "share": 1,
    "submit": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
    "write": 1
   },
   {
@@ -362,7 +374,18 @@
    "report": 1,
    "role": "Finance User",
    "share": 1,
-   "submit": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance User",
+   "share": 1,
    "write": 1
   },
   {
@@ -377,6 +400,18 @@
    "role": "Finance Manager",
    "share": 1,
    "submit": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance Manager",
+   "share": 1,
    "write": 1
   }
  ],

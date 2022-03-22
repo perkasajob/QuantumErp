@@ -230,7 +230,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2022-03-17 15:46:56.710096",
+ "modified": "2022-03-22 14:19:05.669529",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Expense Claim",
@@ -246,7 +246,6 @@
    "report": 1,
    "role": "Accounts User",
    "share": 1,
-   "submit": 1,
    "write": 1
   },
   {
@@ -372,7 +371,18 @@
    "report": 1,
    "role": "Finance User",
    "share": 1,
-   "submit": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance User",
+   "share": 1,
    "write": 1
   },
   {
