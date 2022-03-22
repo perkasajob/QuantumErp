@@ -410,8 +410,8 @@ class QLStockEntry(StockController):
 			work_order = frappe.get_doc("Work Order", self.work_order)
 			if not frappe.db.get_value("Warehouse", work_order.wip_warehouse, "is_group") \
 					and not work_order.skip_transfer and self.inspection_required:
-				wip_warehouse = work_order.wip_warehouse
-				if 	work_order.status != "Completed" or work_order.status != "Closed":
+
+				if work_order.status not in ["Completed", "Closed"]:
 					frappe.throw(_("Work Order {0}: Status still on {1}")
 						.format(self.work_order, work_order.status))
 
