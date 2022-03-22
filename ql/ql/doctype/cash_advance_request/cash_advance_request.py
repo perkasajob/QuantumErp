@@ -16,7 +16,6 @@ class CashAdvanceRequest(Document):
 
 	def onload(self):
 		employee = frappe.db.get_all('Employee', filters={'user_id': 'perkasajob@quantum-laboratories.com'}, fields=['name', 'employee_number'])
-		frappe.throw("{0}".format(employee[0].name))
 		if employee:
 			self.employee = employee[0].name
 			self.employee_number = employee[0].employee_number
