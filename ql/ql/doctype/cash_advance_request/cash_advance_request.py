@@ -15,11 +15,10 @@ class CashAdvanceRequest(Document):
 		super(CashAdvanceRequest, self).__init__(*args, **kwargs)
 
 	def onload(self):
-		employee = frappe.db.get_all('Employee', filters={'user_id': 'perkasajob@quantum-laboratories.com'}, fields=['name', 'employee_number'])
+		employee = frappe.db.get_all('Employee', filters={'user_id': frappe.session['user']}, fields=['name', 'employee_number'])
 		if employee:
 			self.employee = employee[0].name
 			self.employee_number = employee[0].employee_number
-		#frappe.session['user']
 
 	def validate(self):
 		self.calculate_item_values()
