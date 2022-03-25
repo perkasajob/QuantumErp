@@ -89,9 +89,6 @@ frappe.ui.form.on('Petty Cash Reimbursement', {
 	before_workflow_action(frm){
 		if(frm.selected_workflow_action === "Submit"){
 			frappe.db.set_value(frm.doc.doctype, frm.doc.name, 'verifier', frappe.user.full_name())
-		} else if(frm.selected_workflow_action === "Finish"){
-			if(!frm.doc.journal_entry)
-				frappe.throw(__("Please set a Journal Entry"));
 		}
 	}
 });
