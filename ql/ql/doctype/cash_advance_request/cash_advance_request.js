@@ -123,8 +123,8 @@ frappe.ui.form.on('Cash Advance Request', {
 			.then(value => {
 				dept_list = value.split(",");
 				var dept = dept_list.find((e)=>{return frappe.user.has_role(e)})
-				if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Cash Advance Request Verificator"))
-					frm.set_df_property("department", "read_only", dept ? 1 : 0);
+				// if(!frappe.user.has_role("System Manager") && !frappe.user.has_role("Cash Advance Request Verificator"))
+				// 	frm.set_df_property("department", "read_only", dept ? 1 : 0);
 				frm.set_value("department", dept)
 			});
 		}
