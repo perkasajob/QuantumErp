@@ -14,23 +14,15 @@ class CashAdvanceRequest(Document):
 	def __init__(self, *args, **kwargs):
 		super(CashAdvanceRequest, self).__init__(*args, **kwargs)
 
-	def onload(self):
-		if not self.employee:
-			employee = frappe.db.get_all('Employee', filters={'user_id': frappe.session['user']}, fields=['name', 'employee_number'])
-			if employee:
-				self.employee = employee[0].name
-				self.employee_number = employee[0].employee_number
-
 	def validate(self):
 		self.calculate_item_values()
-
-	def on_update(self):
 		if self.workflow_state == "Draft":
 			self.db_set('requestee', get_user_fullname(frappe.session['user']))
 			if not self.employee:
 				employee = frappe.db.get_list("Employee", filters={"user_id": frappe.session['user']})
 				if employee:
 					self.db_set('employee', employee[0].name)
+					self.employee_number = employee[0].employee_number
 
 	def calculate_item_values(self):
 		total = 0
