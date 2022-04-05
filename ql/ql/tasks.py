@@ -12,7 +12,7 @@ def daily():
 
 @frappe.whitelist()
 def quality_inspection_scheduler(today=nowdate()):
-	month_map = {'Monthly': 30, 'Quarterly': 3*30, 'Half-yearly': 6*30, 'Yearly': 12*30}
+	month_map = {'Monthly': 30, 'Quarterly': 3*30, 'Half-yearly': 6*30, 'Yearly': 12*30, '2 Yearly': 2*12*30 }
 	ql_settings = frappe.get_doc('QL Settings')
 
 	qis = frappe.db.sql("""select `tabQuality Inspection`.name as qi, `tabQuality Inspection`.retest_period as retest_period, `tabQuality Inspection`.modified as date, \
