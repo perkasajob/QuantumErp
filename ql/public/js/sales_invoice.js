@@ -2,7 +2,7 @@ frappe.ui.form.on('Sales Invoice', {
 	validate(frm){
 		if(frm.doc.is_return){
 			frm.set_value('taxes', [])
-			frm.set_value('taxes_and_charges', '')
+			// frm.set_value('taxes_and_charges', '')
 			// frm.set_value('mdp_discount_amount', 0)
 			frm.set_value('mdp_discount_margin', 0)
 			// if(!frm.doc.taxes_and_charges){
