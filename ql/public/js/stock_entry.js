@@ -40,6 +40,8 @@ frappe.ui.form.on('Stock Entry', {
 		(async () => {
 			await backdate_batch_no(frm)
 		})();
+
+		frm.set_value("check_fetched_item","")
     },
 	onload_post_render(frm){
 		if(frm.doc.pick_list && !frm.doc.work_order)
@@ -72,6 +74,26 @@ frappe.ui.form.on('Stock Entry', {
 			frm.set_value('inspection_required', 0)
 		if(frm.doc.purpose = "Material Transfer")
 			frm.set_value('inspection_required', 0)
+	},
+	check_fetched_item: function(doc, cdt, cdn) {
+		let scan_check_fetched_field = doc.fields_dict["check_fetched_item"];
+		var d = locals[cdt][cdn];
+		if (d.check_fetched_item) {
+			frappe.call({
+				method: "erpnext.selling.page.point_of_sale.point_of_sale.search_serial_or_batch_or_barcode_number",
+				args: { search_value: d.check_fetched_item },
+				callback: function(r) {
+					let idxFound = 0
+					if (!r.exe){
+						doc.doc.items.forEach(o=>{
+							if(o.item_code === r.message.item_code) idxFound = o.idx
+						})
+						if(!idxFound) scan_check_fetched_field.set_new_description('<span style="color:red;">Item Not Found!</span>')
+						else scan_check_fetched_field.set_new_description("Items[" + idxFound + "}: "+ r.message.item_code);
+					}
+				}
+			});
+		}
 	},
 })
 
