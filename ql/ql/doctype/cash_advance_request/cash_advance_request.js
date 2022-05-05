@@ -73,7 +73,7 @@ frappe.ui.form.on('Cash Advance Request', {
 					cec.department = frm.doc.department
 
 					// var accounts = frm.get_field('accounts').grid.get_selected_children();
-					var cec_account = frappe.model.add_child(cec, 'accounts');
+					// var cec_account = frappe.model.add_child(cec, 'accounts');
 					var items = frm.get_field('items').grid.get_selected_children();
 					if(!items.length) {
 						items = frm.doc.items;
@@ -86,10 +86,10 @@ frappe.ui.form.on('Cash Advance Request', {
 						cec_item.rate = item.rate;
 						cec_item.note = item.note;
 					});
-					cec_account.cash_advance_request = frm.doc.credit_in_account_currency
-					cec_account.account = frm.doc.account
-					cec_account.bank_account = frm.doc.bank_account
-					cec_account.cost_center = frm.doc.cost_center
+					cec.cash_advance_request_amount = frm.doc.credit_in_account_currency
+					cec.account = frm.doc.account
+					cec.bank_account = frm.doc.bank_account
+					cec.cost_center = frm.doc.cost_center
 					frappe.set_route('Form', 'Cash Expense Claim', cec.name);
 				});
 			});
