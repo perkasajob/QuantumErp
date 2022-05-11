@@ -14,7 +14,7 @@ from dateutil import parser
 from six import iteritems, text_type, string_types, integer_types
 from erpnext.utilities.transaction_base import TransactionBase
 from frappe import _
-from erpnext.controllers.accounts_controller import AccountsController
+# from erpnext.controllers.accounts_controller import AccountsController
 from erpnext.controllers.buying_controller import BuyingController
 from erpnext.controllers.stock_controller import StockController
 from ql.overrides import ql_validate_rate_with_reference_doc, money_in_words, validate_multiple_billing, update_raw_materials_supplied_based_on_bom, buyingcontroller_validate, stockcontroller_validate
@@ -30,7 +30,7 @@ def get_logged_user_dept():
 frappe.model.base_document.get_controller = get_controller
 TransactionBase.validate_rate_with_reference_doc = ql_validate_rate_with_reference_doc
 frappe.utils.money_in_words = money_in_words
-AccountsController.validate_multiple_billing = validate_multiple_billing
+# AccountsController.validate_multiple_billing = validate_multiple_billing
 # BuyingController.update_raw_materials_supplied_based_on_bom = update_raw_materials_supplied_based_on_bom
 BuyingController.validate = buyingcontroller_validate
 
