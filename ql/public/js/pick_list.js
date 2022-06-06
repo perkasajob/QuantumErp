@@ -5,7 +5,7 @@ frappe.ui.form.on('Pick List', {
 		// set_query_inspection(frm)
 	},
 	onload(frm){
-		if(!frm.doc.requestee){
+		if(frm.doc.docstatus == 0){
 			frm.set_value("requestee", frappe.user.full_name())
 		}
 	},
@@ -19,10 +19,6 @@ frappe.ui.form.on('Pick List', {
 				});
 				frm.refresh_fields("locations");
 			});
-
-		if(!frm.doc.requestee){
-			frm.set_value("requestee", frappe.user.full_name())
-		}
 	}
 })
 
