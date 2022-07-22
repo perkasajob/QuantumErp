@@ -77,6 +77,14 @@ def get_data():
 					{
 						"type": "doctype",
 						"name": "Sales Stock Return",
+					},
+					{
+						"type": "doctype",
+						"name": "Pre Production Plan",
+					},
+					{
+						"type": "doctype",
+						"name": "Forecast ROFO",
 					}
 				]
 			}
