@@ -1,0 +1,22 @@
+{
+ "add_total_row": 1,
+ "creation": "2022-06-23 11:42:41.988645",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Quantum Labs LH",
+ "modified": "2022-06-23 15:30:36.840886",
+ "modified_by": "dwi@ksp.ksp",
+ "module": "QL",
+ "name": "Item Wise Sales Invoice",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT \n\nsi.name \"Sales Invoice\",\nsi.customer\"Customer\",\nsii.item_code \"Item Code\",\nsii.item_name \"Item\",\nsii.qty \"Qty\",\n/* sii.rate \"Rate\", */\nsii.amount \"Amount\",\nsii.net_amount \"Net Amount\"\n/* si.total_taxes_and_charges \"Total Taxes and Charges\" */\n\nFROM `tabSales Invoice Item` as sii\n\nLEFT JOIN `tabSales Invoice` as si\n\nON sii.parent=si.name \n\nwhere si.posting_date >= %(from_date)s and si.posting_date <= %(to_date)s and si.docstatus=1",
+ "ref_doctype": "Sales Invoice",
+ "report_name": "Item Wise Sales Invoice",
+ "report_type": "Query Report",
+ "roles": []
+}

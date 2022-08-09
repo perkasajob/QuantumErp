@@ -1,0 +1,326 @@
+{
+ "autoname": "format:PPP-{month}{year}-{item_code}-{###}",
+ "creation": "2022-06-30 16:07:42.220366",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "column_break_2",
+  "confidence_level",
+  "planned_qty",
+  "section_break_2",
+  "target_date",
+  "pm",
+  "ppic",
+  "column_break_6",
+  "month",
+  "year",
+  "wh",
+  "mkt",
+  "section_break_11",
+  "prev_month_forecast",
+  "forecast",
+  "column_break_13",
+  "prev_month_rofo",
+  "rofo",
+  "stock_section",
+  "work_in_progress",
+  "apl",
+  "dnr",
+  "total_stock",
+  "column_break_17",
+  "production_output",
+  "ppg",
+  "tsj",
+  "min_safety_stock_qty",
+  "sales_section",
+  "total_sales",
+  "accuracy",
+  "safety_stock",
+  "column_break_24",
+  "ams3",
+  "ams12",
+  "safety_stock_ams3",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "target_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Target Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pm",
+   "fieldtype": "Link",
+   "label": "PM",
+   "options": "User"
+  },
+  {
+   "fieldname": "ppic",
+   "fieldtype": "Link",
+   "label": "PPIC",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Read Only",
+   "label": "Month"
+  },
+  {
+   "fieldname": "year",
+   "fieldtype": "Read Only",
+   "label": "Year"
+  },
+  {
+   "fieldname": "wh",
+   "fieldtype": "Link",
+   "label": "WH",
+   "options": "User"
+  },
+  {
+   "fieldname": "mkt",
+   "fieldtype": "Link",
+   "label": "MKT",
+   "options": "User"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "forecast",
+   "fieldtype": "Read Only",
+   "label": "Forecast"
+  },
+  {
+   "fieldname": "rofo",
+   "fieldtype": "Read Only",
+   "label": "ROFO"
+  },
+  {
+   "fieldname": "stock_section",
+   "fieldtype": "Section Break",
+   "label": "Stock"
+  },
+  {
+   "fieldname": "apl",
+   "fieldtype": "Read Only",
+   "label": "APL"
+  },
+  {
+   "fieldname": "dnr",
+   "fieldtype": "Read Only",
+   "label": "DNR"
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ppg",
+   "fieldtype": "Read Only",
+   "label": "PPG"
+  },
+  {
+   "fieldname": "tsj",
+   "fieldtype": "Read Only",
+   "label": "TSJ"
+  },
+  {
+   "fieldname": "sales_section",
+   "fieldtype": "Section Break",
+   "label": "Sales"
+  },
+  {
+   "fieldname": "total_sales",
+   "fieldtype": "Read Only",
+   "label": "Total Sales"
+  },
+  {
+   "fieldname": "ams3",
+   "fieldtype": "Read Only",
+   "label": "AMS3"
+  },
+  {
+   "fieldname": "ams12",
+   "fieldtype": "Read Only",
+   "label": "AMS12"
+  },
+  {
+   "fieldname": "accuracy",
+   "fieldtype": "Read Only",
+   "label": "Accuracy"
+  },
+  {
+   "fieldname": "safety_stock",
+   "fieldtype": "Read Only",
+   "label": "Safety Stock"
+  },
+  {
+   "fieldname": "safety_stock_ams3",
+   "fieldtype": "Read Only",
+   "label": "Safety Stock AMS3"
+  },
+  {
+   "fieldname": "planned_qty",
+   "fieldtype": "Data",
+   "label": "Planned Qty"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Pre Production Plan",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_24",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Read Only",
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "prev_month_forecast",
+   "fieldtype": "Read Only",
+   "label": "Prev Month Forecast"
+  },
+  {
+   "fieldname": "prev_month_rofo",
+   "fieldtype": "Read Only",
+   "label": "Prev Month Rofo"
+  },
+  {
+   "fieldname": "work_in_progress",
+   "fieldtype": "Read Only",
+   "label": "Work in Progress"
+  },
+  {
+   "fieldname": "production_output",
+   "fieldtype": "Read Only",
+   "label": "Production Output"
+  },
+  {
+   "fieldname": "total_stock",
+   "fieldtype": "Read Only",
+   "label": "Total Stock"
+  },
+  {
+   "default": "84%",
+   "fieldname": "confidence_level",
+   "fieldtype": "Select",
+   "label": "Confidence Level",
+   "options": "84%\n90%\n95%\n99%",
+   "reqd": 1
+  },
+  {
+   "fieldname": "min_safety_stock_qty",
+   "fieldtype": "Read Only",
+   "label": "Min Safety Stock Qty"
+  }
+ ],
+ "is_submittable": 1,
+ "modified": "2022-07-21 14:41:52.904667",
+ "modified_by": "Administrator",
+ "module": "QL",
+ "name": "Pre Production Plan",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "PPIC",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "MKT",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

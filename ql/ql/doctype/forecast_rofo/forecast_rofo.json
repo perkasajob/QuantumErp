@@ -1,0 +1,172 @@
+{
+ "autoname": "format:FCRF-{month}{year}-{item_code}",
+ "creation": "2022-07-02 12:12:56.304328",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "column_break_2",
+  "item_name",
+  "section_break_2",
+  "target_date",
+  "pm",
+  "ppic",
+  "column_break_6",
+  "year",
+  "month",
+  "mkt",
+  "section_break_11",
+  "forecast",
+  "rofo"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Read Only",
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "target_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Target Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pm",
+   "fieldtype": "Link",
+   "label": "PM",
+   "options": "User"
+  },
+  {
+   "fieldname": "ppic",
+   "fieldtype": "Link",
+   "label": "PPIC",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "year",
+   "fieldtype": "Read Only",
+   "label": "Year"
+  },
+  {
+   "fieldname": "mkt",
+   "fieldtype": "Link",
+   "label": "MKT",
+   "options": "User"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "forecast",
+   "fieldtype": "Data",
+   "label": "Forecast",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rofo",
+   "fieldtype": "Data",
+   "label": "ROFO",
+   "reqd": 1
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Read Only",
+   "label": "Month"
+  }
+ ],
+ "modified": "2022-07-02 12:35:33.241426",
+ "modified_by": "Administrator",
+ "module": "QL",
+ "name": "Forecast ROFO",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "PPIC",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "MKT",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
