@@ -1,0 +1,30 @@
+{
+ "creation": "2022-08-09 11:29:34.215769",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item"
+ ],
+ "fields": [
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2022-08-09 11:29:34.215769",
+ "modified_by": "Administrator",
+ "module": "QL",
+ "name": "PPP Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
