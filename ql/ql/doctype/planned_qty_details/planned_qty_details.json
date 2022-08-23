@@ -1,0 +1,56 @@
+{
+ "creation": "2022-08-11 13:40:10.416627",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "supplier",
+  "qty",
+  "batch_size",
+  "batch_qty",
+  "note"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Supplier",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Qty"
+  },
+  {
+   "fieldname": "batch_size",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Batch Size"
+  },
+  {
+   "fieldname": "batch_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Batch Qty"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  }
+ ],
+ "istable": 1,
+ "modified": "2022-08-12 10:35:38.839708",
+ "modified_by": "Administrator",
+ "module": "QL",
+ "name": "Planned Qty Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

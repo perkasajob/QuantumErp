@@ -6,5 +6,5 @@ from __future__ import unicode_literals
 # import frappe
 import unittest
 
-class TestPreProductionPlan(unittest.TestCase):
+class TestPPPItemGroup(unittest.TestCase):
 	pass

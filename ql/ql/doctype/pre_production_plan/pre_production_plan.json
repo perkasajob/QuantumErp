@@ -1,15 +1,24 @@
 {
- "autoname": "format:PPP-{month}{year}-{item_code}-{###}",
+ "autoname": "naming_series:",
  "creation": "2022-06-30 16:07:42.220366",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "item_code",
-  "item_name",
+  "naming_series",
+  "item_group",
+  "group_pareto",
   "column_break_2",
   "confidence_level",
+  "recommend_prod_qty",
+  "section_break_7",
   "planned_qty",
+  "section_break_9",
+  "total_planned_qty",
+  "column_break_11",
+  "total_batch_qty",
+  "section_break_13",
+  "note",
   "section_break_2",
   "target_date",
   "pm",
@@ -35,6 +44,7 @@
   "ppg",
   "tsj",
   "min_safety_stock_qty",
+  "ref_safety_stock",
   "sales_section",
   "total_sales",
   "accuracy",
@@ -46,14 +56,6 @@
   "amended_from"
  ],
  "fields": [
-  {
-   "fieldname": "item_code",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Item Code",
-   "options": "Item",
-   "reqd": 1
-  },
   {
    "fieldname": "section_break_2",
    "fieldtype": "Section Break"
@@ -183,8 +185,9 @@
   },
   {
    "fieldname": "planned_qty",
-   "fieldtype": "Data",
-   "label": "Planned Qty"
+   "fieldtype": "Table",
+   "label": "Planned Qty",
+   "options": "Planned Qty Details"
   },
   {
    "fieldname": "amended_from",
@@ -206,12 +209,6 @@
   {
    "fieldname": "column_break_2",
    "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "item_code.item_name",
-   "fieldname": "item_name",
-   "fieldtype": "Read Only",
-   "label": "Item Name"
   },
   {
    "fieldname": "prev_month_forecast",
@@ -250,10 +247,73 @@
    "fieldname": "min_safety_stock_qty",
    "fieldtype": "Read Only",
    "label": "Min Safety Stock Qty"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "PPP-.year.month-##"
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Group",
+   "options": "PPP Item Group",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item_group.safety_stock_ams",
+   "fieldname": "ref_safety_stock",
+   "fieldtype": "Read Only",
+   "label": "Ref Safety Stock",
+   "precision": "2"
+  },
+  {
+   "fetch_from": "item_group.group_pareto",
+   "fieldname": "group_pareto",
+   "fieldtype": "Read Only",
+   "label": "Group Pareto"
+  },
+  {
+   "fieldname": "recommend_prod_qty",
+   "fieldtype": "Read Only",
+   "label": "Recommend Prod Qty"
+  },
+  {
+   "fieldname": "total_planned_qty",
+   "fieldtype": "Read Only",
+   "label": "Total Planned Qty"
+  },
+  {
+   "fieldname": "total_batch_qty",
+   "fieldtype": "Read Only",
+   "label": "Total Batch Qty"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Text",
+   "label": "Note"
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_13",
+   "fieldtype": "Section Break"
   }
  ],
  "is_submittable": 1,
- "modified": "2022-07-21 14:41:52.904667",
+ "modified": "2022-08-23 14:40:39.899624",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Pre Production Plan",

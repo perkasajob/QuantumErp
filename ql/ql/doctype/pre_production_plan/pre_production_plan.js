@@ -35,7 +35,7 @@ frappe.ui.form.on('Pre Production Plan', {
 			method: "ql.ql.doctype.pre_production_plan.pre_production_plan.get_data",
 			args: {
 				target_date: frm.doc.target_date,
-				item_code: frm.doc.item_code,
+				item_group: frm.doc.item_group,
 				month: month,
 				year: frm.doc.year
 			},
@@ -45,9 +45,11 @@ frappe.ui.form.on('Pre Production Plan', {
 						const regex = /D ([A-Z]{3}) - /gm;
 						let d = r.message
 						console.log(r.message)
+						debugger
 						let total_stock_dist = 0
 						let total_stock = 0
 						let work_in_progress = 0
+						let recommend_prod_qty = 0
 						let production_output = 0
 						let confidence_level = constConfidenceLvl[frm.doc.confidence_level]
 						let min_safety_stock_qty= d.ams.ams12 + d.ams.std_val * confidence_level
@@ -58,40 +60,35 @@ frappe.ui.form.on('Pre Production Plan', {
 						frm.set_value("min_safety_stock_qty", Math.round(min_safety_stock_qty))
 
 						frm.set_value("total_sales", flt(d.ams.total_sales))
-						if(d.nextFcRofo.length){
-							frm.set_value("forecast", flt(d.nextFcRofo[0].forecast, 2))
-							frm.set_value("rofo", flt(d.nextFcRofo[0].rofo, 2))
+						if(d.nextFcRofo){
+							frm.set_value("forecast", flt(d.nextFcRofo.forecast, 2))
+							frm.set_value("rofo", flt(d.nextFcRofo.rofo, 2))
 						}
-						if(d.prevFcRofo.length){
-							frm.set_value("prev_month_forecast", flt(d.prevFcRofo[0].forecast, 2))
-							frm.set_value("prev_month_rofo", flt(d.prevFcRofo[0].rofo, 2))
+						if(d.prevFcRofo){
+							frm.set_value("prev_month_forecast", flt(d.prevFcRofo.forecast, 2))
+							frm.set_value("prev_month_rofo", flt(d.prevFcRofo.rofo, 2))
 						}
 						if(frm.doc.rofo){
 							frm.set_value("accuracy", flt(d.ams.total_sales/frm.doc.rofo*100, 2))
 						}
-						if(d.stock.length){
 
-							d.stock.forEach(o => {
-								if(o.warehouse.startsWith('Work-in-Progress')){
-									work_in_progress += o.qty
-								} else {
-									production_output += o.qty
-								}
-							});
-							frm.set_value("work_in_progress", work_in_progress)
-							frm.set_value("production_output", production_output)
-						}
+						frm.set_value("production_output", d.stock_qty)
+						frm.set_value("work_in_progress", d.wip_qty)
 						if(d.stock_dist){
 							d.stock_dist.forEach(o => {
 								let warehouse = getFirstGroup(regex, o.warehouse)[0].toLowerCase()
-								frm.set_value(warehouse, o.qty)
 								total_stock_dist += o.qty
+								frm.set_value(warehouse, o.qty)
 							});
 						}
-						total_stock = total_stock_dist + production_output + work_in_progress
+						total_stock = total_stock_dist + production_output
 						frm.set_value("total_stock", total_stock)
 						frm.set_value("safety_stock", flt(total_stock/frm.doc.rofo, 2))
 						frm.set_value("safety_stock_ams3", flt(total_stock/frm.doc.ams3, 2))
+						if (frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3) > 0)
+							recommend_prod_qty = (frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3)) * frm.doc.ams3 - d.wip_qty
+
+						frm.set_value("recommend_prod_qty", flt(recommend_prod_qty, 2))
 						if(total_stock < frm.doc.min_safety_stock_qty  ){
 							frm.set_value("planned_qty", frm.doc.min_safety_stock_qty - total_stock)
 						}
