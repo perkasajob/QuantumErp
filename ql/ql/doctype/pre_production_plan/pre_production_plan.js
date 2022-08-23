@@ -25,7 +25,7 @@ frappe.ui.form.on('Pre Production Plan', {
 	},
 	get_data: function(frm){
 		let cols = ["ams3", "ams12", "total_sales", "forecast", "rofo", "prev_month_forecast", "prev_month_rofo", "accuracy",
-		 "work_in_progress", "production_output", "apl", "ppg", "dnr", "tsj"]
+		 "work_in_progress", "production_output", "apl", "ppg", "dnr", "tsj" ]
 		cols.forEach(c =>{
 			frm.set_value(c, null)
 		})
@@ -45,10 +45,8 @@ frappe.ui.form.on('Pre Production Plan', {
 						const regex = /D ([A-Z]{3}) - /gm;
 						let d = r.message
 						console.log(r.message)
-						debugger
 						let total_stock_dist = 0
 						let total_stock = 0
-						let work_in_progress = 0
 						let recommend_prod_qty = 0
 						let production_output = 0
 						let confidence_level = constConfidenceLvl[frm.doc.confidence_level]
@@ -89,9 +87,6 @@ frappe.ui.form.on('Pre Production Plan', {
 							recommend_prod_qty = (frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3)) * frm.doc.ams3 - d.wip_qty
 
 						frm.set_value("recommend_prod_qty", flt(recommend_prod_qty, 2))
-						if(total_stock < frm.doc.min_safety_stock_qty  ){
-							frm.set_value("planned_qty", frm.doc.min_safety_stock_qty - total_stock)
-						}
 					}
 				}
 			}
