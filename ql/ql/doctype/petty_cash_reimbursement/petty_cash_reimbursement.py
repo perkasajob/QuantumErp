@@ -33,7 +33,7 @@ class PettyCashReimbursement(Document):
 def get_items(account, from_date, to_date):
 	cec = ec = pe = []
 
-	cec = frappe.db.sql('''select cec.name, gle.posting_date as date, cec.description, cec.total, gle.name as gle, jea.name as jea
+	cec = frappe.db.sql('''select cec.name, gle.posting_date as date, cec.description, cec.total, gle.voucher_no as voucher, jea.name as jea
 				from `tabGL Entry` gle
 				left join (`tabJournal Entry Account` jea) on (gle.voucher_no = jea.parent)
 				left join (`tabCash Expense Claim` cec) on (jea.reference_name = cec.name)
@@ -42,7 +42,7 @@ def get_items(account, from_date, to_date):
 	 			) and cec.name != '' and gle.voucher_type = "Journal Entry" AND gle.account = %s AND gle.posting_date BETWEEN %s AND %s
 				group by gle.name''',(account, from_date, to_date), as_dict = 1)
 
-	ec = frappe.db.sql('''select ec.name, gle.posting_date as date, ec.remark, ec.total_sanctioned_amount, gle.name as gle
+	ec = frappe.db.sql('''select ec.name, gle.posting_date as date, ec.remark, ec.total_sanctioned_amount, gle.voucher_no as voucher
 				from `tabGL Entry` gle
 				left join (`tabExpense Claim` ec) on (gle.voucher_no = ec.name)
 				where  not exists (
@@ -58,4 +58,4 @@ def get_items(account, from_date, to_date):
 				) AND pe.docstatus = 1 AND pe.paid_from = %s AND pe.posting_date BETWEEN %s AND %s
 				group by pe.name''',(account, from_date, to_date), as_dict = 1)
 
-	return {'cec': cec, 'ec': ec, 'pe': pe}
+	return {'cec': cec, 'ec': ec, 'pe': pe, 'cec_total': sum(i['total'] for i in cec), 'ec_total': sum(i['total_sanctioned_amount'] for i in ec), 'pe_total': sum(i['paid_amount'] for i in pe)}

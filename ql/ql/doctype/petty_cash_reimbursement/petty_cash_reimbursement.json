@@ -16,7 +16,13 @@
   "cash_expense_claims",
   "expense_claims",
   "purchase_inv_payments",
+  "section_break_12",
+  "cec_total",
+  "ec_total",
+  "column_break_15",
+  "pip_total",
   "total",
+  "section_break_18",
   "userbank_sb",
   "user_acc",
   "user_acc_name",
@@ -193,10 +199,37 @@
    "fieldtype": "Table",
    "label": "Cash Expense Claims",
    "options": "Petty Reimbursement CEC Item"
+  },
+  {
+   "fieldname": "section_break_12",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cec_total",
+   "fieldtype": "Currency",
+   "label": "CEC Total"
+  },
+  {
+   "fieldname": "ec_total",
+   "fieldtype": "Currency",
+   "label": "EC Total"
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_18",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "pip_total",
+   "fieldtype": "Currency",
+   "label": "PIP Total"
   }
  ],
  "is_submittable": 1,
- "modified": "2022-03-09 16:02:21.723803",
+ "modified": "2022-08-22 20:43:03.857914",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Petty Cash Reimbursement",

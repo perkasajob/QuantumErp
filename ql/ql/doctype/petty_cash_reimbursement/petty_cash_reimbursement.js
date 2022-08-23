@@ -24,33 +24,6 @@ frappe.ui.form.on('Petty Cash Reimbursement', {
 			})
 	},
 	refresh: function(frm) {
-		// frm.add_custom_button(__('Get CEC'), function() {
-		// 	frappe.xcall('ql.ql.doctype.petty_cash_reimbursement.petty_cash_reimbursement.get_items', {account: frm.doc.cash_account})
-		// 	.then(r => {
-		// 		console.log(r)
-		// 		if(r) {
-		// 			debugger
-		// 			r.cec.forEach((d) => {
-		// 				let i = frm.add_child("items");
-		// 				i.cash_expense_claim = d.name;
-		// 				i.date = d.purchase_date;
-		// 				i.amount = d.total;
-		// 				i.description = d.description;
-		// 			})
-		// 			refresh_field("items");
-
-		// 			r.pe.forEach((d) => {
-		// 				let p = frm.add_child("purchase_inv_payments");
-		// 				p.payment_entry = d.name;
-		// 				p.date = d.posting_date;
-		// 				p.amount = d.paid_amount;
-		// 				p.description = d.description;
-		// 			})
-		// 			refresh_field("purchase_inv_payments");
-		// 		}
-		// 	});
-		// })
-
 		if(frm.doc.workflow_state === "Approved"){
 			frm.add_custom_button(__('Create Journal Entry'), function() {
 				frappe.model.with_doctype('Journal Entry', function() {
@@ -103,7 +76,6 @@ function get_items(frm){
 				frm.doc.cash_expense_claims = []
 				frm.doc.expense_claims = []
 				frm.doc.purchase_inv_payments = []
-				let total = 0
 				if(r) {
 					r.cec.forEach((d) => {
 						let i = frm.add_child("cash_expense_claims");
@@ -111,8 +83,7 @@ function get_items(frm){
 						i.date = d.date;
 						i.amount = d.total;
 						i.description = d.description;
-						i.gle = d.gle;
-						total += d.total;
+						i.voucher = d.voucher;
 					})
 					refresh_field("cash_expense_claims");
 
@@ -122,8 +93,7 @@ function get_items(frm){
 						i.posting_date = d.date;
 						i.total_sanctioned_amount = d.total_sanctioned_amount;
 						i.remark = d.remark;
-						i.gle = d.gle;
-						total += d.total_sanctioned_amount;
+						i.voucher = d.voucher;
 					})
 					refresh_field("expense_claims");
 
@@ -133,10 +103,12 @@ function get_items(frm){
 						p.date = d.posting_date;
 						p.amount = d.paid_amount;
 						p.description = d.description;
-						total += d.paid_amount
 					})
 					refresh_field("purchase_inv_payments");
-					frm.set_value('total', total)
+					frm.set_value('cec_total', r.cec_total)
+					frm.set_value('ec_total', r.ec_total)
+					frm.set_value('pip_total', r.pe_total)
+					frm.set_value('total', r.cec_total + r.ec_total + r.pe_total)
 				}
 			});
 	}
