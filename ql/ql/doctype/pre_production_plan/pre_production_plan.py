@@ -60,9 +60,3 @@ def get_data(item_group=None, target_date=None, month=None, year=None):
 	res['wip_qty']	= sum([i.qty for i in res['wip']])
 
 	return res
-
-# 	"""SELECT ams3.qty AS ams3, ams12.qty AS ams12, ams12.std_val as std_val, cur_si.qty AS total_sales
-# FROM (SELECT i.item_code, sum(i.qty)/3 qty from `tabSales Invoice` p LEFT JOIN `tabSales Invoice Item` i ON p.name=i.parent WHERE p.docstatus=1 and p.posting_date BETWEEN (SELECT DATE_SUB("{0}", INTERVAL 3 MONTH )) AND "{0}" and i.item_code IN({1})) ams3
-# LEFT JOIN (SELECT i.item_code, sum(i.qty)/12 qty, std(i.qty) std_val from `tabSales Invoice` p LEFT JOIN `tabSales Invoice Item` i ON p.name=i.parent WHERE p.docstatus=1 and p.posting_date BETWEEN (SELECT DATE_SUB("{0}", INTERVAL 12 MONTH )) AND "{0}" and i.item_code IN({1})) ams12 ON ams12.item_code=ams3.item_code
-# LEFT JOIN (SELECT i.item_code, sum(i.qty) qty from `tabSales Invoice` p LEFT JOIN `tabSales Invoice Item` i ON p.name=i.parent WHERE p.docstatus=1 and p.posting_date BETWEEN (SELECT DATE_SUB("{0}", INTERVAL 1 MONTH )) AND "{0}" and i.item_code IN({1})) cur_si ON cur_si.item_code=ams3.item_code"""
-# .format(target_date, items), as_dict=True)[0]
