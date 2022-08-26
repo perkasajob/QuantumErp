@@ -25,7 +25,7 @@ frappe.ui.form.on('Pre Production Plan', {
 	},
 	get_data: function(frm){
 		let cols = ["ams3", "ams12", "total_sales", "forecast", "rofo", "prev_month_forecast", "prev_month_rofo", "accuracy",
-		 "work_in_progress", "production_output", "apl", "ppg", "dnr", "tsj" ]
+			"recommend_prod_qty", "work_in_progress", "production_output", "apl", "ppg", "dnr", "tsj" ]
 		cols.forEach(c =>{
 			frm.set_value(c, null)
 		})
@@ -50,14 +50,14 @@ frappe.ui.form.on('Pre Production Plan', {
 						let recommend_prod_qty = 0
 						let production_output = 0
 						let confidence_level = constConfidenceLvl[frm.doc.confidence_level]
-						let min_safety_stock_qty= d.ams.ams12 + d.ams.std_val * confidence_level
+						let min_safety_stock_qty= d.ams12.qty + d.ams12.std_val * confidence_level
 
-						frm.set_value("ams3", flt(d.ams.ams3, 2))
-						frm.set_value("ams12", flt(d.ams.ams12, 2))
+						frm.set_value("ams3", flt(d.ams3.qty, 2))
+						frm.set_value("ams12", flt(d.ams12.qty, 2))
 
 						frm.set_value("min_safety_stock_qty", Math.round(min_safety_stock_qty))
 
-						frm.set_value("total_sales", flt(d.ams.total_sales))
+						frm.set_value("total_sales", flt(d.total_sales.qty))
 						if(d.nextFcRofo){
 							frm.set_value("forecast", flt(d.nextFcRofo.forecast, 2))
 							frm.set_value("rofo", flt(d.nextFcRofo.rofo, 2))
@@ -67,7 +67,7 @@ frappe.ui.form.on('Pre Production Plan', {
 							frm.set_value("prev_month_rofo", flt(d.prevFcRofo.rofo, 2))
 						}
 						if(frm.doc.rofo){
-							frm.set_value("accuracy", flt(d.ams.total_sales/frm.doc.rofo*100, 2))
+							frm.set_value("accuracy", flt(d.total_sales.qty/frm.doc.rofo*100, 2))
 						}
 
 						frm.set_value("production_output", d.stock_qty)
@@ -83,8 +83,9 @@ frappe.ui.form.on('Pre Production Plan', {
 						frm.set_value("total_stock", total_stock)
 						frm.set_value("safety_stock", flt(total_stock/frm.doc.rofo, 2))
 						frm.set_value("safety_stock_ams3", flt(total_stock/frm.doc.ams3, 2))
-						if (frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3) > 0)
-							recommend_prod_qty = (frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3)) * frm.doc.ams3 - d.wip_qty
+						if (frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3) > 0){
+							recommend_prod_qty = ((frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3)) * frm.doc.ams3) - d.wip_qty
+						}
 
 						frm.set_value("recommend_prod_qty", flt(recommend_prod_qty, 2))
 					}
