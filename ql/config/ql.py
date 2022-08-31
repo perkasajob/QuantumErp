@@ -41,6 +41,14 @@ def get_data():
 					{
 						"type": "report",
 						"is_query_report": True,
+						"name": "Batch Qty Val",
+						"doctype": "Stock Ledger Entry",
+						"onboard": 1,
+						"dependencies": ["Item","Batch"],
+					},
+					{
+						"type": "report",
+						"is_query_report": True,
 						"name": "WO - Remain Qty",
 						"doctype": "Work Order",
 						"onboard": 1,

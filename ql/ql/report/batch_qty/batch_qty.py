@@ -69,7 +69,7 @@ def get_columns(filters):
 	return columns
 
 def get_conditions(filters):
-	conditions = ""
+	conditions = conditions1 = ""
 
 	if filters.get("end_date"):
 		conditions += "sle.posting_date < {}".format(frappe.db.escape(filters.get('end_date')))
@@ -77,7 +77,13 @@ def get_conditions(filters):
 	if filters.get("batch_no_flt"):
 		conditions += " AND sle.batch_no = {}".format(frappe.db.escape(filters.get('batch_no_flt')))
 
-	return conditions
+	if filters.get("warehouse"):
+		conditions += " AND sle.warehouse = {}".format(frappe.db.escape(filters.get('warehouse')))
+
+	if filters.get("not_empty"):
+		conditions1 += "HAVING SUM(sle.actual_qty) > 0"
+
+	return [conditions, conditions1]
 
 def get_data(filters):
 	conditions = get_conditions(filters)
@@ -104,7 +110,8 @@ def get_mapped_batches_details(conditions):
 			`tabBatch` b ON sle.batch_no = b.name
 		WHERE {conditions}
 		GROUP BY sle.warehouse, sle.batch_no
+		{conditions2}
 		ORDER BY sle.posting_date ASC
-		""".format(conditions=conditions), as_dict=1) #nosec
+		""".format(conditions=conditions[0], conditions2=conditions[1]), as_dict=1) #nosec
 
 	return batches_details

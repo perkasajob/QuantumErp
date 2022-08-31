@@ -26,6 +26,20 @@ frappe.query_reports["Batch Qty"] = {
 		"fieldtype": "Link",
 		"options": "Batch",
 		"width": "80"
+	  },
+	  {
+		"fieldname":"warehouse",
+		"label": "Warehouse",
+		"fieldtype": "Link",
+		"options": "Warehouse",
+		"width": "100"
+	  },
+	  {
+		"fieldname":"not_empty",
+		"label": "not Empty",
+		"fieldtype": "Check",
+		"width": "50",
+		"default": 1
 	  }
 	]
   };
