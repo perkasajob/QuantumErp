@@ -9,7 +9,6 @@
   "employee",
   "employee_number",
   "cash_advance_request",
-  "journal_entry",
   "cb1",
   "verifier",
   "purchase_date",
@@ -185,12 +184,6 @@
    "options": "<div class=\"form-grid\">\n   <div class=\"grid-heading-row\">\n      <div class=\"grid-row\">\n         <div class=\"data-row row\">\n            <div class=\"row-index sortable-handle col col-xs-1\">               \n            </div>            \n            <div class=\"col grid-static-col col-xs-5 \">               \n               <div class=\"static-area ellipsis\">Planned Item</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-1  text-right\">               \n               <div class=\"static-area ellipsis\">Qty</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-1 \">               \n               <div class=\"static-area ellipsis\">UoM</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-2  text-right\">               \n               <div class=\"static-area ellipsis\">Rate</div>\n            </div>\n            <div class=\"col grid-static-col col-xs-2  text-right\">               \n               <div class=\"static-area ellipsis\">Note</div>\n            </div>\n         </div>\n      </div>\n   </div>\n   <div class=\"grid-body\">\n      <div class=\"rows\">\n         <div class=\"grid-row\">\n         <div class=\"data-row row\">\n         [No Data]\n         </div>\n         </div>\n      </div>      \n   </div>\n</div>"
   },
   {
-   "fieldname": "journal_entry",
-   "fieldtype": "Link",
-   "label": "Journal Entry",
-   "options": "Journal Entry"
-  },
-  {
    "fieldname": "department",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -230,7 +223,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2022-03-22 14:19:05.669529",
+ "modified": "2022-09-02 15:55:25.800932",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Expense Claim",
