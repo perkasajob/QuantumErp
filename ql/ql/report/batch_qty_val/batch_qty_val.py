@@ -102,7 +102,7 @@ def get_data(filters):
 
 def get_mapped_batches_details(conditions):
 	batches_details = frappe.db.sql("""
-	    SELECT
+    SELECT
 			sle.posting_date,
 			sle.batch_no,
 			sle.item_code,
