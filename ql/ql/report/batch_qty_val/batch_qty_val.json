@@ -13,7 +13,7 @@
  "module": "QL",
  "name": "Batch Qty Val",
  "owner": "Administrator",
- "prepared_report": 0,
+ "prepared_report": 1,
  "query": "SELECT\r\n  sle.posting_date as \"Date:Date:100\",\r\n  sle.batch_no as \"Batch No:Link/Batch:100\",\r\n  sle.item_code as \"Item:Link/Item:100\",\r\n  i.item_name as \"Item Name:Data:100\",\r\n  sle.warehouse as \"Warehouse:Link/Warehouse:200\",\r\n  SUM(sle.actual_qty) as \"Qty:Float:100\",\r\n  sle.stock_uom as \"UoM:Data:100\"\r\nFROM\r\n  `tabStock Ledger Entry` sle\r\n  INNER JOIN\r\n  `tabItem` i ON sle.item_code = i.item_code\r\nWHERE (sle.posting_date between %(start_date)s and %(end_date)s) and sle.batch_no = %(batch_no_flt)s\r\nGROUP BY sle.warehouse, sle.batch_no\r\nORDER BY sle.posting_date ASC",
  "ref_doctype": "Stock Ledger Entry",
  "report_name": "Batch Qty Val",

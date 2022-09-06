@@ -109,12 +109,24 @@ def get_mapped_batches_details(conditions):
 			i.item_name,
 			sle.warehouse,
 			SUM(sle.actual_qty) as qty,
-			sle.valuation_rate as valuation_rate,
-			sle.valuation_rate * SUM(sle.actual_qty) as stock_value,
+			sl.valuation_rate as valuation_rate,
+			sl.valuation_rate * SUM(sle.actual_qty) as stock_value,
 			sle.stock_uom as uom,
 			b.expiry_date
 		FROM
 			`tabStock Ledger Entry` sle
+		INNER JOIN 	(SELECT t.*
+			  FROM
+			    (
+			    SELECT item_code
+			          ,valuation_rate
+			          ,posting_date
+			          ,MAX(posting_date) OVER (PARTITION BY item_code) AS max_posting_date
+			      FROM `tabStock Ledger Entry`
+			    ) t
+			  WHERE t.posting_date = t.max_posting_date
+			  GROUP BY item_code) sl
+			ON sle.item_code = sl.item_code
 		INNER JOIN
 			`tabItem` i ON sle.item_code = i.item_code
 		INNER JOIN
