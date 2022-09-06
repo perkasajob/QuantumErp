@@ -115,17 +115,8 @@ def get_mapped_batches_details(conditions):
 			b.expiry_date
 		FROM
 			`tabStock Ledger Entry` sle
-		INNER JOIN 	(SELECT t.*
-			  FROM
-			    (
-			    SELECT item_code
-			          ,valuation_rate
-			          ,posting_date
-			          ,MAX(posting_date) OVER (PARTITION BY item_code) AS max_posting_date
-			      FROM `tabStock Ledger Entry`
-			    ) t
-			  WHERE t.posting_date = t.max_posting_date
-			  GROUP BY item_code) sl
+		INNER JOIN 	(SELECT * FROM (SELECT item_code, first_value(valuation_rate) over (partition by item_code order by posting_date DESC) AS valuation_rate FROM  `tabStock Ledger Entry`)
+				sli GROUP BY sli.item_code) sl
 			ON sle.item_code = sl.item_code
 		INNER JOIN
 			`tabItem` i ON sle.item_code = i.item_code
@@ -138,6 +129,3 @@ def get_mapped_batches_details(conditions):
 		""".format(conditions=conditions), as_dict=1) #nosec
 
 	return batches_details
-
-
-#SUM(sle.actual_qty)*i.valuation_rate as stock_value,
