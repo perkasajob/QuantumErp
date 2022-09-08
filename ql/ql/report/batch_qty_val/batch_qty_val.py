@@ -115,9 +115,9 @@ def get_mapped_batches_details(conditions):
 			b.expiry_date
 		FROM
 			`tabStock Ledger Entry` sle
-		INNER JOIN 	(SELECT * FROM (SELECT item_code, first_value(valuation_rate) over (partition by item_code order by posting_date DESC) AS valuation_rate FROM  `tabStock Ledger Entry`)
-				sli GROUP BY sli.item_code) sl
-			ON sle.item_code = sl.item_code
+		INNER JOIN 	(SELECT sli.* FROM (SELECT item_code, warehouse, valuation_rate, first_value(valuation_rate) over (partition by item_code, warehouse order by posting_date DESC) AS val_rate FROM  `tabStock Ledger Entry`)
+		    sli GROUP BY sli.item_code, sli.warehouse) sl
+			ON sle.item_code = sl.item_code AND sle.warehouse = sl.warehouse
 		INNER JOIN
 			`tabItem` i ON sle.item_code = i.item_code
 		INNER JOIN
