@@ -23,6 +23,7 @@ frappe.ui.form.on('Purchase Receipt', {
 	},
 	onload_post_render(frm){
 		set_query_inspection(frm)
+		set_query_for_batch(frm)
 	},
 	refresh(frm) {
 		set_POQty_btn(frm)
@@ -30,6 +31,11 @@ frappe.ui.form.on('Purchase Receipt', {
 			set_auto_batch_insp_btn(frm)
 		}
 		show_stock_ledger(frm)
+		if(frm.doc.is_subcontracted==="Yes" && frm.doc.docstatus === 1) {
+			cur_frm.add_custom_button(__('Consumed Qty Subcontract'),
+				function() { consumed_qty_subcontract(frm) }, __("Create"));
+		}
+
 	},
 	validate(frm) {
 		let project = ""
@@ -50,8 +56,6 @@ frappe.ui.form.on('Purchase Receipt', {
 	},
 
 })
-
-
 
 function show_stock_ledger(frm){
 	var me = this;
@@ -286,6 +290,27 @@ async function create_inspection(frm, o){
 			frappe.msgprint(`Quality Inspection ${doc.name} is Created`)
 		}
     }
+}
+
+function consumed_qty_subcontract(frm) {
+	frappe.model.open_mapped_doc({
+		method: "erpnext.stock.doctype.purchase_receipt.purchase_receipt.make_consumed_qty_subcontract",
+		frm: frm,
+	})
+}
+
+function set_query_for_batch(frm) {
+	// Show item's batches in the dropdown of batch no
+	frm.set_query("batch_no",'supplied_items', function(doc, cdt, cdn){
+		var d =locals[cdt][cdn]
+		return {
+			"query" : "erpnext.controllers.queries.get_batch_no",
+			"filters": {
+				"item_code": d.rm_item_code,
+				"warehouse": frm.doc.supplier_warehouse,
+			}
+		};
+	})
 }
 
 

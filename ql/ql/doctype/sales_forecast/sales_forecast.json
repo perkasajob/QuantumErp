@@ -1,5 +1,5 @@
 {
- "autoname": "format:FCRF-{month}{year}-{item_group}",
+ "autoname": "format:SF-{year}{month}-{item_group}",
  "creation": "2022-07-02 12:12:56.304328",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -16,7 +16,11 @@
   "mkt",
   "section_break_11",
   "forecast",
-  "rofo"
+  "rofo",
+  "column_break_13",
+  "sales_qty",
+  "last_year_sales",
+  "amended_from"
  ],
  "fields": [
   {
@@ -63,14 +67,17 @@
   },
   {
    "fieldname": "forecast",
-   "fieldtype": "Data",
+   "fieldtype": "Float",
    "label": "Forecast",
+   "precision": "2",
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "rofo",
-   "fieldtype": "Data",
+   "fieldtype": "Float",
    "label": "ROFO",
+   "precision": "2",
    "reqd": 1
   },
   {
@@ -85,12 +92,39 @@
    "label": "Item Group",
    "options": "PPP Item Group",
    "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "sales_qty",
+   "fieldtype": "Float",
+   "label": "Sales Qty",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_year_sales",
+   "fieldtype": "Float",
+   "label": "Last Year Sales",
+   "precision": "2"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Sales Forecast",
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
- "modified": "2022-08-23 12:14:23.068868",
+ "is_submittable": 1,
+ "modified": "2022-09-19 16:20:45.960550",
  "modified_by": "Administrator",
  "module": "QL",
- "name": "Forecast ROFO",
+ "name": "Sales Forecast",
  "owner": "Administrator",
  "permissions": [
   {

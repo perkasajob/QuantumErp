@@ -27,6 +27,14 @@ frappe.ui.form.on('Stock Entry', {
 	refresh(frm) {
 		set_auto_batch_insp_btn(frm)
 		set_vol_calc(frm)
+		frm.add_custom_button(__('Good Receipt'), () => {
+			// frm.trigger("make_good_receipt");
+			frappe.model.open_mapped_doc({
+				method: "ql.ql.stock_entry.make_good_receipt",
+				frm: frm,
+				run_link_triggers: true
+			});
+		}, __('Create'));
 	},
     validate(frm) {
 		sum_volume(frm);

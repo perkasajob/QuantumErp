@@ -39,21 +39,21 @@ def get_data(item_group=None, target_date=None, month=None, year=None):
 			WHERE p.docstatus=1 and p.posting_date BETWEEN (SELECT DATE_SUB("{0}", INTERVAL 1 MONTH )) AND "{0}" and i.item_code IN({1})"""
 			.format(target_date, items), as_dict=True)[0],
 
-		"stock":frappe.db.sql("""SELECT sum(projected_qty) AS qty, warehouse FROM tabBin
+		"stock":frappe.db.sql("""SELECT sum(actual_qty) AS qty, warehouse FROM tabBin
 			WHERE warehouse IN ({0}) and item_code IN ({1}) group by warehouse""".format(', '.join(['"%s"' % d.name for d in wh_fg]), items), as_dict=True),
 
-		"wip":frappe.db.sql("""SELECT sum(projected_qty) AS qty, warehouse FROM tabBin
+		"wip":frappe.db.sql("""SELECT sum(actual_qty) AS qty, warehouse FROM tabBin
 			WHERE warehouse IN ({0}) and item_code IN ({1}) group by warehouse""".format(', '.join(['"%s"' % d.name for d in wip]), items), as_dict=True),
 
-		"stock_dist":frappe.db.sql("""SELECT sum(projected_qty) AS qty, warehouse FROM tabBin
+		"stock_dist":frappe.db.sql("""SELECT sum(actual_qty) AS qty, warehouse FROM tabBin
 			WHERE warehouse REGEXP '^D [A-Z]{3} - [A-Z]{2}' and item_code IN (%s) group by warehouse""" % items, as_dict=True),
 
-		"prevFcRofo":frappe.db.sql("""SELECT forecast, rofo FROM `tabForecast ROFO`
+		"prevFcRofo":frappe.db.sql("""SELECT forecast, rofo FROM `tabSales Forecast`
 			WHERE month=%s and year=%s and item_group=%s LIMIT 1""",
-				(prev_month, year, item_group), as_dict=True)[0],
-		"nextFcRofo":frappe.db.sql("""SELECT forecast, rofo FROM `tabForecast ROFO`
+				(prev_month, year, item_group), as_dict=True),
+		"nextFcRofo":frappe.db.sql("""SELECT forecast, rofo FROM `tabSales Forecast`
 			WHERE month=%s and year=%s and item_group=%s LIMIT 1""",
-				(next_month, year, item_group), as_dict=True)[0]}
+				(next_month, year, item_group), as_dict=True)}
 
 	res['stock_qty']	= sum([i.qty for i in res['stock']])
 	res['stock_dist_qty']	= sum([i.qty for i in res['stock_dist']])

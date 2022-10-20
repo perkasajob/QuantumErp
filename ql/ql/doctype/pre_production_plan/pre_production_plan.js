@@ -12,6 +12,12 @@ frappe.ui.form.on('Pre Production Plan', {
 			frm.trigger("get_data");
 		});
 	},
+	validate: function(frm){
+		if (frm.doc.target_date < get_today()) {
+			frappe.msgprint(__("You can not select past date in From Target Date"));
+			frappe.validated = false;
+		}
+	},
 	target_date: function(frm){
 		var datestr = frappe.datetime.str_to_obj(frm.doc.target_date).getMonth()
 		frm.set_value("month", ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
@@ -24,6 +30,8 @@ frappe.ui.form.on('Pre Production Plan', {
 		}
 	},
 	get_data: function(frm){
+		if(!frm.doc.target_date)
+			frappe.throw("Target Date cannot be empty")
 		let cols = ["ams3", "ams12", "total_sales", "forecast", "rofo", "prev_month_forecast", "prev_month_rofo", "accuracy",
 			"recommend_prod_qty", "work_in_progress", "production_output", "apl", "ppg", "dnr", "tsj" ]
 		cols.forEach(c =>{
@@ -58,16 +66,14 @@ frappe.ui.form.on('Pre Production Plan', {
 						frm.set_value("min_safety_stock_qty", Math.round(min_safety_stock_qty))
 
 						frm.set_value("total_sales", flt(d.total_sales.qty))
-						if(d.nextFcRofo){
-							frm.set_value("forecast", flt(d.nextFcRofo.forecast, 2))
-							frm.set_value("rofo", flt(d.nextFcRofo.rofo, 2))
-						}
-						if(d.prevFcRofo){
-							frm.set_value("prev_month_forecast", flt(d.prevFcRofo.forecast, 2))
-							frm.set_value("prev_month_rofo", flt(d.prevFcRofo.rofo, 2))
-						}
-						if(frm.doc.rofo){
+						if(d.nextFcRofo.length){
+							frm.set_value("forecast", flt(d.nextFcRofo[0].forecast, 2))
+							frm.set_value("rofo", flt(d.nextFcRofo[0].rofo, 2))
 							frm.set_value("accuracy", flt(d.total_sales.qty/frm.doc.rofo*100, 2))
+						}
+						if(d.prevFcRofo.length){
+							frm.set_value("prev_month_forecast", flt(d.prevFcRofo[0].forecast, 2))
+							frm.set_value("prev_month_rofo", flt(d.prevFcRofo[0].rofo, 2))
 						}
 
 						frm.set_value("production_output", d.stock_qty)
@@ -83,7 +89,9 @@ frappe.ui.form.on('Pre Production Plan', {
 						frm.set_value("total_stock", total_stock)
 						frm.set_value("safety_stock", flt(total_stock/frm.doc.rofo, 2))
 						frm.set_value("safety_stock_ams3", flt(total_stock/frm.doc.ams3, 2))
-						if (frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3) > 0){
+						if (d.nextFcRofo?.[0]?.forecast){
+							recommend_prod_qty = d.nextFcRofo[0].forecast
+						} else if (frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3) > 0){
 							recommend_prod_qty = ((frm.doc.ref_safety_stock - (total_stock/frm.doc.ams3)) * frm.doc.ams3) - d.wip_qty
 						}
 

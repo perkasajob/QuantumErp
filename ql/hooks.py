@@ -49,6 +49,10 @@ doctype_list_js = {"Purchase Order" : "public/js/purchase_order_list.js", "Purch
 # Website user home page (by function)
 # get_website_user_home_page = "ql.utils.get_home_page"
 
+has_website_permission = {
+	"Good Receipt": "ql.ql.web_form.good_receipt.good_receipt.has_website_permission",
+}
+
 # Generators
 # ----------
 
