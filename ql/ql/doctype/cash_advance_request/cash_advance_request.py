@@ -67,7 +67,7 @@ def make_bank_entry(dt, dn):
 	})
 
 	je.append("accounts", {
-		"account": payment_account.account,
+		"account": doc.account,
 		"cost_center": cost_center,
 		"credit_in_account_currency": flt(doc.credit_in_account_currency),
 		"account_currency": payment_account.account_currency,
