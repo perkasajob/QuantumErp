@@ -257,18 +257,17 @@ async function create_batch_inspection(frm){
 }
 
 async function create_batch_inspection_item(frm, o, a, qi_inspected_by_default){
-	if(frm.doc.batch_no)
+	if(frm.doc.batch_no){
 		frappe.model.set_value(o.doctype, o.name, 'batch_no', frm.doc.batch_no)
-	else {
+	} else if(!o.batch_no) {
 		// let batch_no = (await frappe.db.get_value('Work Order', frm.doc.work_order, 'batch_no')).message.batch_no
 		let shelf_life = (await frappe.db.get_value('BOM', frm.doc.bom_no, 'shelf_life_in_days')).message.shelf_life_in_days
 		if(!shelf_life){
 			shelf_life = (await frappe.db.get_value('Item', frm.doc.item_code, 'shelf_life_in_days')).message.shelf_life_in_days
 		}
 		var exp_date = frappe.datetime.add_days(frappe.datetime.now_date(), shelf_life)
-		let batch_pre = o.item_code+moment().format('YY').substr(-1)+a[(new Date()).getMonth()]
+		let batch_pre = a[(new Date()).getMonth()] + moment().format('YYDD') //o.item_code+
 		let batch_count = (await frappe.db.count('Batch', {filters:{'batch_id': ['like',batch_pre+'%']}}))
-
 		let doc = (await frappe.db.insert({
 			doctype: 'Batch',
 			item: o.item_code,
