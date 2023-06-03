@@ -1,5 +1,6 @@
 frappe.ui.form.on('Purchase Order', {
 	onload(frm){
+			console.log('am I loaded ?')
 	    if(frm.doc.department){
 	        if (!(frappe.user.has_role("System Manager") || frappe.user.name =="Administrator") ){
     	        frm.set_df_property("department", "read_only", 1);
@@ -31,6 +32,24 @@ frappe.ui.form.on('Purchase Order', {
 	},
 	set_warehouse(frm){
 		frm.set_value("shipping_address", frm.doc.set_warehouse)
+	}
+})
+
+
+frappe.ui.form.on("Purchase Order Item", {
+	item_code: function(frm, cdt, cdn) {
+		console.log("item_code selected")
+		var row = locals[cdt][cdn];
+			if (row.item_code) {
+				frm.set_query("supplier", function() {
+					return {
+						query: "ql.ql.purchase.get_allow_suppliers",
+						filters: {
+							"item_code": row.item_code,
+						}
+					}
+				});
+			}
 	}
 })
 

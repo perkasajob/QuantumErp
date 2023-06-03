@@ -7,6 +7,14 @@ frappe.ui.form.on('Quality Inspection', {
 			let ed = frappe.get_doc('Batch',frm.doc.batch_no)
 			if(ed) frm.set_value('expired_date', ed.expiry_date)
 		}
+
+		frm.set_query('quality_inspection_template', function(doc) {
+			return {
+				filters: {
+					"disabled": 0,
+				}
+			};
+		});
 	},
 	refresh(frm){
 		set_reject_btn(frm)

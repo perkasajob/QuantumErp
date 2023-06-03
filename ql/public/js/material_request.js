@@ -1,4 +1,16 @@
 frappe.ui.form.on('Material Request', {
+	setup(frm) {
+		frm.set_query("bom", "items", function(doc, cdt, cdn) {
+			var d = locals[cdt][cdn];
+			return {
+				filters: {
+					'item': d.item_code,
+					'is_active': 1,
+					'docstatus': 1
+				}
+			};
+		});
+	},
 	refresh(frm) {
 		if(!frm.doc.requestee){
 			frm.set_value("requestee", frappe.user.full_name())

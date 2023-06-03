@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import frappe, erpnext
 import frappe.defaults
 from frappe import _
-from frappe.utils import cstr, cint, flt, comma_or, getdate, nowdate, formatdate, format_time, get_link_to_form
+from frappe.utils import cstr, cint, flt, comma_or, getdate, nowdate, formatdate, format_time, get_link_to_form, unique
 from erpnext.stock.utils import get_incoming_rate
 from erpnext.stock.stock_ledger import get_previous_sle, NegativeStockError, get_valuation_rate
 from erpnext.stock.get_item_details import get_bin_details, get_default_cost_center, get_conversion_factor, get_reserved_qty_for_so
@@ -20,8 +20,10 @@ from frappe.model.mapper import get_mapped_doc
 from erpnext.stock.doctype.serial_no.serial_no import update_serial_nos_after_submit, get_serial_nos
 from erpnext.stock.doctype.stock_reconciliation.stock_reconciliation import OpeningEntryAccountError
 from ql.overrides import stockcontroller_validate
+from functools import reduce
 
 import json
+import pandas as pd
 
 from six import string_types, itervalues, iteritems
 
@@ -91,6 +93,11 @@ class QLStockEntry(StockController):
 		self.validate_serialized_batch()
 		self.set_actual_qty()
 		self.calculate_rate_and_amount(update_finished_item_rate=False)
+		if self.purchase_order and self.purpose == "Send to Subcontractor":
+			self.validate_against_bom()
+		if self.purpose == "Material Consumption at Subcontractor":
+			self.validate_scrap()
+		self.create_batch_nr()
 
 	def on_submit(self):
 
@@ -119,6 +126,9 @@ class QLStockEntry(StockController):
 
 		if self.purchase_order and self.purpose == "Send to Subcontractor":
 			self.update_purchase_order_supplied_items()
+
+		if self.purpose == "Material Consumption at Subcontractor":
+			self.update_purchase_receipt_supplied_items()
 
 		if self.work_order and self.purpose == "Material Consumption for Manufacture":
 			self.validate_work_order_status()
@@ -756,7 +766,8 @@ class QLStockEntry(StockController):
 				sl_entries.append(self.get_sl_entries(d, {
 					"warehouse": cstr(d.s_warehouse),
 					"actual_qty": -flt(d.transfer_qty),
-					"incoming_rate": 0
+					"incoming_rate": 0,
+					"batch_nr" : cstr(d.batch_nr)
 				}))
 
 		for d in self.get('items'):
@@ -764,7 +775,8 @@ class QLStockEntry(StockController):
 				sl_entries.append(self.get_sl_entries(d, {
 					"warehouse": cstr(d.t_warehouse),
 					"actual_qty": flt(d.transfer_qty),
-					"incoming_rate": flt(d.valuation_rate)
+					"incoming_rate": flt(d.valuation_rate),
+					"batch_nr" : cstr(d.batch_nr)
 				}))
 
 		# On cancellation, make stock ledger entry for
@@ -843,7 +855,8 @@ class QLStockEntry(StockController):
 		if self.work_order:
 			pro_doc = frappe.get_doc("Work Order", self.work_order)
 			_validate_work_order(pro_doc)
-			pro_doc.run_method("update_status")
+			if pro_doc.status != "Completed":
+				pro_doc.run_method("update_status")
 			if self.fg_completed_qty:
 				pro_doc.run_method("update_work_order_qty")
 				if self.purpose == "Manufacture":
@@ -1371,6 +1384,50 @@ class QLStockEntry(StockController):
 						frappe.throw(_("Batch {0} of Item {1} is disabled.")
 							.format(item.batch_no, item.item_code))
 
+	def validate_against_bom(self):
+		# to catch excessive raw material to be sent out
+		po = frappe.get_doc("Purchase Order", self.purchase_order)
+		rm_items = {item.rm_item_code: item.required_qty - item.supplied_qty for item in po.supplied_items}
+		for item in self.items:
+			if item.item_code in rm_items.keys() and item.qty < rm_items[item.item_code]:
+					frappe.throw("QTY {}: {}, min qty is {} (BOM)".format(item.item_code, item.qty, rm_items[item.item_code]))
+
+	def validate_scrap(self):
+		# to catch consumed qty greater than the allowable scrap
+		df = pd.DataFrame([[i.item_code, i.reference_purchase_receipt, i.transfer_qty] for i in self.items],columns=['item','reference_purchase_receipt','transfer_qty'])
+		items_qty = df.groupby(['reference_purchase_receipt','item'])['transfer_qty'].sum().reset_index()
+		# pr_list = unique([i.reference_purchase_receipt for i in self.items])
+		# bom_list = frappe.db.get_list('Purchase Receipt Item', filters={'parent': ['IN',pr_list]}, fields=['bom'], as_list=1)
+		# bom = frappe.db.sql('select item_code, sum(qty) as qty from `tabBOM Item` WHERE parent in ({}) GROUP BY item_code'.format(','.join(['%s'] * len(bom_list))), tuple(bom_list), as_dict=1)
+		# bom_scrap = {b.item_code: b.scrap for b in bom }
+		# req_qty = frappe.db.sql('select main_item_code, rm_item_code, sum(required_qty) as qty from `tabPurchase Receipt Item Supplied` WHERE parent in ({}) GROUP BY rm_item_code'.format(','.join(['%s'] * len(pr_list))), tuple(pr_list), as_dict=1)
+		# req_qty = {r.main_item_code+'-'+ r.rm_item_code:r.qty for r in req_qty}
+
+
+		# for i in items_qty.index:
+		# 	scraps = {bom_item.item_code: (100 + bom_item.scrap)*pr_item.qty/bom.quantity/100*bom_item.stock_qty for bom_item in bom.items}
+
+		# items  = unique([{item.reference_purchase_receipt : {item.item_code : 0} for item in self.items}])
+		# for item in self.items:
+		# 	items[item.item_code]	=	items[item.item_code] + item.qty
+
+		pr = {}
+		for i in range(len(items_qty)):
+			# frappe.throw(items_qty.iloc[i].loc['reference_purchase_receipt'])
+			if i == 0  or (i > 0 and items_qty.iloc[i].reference_purchase_receipt != items_qty.iloc[i-1].reference_purchase_receipt):
+				pr = frappe.get_doc("Purchase Receipt", items_qty.iloc[i].loc['reference_purchase_receipt'])
+			max_qty = reduce(lambda s1,s2:s1+s2, [s.required_qty * (1 + s.scrap/100) for s in pr.supplied_items if s.rm_item_code == items_qty.iloc[i].loc['item']])
+
+			if items_qty.iloc[i].loc['transfer_qty'] > max_qty:
+				frappe.throw("QTY {}: {} > scrap % {} (BOM)".format(items_qty.iloc[i].loc['item'], items_qty.iloc[i].loc['transfer_qty'], max_qty))
+
+
+			# for pr_item in pr.items:
+			# 	bom = frappe.get_doc("BOM", pr_item.bom)
+			# 	scraps = {bom_item.item_code: (100 + bom_item.scrap)*pr_item.qty/bom.quantity/100*bom_item.stock_qty for bom_item in bom.items}
+			# 	if item.item_code in scraps.keys() and item.qty > scraps[item.item_code]:
+			# 			frappe.throw("QTY {}: {} < {} (BOM)".format(item.item_code, item.qty, scraps[item.item_code]))
+
 	def update_purchase_order_supplied_items(self):
 		#Get PO Supplied Items Details
 		item_wh = frappe._dict(frappe.db.sql("""
@@ -1493,6 +1550,16 @@ class QLStockEntry(StockController):
 						'reference_type': reference_type,
 						'reference_name': reference_name
 					})
+
+	def create_batch_nr(self): #PJOB Tunnel to NLP
+		for item in self.items:
+			if (item.t_warehouse and (item.t_warehouse == "Gudang Quantum Lab - QL" or item.t_warehouse[0:2] == "N ")) and item.batch_no:
+				is_occupied = True
+				if item.batch_nr:
+					is_occupied = frappe.db.exists("Stock Entry Detail", {'t_warehouse': item.t_warehouse, 'parent': ['!=', self.name], 'batch_nr': item.batch_nr})
+
+				if is_occupied:
+					item.batch_nr = item.batch_no + str(frappe.db.count('Stock Entry Detail', {'t_warehouse': item.t_warehouse, 'batch_no': item.batch_no}))
 
 @frappe.whitelist()
 def move_sample_to_retention_warehouse(company, items):

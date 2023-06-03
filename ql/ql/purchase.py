@@ -25,6 +25,20 @@ def check_PO_qty(docname=None, item_names=None, purchase_order_item=None):
 		#  res.append(frappe.db.sql("""  select pri.item_name as item_name,sum(pri.qty) as pri_qty, poi.qty as poi_qty from `tabPurchase Receipt Item` pri left join `tabPurchase Order Item` poi on poi.name=pri.purchase_order_item where pri.docstatus < 2 and pri.purchase_order_item='{}' and pri.item_name='{}'""".format(purchase_order_item[i], item_names[i]), as_dict=1))
 	return res
 
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_allow_suppliers(doctype, txt, searchfield, start, page_len, filters):
+	# ql.ql.purchase.get_allow_suppliers
+	if filters and filters.get('item_code'):
+		query = """
+			select supplier
+			from `tabItem Supplier`
+			where parent = {}""".format(frappe.db.escape(filters.get('item_code')))
+		return frappe.db.sql(query, filters)
+	else:
+		return []
+
 class QLPurchaseInvoice(BuyingController):
 	def validate_with_previous_doc(self):
 		super(PurchaseInvoice, self).validate_with_previous_doc({

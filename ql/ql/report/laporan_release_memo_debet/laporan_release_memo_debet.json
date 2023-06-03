@@ -1,0 +1,38 @@
+{
+ "add_total_row": 0,
+ "creation": "2022-09-27 09:49:36.947019",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Quantum Labs LH",
+ "modified": "2022-11-03 13:29:47.486915",
+ "modified_by": "andreas2412@gmail.com",
+ "module": "QL",
+ "name": "Laporan Release Memo Debet",
+ "owner": "andreas2412@gmail.com",
+ "prepared_report": 0,
+ "query": "SELECT\n    sle.item_code as \"Kode Produk\",\n    i.item_name as \"Nama Produk\",\n    sle.creation as \"Tgl Release\",\n    sle.warehouse as \"Gudang\",\n    sle.voucher_no as \"No Memo Debet\",\n    sle.batch_no as \"No Batch\",\n    b.expiry_date as \"ED\",\n    sle.actual_qty as \"Kuantiti Release\",\n    sle.stock_uom as \"Satuan\"\nFROM \n    `tabStock Ledger Entry` as sle LEFT JOIN `tabBatch` as b ON sle.batch_no=b.batch_id \n    LEFT JOIN `tabItem` as i ON sle.item_code=i.item_code\nWHERE\n    /* Pilih semua transaksi yang tanggal postingnya antara periode 1 sampai periode 2  */\n    sle.voucher_type like \"Purchase Receipt\"\n    AND\n    sle.posting_date BETWEEN %(start_date)s and %(end_date)s\n    AND\n    (i.item_group like \"Q1 : Generik\" OR i.item_group like \"Q2 : Branded\" OR i.item_group like \"Q4 : PKRT\" OR i.item_group like \"Q8 : Omega\" OR i.item_group like \"Q8 : OTC\")\n    Order By sle.item_code",
+ "ref_doctype": "Stock Ledger Entry",
+ "report_name": "Laporan Release Memo Debet",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "WH"
+  },
+  {
+   "role": "Stock Manager"
+  },
+  {
+   "role": "LOG"
+  }
+ ]
+}

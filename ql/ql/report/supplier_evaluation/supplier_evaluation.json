@@ -1,0 +1,44 @@
+{
+ "add_total_row": 0,
+ "creation": "2023-03-29 12:09:47.417974",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Quantum Labs LH",
+ "modified": "2023-03-30 00:44:21.693130",
+ "modified_by": "andreas2412@gmail.com",
+ "module": "QL",
+ "name": "Supplier Evaluation",
+ "owner": "andreas2412@gmail.com",
+ "prepared_report": 0,
+ "query": "SELECT\n    pr.supplier as \"Supplier\",\n    pri.item_code as \"Item Code\",\n    pri.item_name as \"Item Name\",\n    pri.qty as \"QTY\",\n    pri.uom as \"UOM\",\n    po.transaction_date as \"Tanggal PO\",\n    poi.parent as \"Nomer PO\",\n    pr.arrival_date as \"Tanggal Kedatangan\",\n    (pr.arrival_date - po.transaction_date) as \"Hari\"\nFROM \n    `tabPurchase Receipt` as pr\n    LEFT JOIN `tabPurchase Receipt Item` as pri ON pr.name=pri.parent\n    LEFT JOIN `tabPurchase Order Item` as poi ON pri.purchase_order=poi.parent\n    LEFT JOIN `tabPurchase Order` as po ON poi.parent=po.name\nORDER BY pr.supplier \n\n",
+ "ref_doctype": "Purchase Order",
+ "report_name": "Supplier Evaluation",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "Quality Manager"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Manufacturing User"
+  },
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "QA"
+  },
+  {
+   "role": "RND"
+  },
+  {
+   "role": "QC"
+  }
+ ]
+}

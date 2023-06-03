@@ -56,6 +56,7 @@ frappe.ui.form.on('Stock Entry', {
 			frappe.db.get_doc("Pick List", frm.doc.pick_list).then(o =>{
 				frm.set_value("batch_no", o.batch_no)
 			})
+		paint_wh_checked(frm)
 	},
 	work_order(frm){
 		frappe.db.get_doc("Work Order", frm.doc.work_order).then(o =>{
@@ -87,20 +88,56 @@ frappe.ui.form.on('Stock Entry', {
 		let scan_check_fetched_field = doc.fields_dict["check_fetched_item"];
 		var d = locals[cdt][cdn];
 		if (d.check_fetched_item) {
-			frappe.call({
-				method: "erpnext.selling.page.point_of_sale.point_of_sale.search_serial_or_batch_or_barcode_number",
-				args: { search_value: d.check_fetched_item },
-				callback: function(r) {
-					let idxFound = 0
-					if (!r.exe){
-						doc.doc.items.forEach(o=>{
-							if(o.item_code === r.message.item_code) idxFound = o.idx
-						})
-						if(!idxFound) scan_check_fetched_field.set_new_description('<span style="color:red;">Item Not Found!</span>')
-						else scan_check_fetched_field.set_new_description("Items[" + idxFound + "}: "+ r.message.item_code);
-					}
+			let idxFound = 0
+			let item_code = ""
+			// Search for batch_no
+			d.items.forEach(o=>{
+				if(o.batch_no === d.check_fetched_item) {
+					idxFound = o.idx;
+					item_code = o.item_code
+					o.wh_checked  = 1
 				}
-			});
+			})
+			if(!idxFound){
+				// Search for item_code
+				d.items.forEach(o=>{
+					if(o.batch_no === d.check_fetched_item) {
+						idxFound = o.idx;
+						item_code = o.item_code
+						o.wh_checked  = 1
+					}
+				})
+			}
+			cur_frm.refresh_fields("items")
+			if(!idxFound) scan_check_fetched_field.set_new_description('<span style="color:red;">Item Not Found!</span>')
+			else{
+				scan_check_fetched_field.set_new_description("Items[" + idxFound + "]: "+ item_code);
+				// $(`[data-idx=${idxFound}] > .data-row > .row-index`).css('background-color', '#bfff80');
+				$(`[data-idx=${idxFound}] > .data-row > [data-fieldname=batch_no]`).css('background-color', '#bfff80');
+			}
+
+			// frappe.call({
+			// 	method: "erpnext.selling.page.point_of_sale.point_of_sale.search_serial_or_batch_or_barcode_number",
+			// 	args: { search_value: d.check_fetched_item },
+			// 	callback: function(r) {
+			// 		let idxFound = 0
+			// 		if (!r.exe){
+			// 			doc.doc.items.forEach(o=>{
+			// 				if(o.item_code === r.message.item_code) {
+			// 					idxFound = o.idx;
+			// 					o.wh_checked  = 1
+			// 					debugger
+			// 				}
+			// 			})
+			// 			cur_frm.refresh_fields("items")
+			// 			if(!idxFound) scan_check_fetched_field.set_new_description('<span style="color:red;">Item Not Found!</span>')
+			// 			else{
+			// 				scan_check_fetched_field.set_new_description("Items[" + idxFound + "]: "+ r.message.item_code);
+			// 				$(`[data-idx=${idxFound}] > .data-row > .row-index`).css('background-color', '#bfff80');
+			// 			}
+			// 		}
+			// 	}
+			// });
 		}
 	},
 })
@@ -296,6 +333,15 @@ async function create_batch_inspection_item(frm, o, a, qi_inspected_by_default){
 		cur_frm.refresh_field("items")
 		frappe.msgprint(`Quality Inspection ${doc.name} is Created`)
 	}
+}
+
+function paint_wh_checked(frm){
+	frm.doc.items.forEach(o=>{
+		if(o.wh_checked) {
+			// $(`[data-idx=${o.idx}] > .data-row > .row-index`).css('background-color', '#00ffaa');
+			$(`[data-idx=${o.idx}] > .data-row > [data-fieldname=batch_no]`).css('background-color', '#00ffaa');
+		}
+	})
 }
 
 function sum_volume(frm){

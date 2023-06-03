@@ -32,7 +32,6 @@ function convertUom(frm) {
 			material_request: frm.doc.material_request || ""
 		},
 		callback: (r) => {
-			console.log(r)
 			r.message.forEach(o => {
 				frm.doc.locations.forEach(row =>{
 					if(o.item_code == row.item_code){
