@@ -13,7 +13,8 @@
   "carton_sizes",
   "wip_reserve_warehouse",
   "mkt_email_api",
-  "user_allow_negative_stock"
+  "user_allow_negative_stock",
+  "pi_po_same_rate"
  ],
  "fields": [
   {
@@ -70,10 +71,16 @@
    "fieldtype": "Link",
    "label": "User Allow Negative Stock",
    "options": "User"
+  },
+  {
+   "default": "0",
+   "fieldname": "pi_po_same_rate",
+   "fieldtype": "Check",
+   "label": "PI PO same rate"
   }
  ],
  "issingle": 1,
- "modified": "2023-02-25 10:12:46.781274",
+ "modified": "2023-06-07 12:45:04.744350",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "QL Settings",
