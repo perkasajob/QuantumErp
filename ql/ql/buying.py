@@ -15,6 +15,11 @@ from six import iteritems
 
 def update_completed_with_draft_qty(self, mr_items=None, update_modified=True):
 		if self.material_request_type == "Purchase":
+			if self.department == "PPIC":
+				for d in self.get("items"):
+					require_project = frappe.db.get_value('Item', d.item_code, 'require_project')
+					if require_project and not d.project:
+						frappe.throw("Item {0} on row {1} need a Project").format(d.item_code, d.ID)
 			return
 
 		if not mr_items:
