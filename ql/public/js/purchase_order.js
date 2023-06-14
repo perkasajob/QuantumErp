@@ -1,6 +1,5 @@
 frappe.ui.form.on('Purchase Order', {
 	onload(frm){
-		console.log('am I loaded ?')
 	    // if(frm.doc.department){
 	    //     if (!(frappe.user.has_role("System Manager") || frappe.user.name =="Administrator") ){
     	//         frm.set_df_property("department", "read_only", 1);
@@ -22,7 +21,7 @@ frappe.ui.form.on('Purchase Order', {
 				frappe.db.get_list('Supplier', {
 						fields: ['name'],
 						filters: {
-							maintain_same_purchase_rate: 1,
+							allow_different_purchase_rate: 1,
 						}
 				}).then(s => {
 					if( s.map((a)=>{return a.name}).includes(frm.doc.supplier)){
@@ -34,6 +33,7 @@ frappe.ui.form.on('Purchase Order', {
 							callback: function(r) {
 								if (!r.exc) {
 									let o = r.message
+									let total = 0
 									for(var i=0; i< o.length; i++) {
 										frm.doc.items.forEach(item => {
 											if(item.name == o[i].po_detail){
@@ -41,23 +41,15 @@ frappe.ui.form.on('Purchase Order', {
 												item.price_list_rate = o[i].rate
 												item.amount = flt(item.rate * item.qty, 2)
 											}
+											total += item.amount
 										});
 									}
+									frm.doc.total =  total
 									frm.refresh_field("items");
+									frm.refresh_field("total");
 								}
 							}
-					});
-						// erpnext.utils.map_current_doc({
-						// 	method: 'erpnext.buying.doctype.purchase_order.purchase_order.get_pi_price',
-						// 	source_doctype: 'Purchase Invoice',
-						// 	target: frm,
-						// 	// setters: {
-						// 	// 	company: frm.doc.company,
-						// 	// 	customer: frm.doc.customer
-						// 	// },
-						// 	// date_field: 'transaction_date',
-						// 	// get_query_filters: get_query_filters
-						// });
+						});
 					}
 				})
 			}
