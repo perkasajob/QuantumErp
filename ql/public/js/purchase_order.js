@@ -31,7 +31,7 @@ frappe.ui.form.on('Purchase Order', {
 									'purchase_order': frm.doc.name
 							},
 							callback: function(r) {
-								if (!r.exc) {
+								if (!r.exc && r.message.length > 0) {
 									let o = r.message
 									let total = 0
 									for(var i=0; i< o.length; i++) {
