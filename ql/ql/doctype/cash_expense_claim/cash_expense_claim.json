@@ -175,7 +175,8 @@
   {
    "fieldname": "verifier",
    "fieldtype": "Read Only",
-   "label": "Verifier"
+   "label": "Verifier",
+   "no_copy": 1
   },
   {
    "fieldname": "item_request",
@@ -223,7 +224,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2022-09-02 15:55:25.800932",
+ "modified": "2024-09-25 13:42:09.677550",
  "modified_by": "Administrator",
  "module": "QL",
  "name": "Cash Expense Claim",

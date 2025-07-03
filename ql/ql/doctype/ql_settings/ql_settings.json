@@ -76,12 +76,13 @@
    "default": "0",
    "fieldname": "pi_po_same_rate",
    "fieldtype": "Check",
-   "label": "PI PO same rate"
+   "label": "PI PO same rate",
+   "permlevel": 1
   }
  ],
  "issingle": 1,
- "modified": "2023-06-07 12:45:04.744350",
- "modified_by": "Administrator",
+ "modified": "2023-06-16 10:01:25.497754",
+ "modified_by": "dwi@ksp.ksp",
  "module": "QL",
  "name": "QL Settings",
  "owner": "Administrator",

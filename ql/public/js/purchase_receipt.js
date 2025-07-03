@@ -196,12 +196,15 @@ async function check_POqty(frm, validation){
 	});
 }
 
+//TODO: Fix, this function must not create inspection when inspection_required_before_purchase is not set
 async function create_batch_inspection(frm){
-    if(frm.doc.__islocal)
-		return
+	if(frm.doc.__islocal)
+	return
 	let processed_items = []
 	for (let o of  cur_frm.doc.items){
 		console.log('Item: ' + o.item_name)
+		const res = (await frappe.db.get_value('Item',o.item_code,['has_batch_no', 'inspection_required_before_purchase'])).message
+
 		let prev_item = processed_items.find(item=>item.item_code == o.item_code)
 		if(prev_item){
 			let idx = prev_item.idx - 1
@@ -209,9 +212,9 @@ async function create_batch_inspection(frm){
 			frappe.model.set_value(o.doctype, o.name, 'quality_inspection', frm.doc.items[idx].quality_inspection)
 			cur_frm.refresh_field("items")
 		} else if((!Object.keys(o).includes("batch_no") || !o.batch_no)){
-			let has_batch_no = (await frappe.db.get_value('Item',o.item_code,'has_batch_no')).message.has_batch_no
+
 			// let batch_count = (await frappe.db.count('Batch'))
-			if(has_batch_no){
+			if(res.has_batch_no){
 				let a = await ql.get_month_code()
 				let batch_pre = a[(new Date()).getMonth()]+moment().format('YYDD')
 				let batch_count = (await frappe.db.count('Batch', {filters:{'batch_id': ['like',batch_pre+'%']}}))
@@ -227,12 +230,11 @@ async function create_batch_inspection(frm){
 				frappe.model.set_value(o.doctype, o.name, 'batch_no', doc.name)
 				cur_frm.refresh_field("items")
 				// frappe.msgprint(`Batch ${doc.name} is Created`)
-				await create_inspection(cur_frm, o)
-
-			} else {
+			}
+			if(res.inspection_required_before_purchase){
 				await create_inspection(cur_frm, o)
 			}
-		} else { // create inspection only
+		} else if (res.inspection_required_before_purchase){ // create inspection only
 			await create_inspection(cur_frm, o)
 		}
 		if(o.batch_no || o.quality_inspection){
@@ -275,6 +277,8 @@ async function create_inspection(frm, o){
 				reference_type: 'Purchase Receipt',
 				reference_name: frm.doc.name,
 				supplier: frm.doc.supplier,
+				manufacturer: frm.doc.manufacturer,
+				asl_required: o.asl_required,
 				inspected_by: frappe.user.name,
 				received_qty: o.received_qty * o.conversion_factor,
 				uom: o.stock_uom,

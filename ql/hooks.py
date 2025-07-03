@@ -29,7 +29,7 @@ app_include_js = ["/assets/ql/js/base_control.js"]
 # page_js = {"Stock Ledger" : "public/js/stock_ledger.js"}
 
 # include js in doctype views
-doctype_js = {"Sales Order" : "public/js/sales_order.js","Sales Invoice" : "public/js/sales_invoice.js","Purchase Order" : "public/js/purchase_order.js", "Purchase Receipt" : "public/js/purchase_receipt.js", "Purchase Invoice" : "public/js/purchase_invoice.js", "Quality Inspection" : "public/js/quality_inspection.js","Material Request" : "public/js/material_request.js","Stock Entry" : "public/js/stock_entry.js","Batch" : "public/js/batch.js","Job Card" : "public/js/job_card.js","Pick List" : "public/js/pick_list.js","Warehouse" : "public/js/warehouse.js","Work Order" : "public/js/work_order.js","BOM" : "public/js/bom.js", "Payment Entry" : "public/js/payment_entry.js"}
+doctype_js = {"Sales Order" : "public/js/sales_order.js","Sales Invoice" : "public/js/sales_invoice.js","Purchase Order" : "public/js/purchase_order.js", "Purchase Receipt" : "public/js/purchase_receipt.js", "Purchase Invoice" : "public/js/purchase_invoice.js", "Quality Inspection" : "public/js/quality_inspection.js","Material Request" : "public/js/material_request.js","Stock Entry" : "public/js/stock_entry.js","Batch" : "public/js/batch.js","Job Card" : "public/js/job_card.js","Pick List" : "public/js/pick_list.js","Warehouse" : "public/js/warehouse.js","Work Order" : "public/js/work_order.js","BOM" : "public/js/bom.js", "Payment Entry" : "public/js/payment_entry.js", "Item" : "public/js/item.js" }
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
 # doctype_js = {"Kanban Board" : "public/js/kanban_board.js"}
@@ -112,7 +112,13 @@ doc_events = {
 	},
 	"Purchase Receipt": {
 		"on_submit":"ql.ql.stock.purchase_receipt_on_submit",
-		"validate":"ql.ql.stock.purchase_receipt_validate",
+		"validate":"ql.ql.validation.purchase_receipt_validate",
+	},
+	"Purchase Order": {
+		"validate":"ql.ql.validation.purchase_order_validate",
+	},
+	"Quality Inspection": {
+		"validate":"ql.ql.validation.quality_inspection_validate",
 	},
 	"Work Order": {
 		"validate":"ql.ql.work_order.work_order_validate",
