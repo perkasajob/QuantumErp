@@ -19,12 +19,14 @@ frappe.ui.form.on('Quality Inspection', {
 	refresh(frm){
 		set_reject_btn(frm)
 	},
-    validate(frm) {
-		// set_month_code(cur_frm)
+	validate(frm) {
 		check_expiry_date(cur_frm)
 		set_sample_size(cur_frm)
 		auto_fill(cur_frm)
-    },
+	},
+	before_submit(frm){
+		validate_readings(cur_frm)
+	},
 	sample_type(frm) {
 		set_sample_size(cur_frm)
 	},
@@ -157,7 +159,7 @@ function test_criteria(frm){
             } else if(!isNaN(criteria)){
                 criteria = reading +'==' + criteria
 			} else if(criteria.match(/[<=>]/g)){
-                criteria = criteria.replace('<<','<'+cstr(reading)+"&&"+cstr(reading)+'<').replace('<=<','<='+cstr(reading)+"&&"+cstr(reading)+'<')
+                criteria = criteria.replaceAll(',','.').replace('<<','<'+cstr(reading)+"&&"+cstr(reading)+'<').replace('<=<','<='+cstr(reading)+"&&"+cstr(reading)+'<')
             } else {
                 criteria = null
             }
@@ -200,6 +202,30 @@ function auto_fill(frm){
 			})
 		})
 	}
+}
+
+function validate_readings(frm) {
+  const canJustify = frappe.user.has_role("Quality Manager", "System Manager");
+
+  const errors = frm.doc.readings.map((row, idx) => {
+      const rowErrors = [];
+      if (!row.reading_1.trim()) {
+        rowErrors.push(`Row ${idx + 1}: reading is required.`);
+      }
+
+      if (!canJustify && row.status === "Justified") {
+        rowErrors.push(
+          `Row ${idx + 1}: status “Justified” is restricted to Quality / System Managers.`
+        );
+      }
+      return rowErrors;
+    })
+    .flat();
+
+  if (errors.length) {
+    const message = errors.join("\n");
+    frappe.throw(message);
+  }
 }
 
 function set_sample_size(frm){

@@ -18,6 +18,43 @@ class OperationTooLongError(frappe.ValidationError): pass
 class ItemHasVariantError(frappe.ValidationError): pass
 
 class QLWorkOrder(WorkOrder):
+	def update_status(self, status=None):
+		if status == "Stopped":
+			self.validate_draft_stock_entries()
+
+		return super(QLWorkOrder, self).update_status(status)
+
+	def validate_draft_stock_entries(self):
+		draft_entries = frappe.get_all(
+			"Stock Entry",
+			filters={
+				"work_order": self.name,
+				"docstatus": 0
+			},
+			fields=["name", "purpose"],
+			order_by="creation asc"
+		)
+
+		if draft_entries:
+			entries = "<br>".join([
+				"{} - {}".format(
+					get_link_to_form("Stock Entry", se.name),
+					se.purpose
+				)
+				for se in draft_entries
+			])
+
+			frappe.throw(
+				_(
+					"Cannot stop Work Order {0} because the "
+					"following Stock Entries are still in Draft:"
+					"<br><br>{1}<br><br>"
+					"Please submit or delete these Stock Entries "
+					"before stopping the Work Order."
+				).format(self.name, entries),
+				title=_("Unsubmitted Stock Entries")
+			)
+
 	def calculate_operating_cost(self):
 		# super(WorkOrder, self).validate()
 		self.calculate_operating_cost_ql()
